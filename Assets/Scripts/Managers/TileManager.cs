@@ -54,7 +54,7 @@ public class TileManager : MonoBehaviour
 
 					//load model, create mesh
 					P3DModel model = parser.LoadFromFile (pathToModel);
-					Mesh[] meshes = model.CreateMeshes ();
+					//Mesh[] meshes = model.CreateMeshes ();
 
 					tileNames.Add (files [i].Substring (files [i].LastIndexOf ('/')+1));
 					tileModels.Add (model);
