@@ -4,28 +4,28 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    private TrackTileSavable trackTileSavable;
-    public string size = "";
+    private TrackTileSavable _trackTileSavable;
+    private string _size;
 
-    public int PositionX, PositionY;
+    public Vector2 GridPosition;
 
-    Tile(TrackTileSavable trackTileSavable)
+    public void SetupTile(TrackTileSavable trackTileSavable, string size, Vector2 gridPosition)
     {
-        this.trackTileSavable = trackTileSavable;
-    }
+		_trackTileSavable = trackTileSavable;
+	    _size = size;
+	    GridPosition = gridPosition;
 
-	public void SetTileSavable(TrackTileSavable trackTileSavable)
-	{
-		this.trackTileSavable = trackTileSavable;
-	}
+		SetRotation(trackTileSavable.Rotation);
+    }
 
     public void SetRotation(byte rotation)
     {
-        trackTileSavable.Rotation = rotation;
+        _trackTileSavable.Rotation = rotation;
         transform.localRotation = Quaternion.Euler(0, (rotation - 1) * 90, 0);
 
-        if (trackTileSavable.IsMirrored != 0)
+        if (_trackTileSavable.IsMirrored != 0)
         {
+			//ghetto way of flipping
             if (rotation == 1 || rotation == 3)
             {
                 transform.localScale = new Vector3(1, 1, -1);
@@ -36,31 +36,31 @@ public class Tile : MonoBehaviour
             }
         }
 
-        if (size == "11")
+        if (_size == "11")
         {
-            transform.localPosition = new Vector3(PositionY * TrackManager.TileSize, transform.localPosition.y, PositionX * TrackManager.TileSize);
+            transform.localPosition = new Vector3(GridPosition.y * TrackManager.TileSize, transform.localPosition.y, GridPosition.x * TrackManager.TileSize);
         }
-        else if (size == "22")
+        else if (_size == "22")
         {
-            transform.localPosition = new Vector3(PositionY * TrackManager.TileSize + TrackManager.TileSize / 2, transform.localPosition.y, PositionX * TrackManager.TileSize + TrackManager.TileSize / 2);
+            transform.localPosition = new Vector3(GridPosition.y * TrackManager.TileSize + TrackManager.TileSize / 2.0f, transform.localPosition.y, GridPosition.x * TrackManager.TileSize + TrackManager.TileSize / 2.0f);
         }
-        else if (size == "21")
+        else if (_size == "21")
         {
             if (rotation == 1 || rotation == 3)
             {
-                transform.localPosition = new Vector3(PositionY * TrackManager.TileSize + TrackManager.TileSize / 2, transform.localPosition.y, PositionX * TrackManager.TileSize);
+                transform.localPosition = new Vector3(GridPosition.y * TrackManager.TileSize + TrackManager.TileSize / 2.0f, transform.localPosition.y, GridPosition.x * TrackManager.TileSize);
             }
             else
-                transform.localPosition = new Vector3(PositionY * TrackManager.TileSize, transform.localPosition.y, PositionX * TrackManager.TileSize + TrackManager.TileSize - TrackManager.TileSize / 2);
+                transform.localPosition = new Vector3(GridPosition.y * TrackManager.TileSize, transform.localPosition.y, GridPosition.x * TrackManager.TileSize + TrackManager.TileSize - TrackManager.TileSize / 2.0f);
         }
         else
         {
             if (rotation == 1 || rotation == 3)
             {
-                transform.localPosition = new Vector3(PositionY * TrackManager.TileSize, transform.localPosition.y, PositionX * TrackManager.TileSize + TrackManager.TileSize / 2);
+                transform.localPosition = new Vector3(GridPosition.y * TrackManager.TileSize, transform.localPosition.y, GridPosition.x * TrackManager.TileSize + TrackManager.TileSize / 2.0f);
             }
             else
-                transform.localPosition = new Vector3(PositionY * TrackManager.TileSize + TrackManager.TileSize, transform.localPosition.y, PositionX * TrackManager.TileSize);
+                transform.localPosition = new Vector3(GridPosition.y * TrackManager.TileSize + TrackManager.TileSize, transform.localPosition.y, GridPosition.x * TrackManager.TileSize);
         }
 
     }

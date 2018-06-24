@@ -6,7 +6,7 @@ public class TileManager : MonoBehaviour
 {
 	public List<string>	tileNames;
 	public List<P3DModel> tileModels;
-	public List<Mesh> tileMeshes;
+	//public List<Mesh> tileMeshes;
 
 	private bool loaded = false;
 
@@ -24,7 +24,7 @@ public class TileManager : MonoBehaviour
 
 			tileNames = new List<string>();
 			tileModels = new List<P3DModel>();
-			tileMeshes = new List<Mesh>();
+			//tileMeshes = new List<Mesh>();
 
 			P3DParser parser = new P3DParser();
 
@@ -58,7 +58,7 @@ public class TileManager : MonoBehaviour
 
 					tileNames.Add (files [i].Substring (files [i].LastIndexOf ('/')+1));
 					tileModels.Add (model);
-					tileMeshes.Add (meshes[0]);
+					//tileMeshes.Add (meshes[0]);
 				}
 			}
 		}

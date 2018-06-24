@@ -49,20 +49,21 @@ public class TrackManager : MonoBehaviour
                     size = size.Remove(size.IndexOf("#")).Trim();
                     size = size.Replace(" ", string.Empty);
 
+	                string name = cflFIle[2];
+	                name = name.Remove(name.IndexOf("#")).Trim();
+
                     
-                    newTile.name = x + ":" + y;
+                    newTile.name = x + ":" + y + " " + name;
 
                     MeshFilter mf = (MeshFilter)newTile.gameObject.GetComponent(typeof(MeshFilter));
                     MeshRenderer mr = (MeshRenderer)newTile.gameObject.GetComponent(typeof(MeshRenderer));
-					mf.mesh = tileManager.tileMeshes [index];
+					mf.mesh = tileManager.tileModels[index].CreateMeshes()[0];
                     //mr.GetComponent<Renderer>().material.color = Color.grey;
 
+	                newTile.AddComponent<Tile>();
+
                     newTile.transform.SetParent(Map);
-					newTile.GetComponent<Tile>().SetTileSavable(track.TrackTiles [x, y]);
-	                newTile.GetComponent<Tile>().size = size;
-	                newTile.GetComponent<Tile>().PositionX = x;
-	                newTile.GetComponent<Tile>().PositionY = y;
-					newTile.GetComponent<Tile>().SetRotation (track.TrackTiles [x, y].Rotation);
+					newTile.GetComponent<Tile>().SetupTile(track.TrackTiles [x, y], size, new Vector2(x, y));
                 }
             }
         }

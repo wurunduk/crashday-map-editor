@@ -39,7 +39,7 @@ public class ToolManager : MonoBehaviour
 			if(GUI.Button(new Rect(Screen.width - 110, 20*(i+1), 100, 18), _tileManager.tileNames[i]))
 			{
 				SelectedTileId = i;
-				DummyShadowTile.GetComponent<MeshFilter> ().mesh = _tileManager.tileMeshes [i];
+				//DummyShadowTile.GetComponent<MeshFilter> ().mesh = _tileManager.tileMeshes [i];
 
 			}
 		}
