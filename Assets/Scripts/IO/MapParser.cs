@@ -11,7 +11,7 @@ public class MapParser
         IO io = new IO(data);
 
         //ignore "CDTRK" string in the start of the file
-        io.ReadOffset = 5;
+        io.SetReadingOffest(5);
 
         //unused current time thing
         Track.CurrentTime = io.ReadInt();
@@ -25,20 +25,12 @@ public class MapParser
         //skip unneeded block
         for (int n = 0; n < 20; n++)
         {
-            io.ReadOffset += sizeof(int);
-            for (int i = io.ReadOffset; i < data.Length; i++)
-            {
-                if (data[i] == 0)
-                {
-                    io.ReadOffset = i + 1;
-                    break;
-                }
-            }
+	        io.ReadInt();
+	        io.ReadString();
         }
 
         //track style (race, derby, htf)
-        Track.Style = data[io.ReadOffset];
-        io.ReadOffset += 1;
+	    Track.Style = io.ReadByte();
 
         //ambience
         Track.Ambience = io.ReadString();
@@ -65,12 +57,9 @@ public class MapParser
             {
                 TrackTileSavable newTile = new TrackTileSavable();
                 newTile.FieldId = io.ReadUShort();
-                newTile.Rotation = data[io.ReadOffset];
-                io.ReadOffset += 1;
-                newTile.IsMirrored = data[io.ReadOffset];
-                io.ReadOffset += 1;
-                newTile.Height = data[io.ReadOffset];
-                io.ReadOffset += 1;
+	            newTile.Rotation = io.ReadByte();
+                newTile.IsMirrored = io.ReadByte();
+                newTile.Height = io.ReadByte();
 
                 Track.TrackTiles[x, y] = newTile;
             }
@@ -103,13 +92,11 @@ public class MapParser
             Track.Checkpoints[i] = io.ReadUShort();
         }
 
-        Track.Permission = data[io.ReadOffset];
-        io.ReadOffset += 1;
+        Track.Permission = io.ReadByte();
 
         Track.GroundBumpyness = io.ReadFloat();
 
-        Track.Scenery = data[io.ReadOffset];
-        io.ReadOffset += 1;
+        Track.Scenery = io.ReadByte();
 
         Track.Heightmap = new float[Track.Width * 4 + 1, Track.Height * 4 + 1];
         

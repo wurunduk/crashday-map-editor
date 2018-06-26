@@ -6,14 +6,16 @@ public class Tile : MonoBehaviour
 {
     private TrackTileSavable _trackTileSavable;
     private string _size;
+	private TrackManager _tm;
 
     public Vector2 GridPosition;
 
-    public void SetupTile(TrackTileSavable trackTileSavable, string size, Vector2 gridPosition)
+    public void SetupTile(TrackTileSavable trackTileSavable, string size, Vector2 gridPosition, TrackManager tm)
     {
 		_trackTileSavable = trackTileSavable;
 	    _size = size;
 	    GridPosition = gridPosition;
+	    _tm = tm;
 
 		SetRotation(trackTileSavable.Rotation);
     }
@@ -70,15 +72,21 @@ public class Tile : MonoBehaviour
         
     }
 
-	// Use this for initialization
-	void Start ()
-    {
-		
-	}
-	
-	// Update is called once per frame
-	void Update ()
-    {
-		
+	public void ApplyTerrain()
+	{
+		/*Vector3[] verticies = GetComponent<MeshFilter>().mesh.vertices;
+		for (int i = 0; i < verticies.Length; i++)
+		{
+			
+			int posX = Mathf.FloorToInt(GridPosition.x * 4 + verticies[i].x / 5*(_size[0]-'0') + 2);
+			int posY = Mathf.FloorToInt(GridPosition.y * 4 + verticies[i].z / 5*(_size[1]-'0') + 2);
+
+			if(posX < 0 || posY < 0 || posX> _tm.CurrentTrack.Width*4-1 || posY> _tm.CurrentTrack.Height*4-1) continue;
+
+			verticies[i].y +=  (_tm.CurrentTrack.Heightmap[posX+1, posY+1] - _tm.CurrentTrack.Heightmap[posX,posY])
+			                   *((verticies[i]+ new Vector3(10,0,0)*(_size[0]-'0') + new Vector3(0,0,10)*(_size[1]-'0')).magnitude*_tm.CurrentTrack.Height)/(20*Mathf.Sqrt(2));
+		}
+			
+		GetComponent<MeshFilter>().mesh.vertices = verticies;*/
 	}
 }

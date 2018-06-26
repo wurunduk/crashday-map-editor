@@ -5,95 +5,101 @@ using UnityEngine;
 
 public class IO
 {
-    public int ReadOffset = 0;
-    public int writeOffset = 0;
+    private int _readOffset = 0;
+    private int _writeOffset = 0;
 
     private readonly byte[] _data;
 
     public static string GetCrashdayPath()
     {
-        string CrashdayPath = "";
+        string crashdayPath;
+
         if (PlayerPrefs.HasKey("crashpath"))
         {
-            CrashdayPath = PlayerPrefs.GetString("crashpath");
-            if (!Directory.Exists(CrashdayPath))
+	        crashdayPath = PlayerPrefs.GetString("crashpath");
+            if (!Directory.Exists(crashdayPath))
             {
-                CrashdayPath = EditorUtility.OpenFolderPanel("Select crashday folder", "", "");
-                PlayerPrefs.SetString("crashpath", CrashdayPath);
+	            crashdayPath = EditorUtility.OpenFolderPanel("Select crashday folder", "", "");
+                PlayerPrefs.SetString("crashpath", crashdayPath);
             }
         }
         else
         {
-            CrashdayPath = EditorUtility.OpenFolderPanel("Select crashday folder", "", "");
-            PlayerPrefs.SetString("crashpath", CrashdayPath);
+	        crashdayPath = EditorUtility.OpenFolderPanel("Select crashday folder", "", "");
+            PlayerPrefs.SetString("crashpath", crashdayPath);
         }
-        if (!File.Exists(CrashdayPath + "/crashday.exe"))
+
+        if (!File.Exists(crashdayPath + "/crashday.exe"))
         {
             PlayerPrefs.DeleteKey("crashpath");
-            CrashdayPath = GetCrashdayPath();
+	        crashdayPath = GetCrashdayPath();
         }
-        return CrashdayPath;
+
+        return crashdayPath;
     }
 
 	public static string RemoveComment(string input)
 	{
-		if(input.IndexOf('#') > 0)
-		{
-			return input.Remove (input.IndexOf ('#')).Trim ();
-		}
-		else
-		{
-			return input.Trim ();			
-		}
+		return input.IndexOf('#') > 0 ? input.Remove (input.IndexOf ('#')).Trim () : input.Trim ();
 	}
 
     public IO(byte[] data)
     {
-        this._data = data;
+        _data = data;
     }
 
     public string ReadString()
     {
-        for (int i = ReadOffset; i < _data.Length; i++)
+        for (var i = _readOffset; i < _data.Length; i++)
         {
             if (_data[i] == 0)
             {
-                int oldOffset = ReadOffset;
-                ReadOffset = i + 1;
+                var oldOffset = _readOffset;
+	            _readOffset = i + 1;
                 return System.Text.Encoding.UTF8.GetString(_data, oldOffset, i - oldOffset);
             }
         }
         return "";
     }
 
+	public void SetReadingOffest(int newOffset)
+	{
+		_readOffset = newOffset;
+	}
+
+	public void AddReadingOffset(int newOffest)
+	{
+		_readOffset += newOffest;
+	}
+
     public int ReadInt()
     {
-        ReadOffset += 4;
-        return BitConverter.ToInt32(_data, ReadOffset - 4);
+	    _readOffset += 4;
+        return BitConverter.ToInt32(_data, _readOffset - 4);
     }
 
     public uint ReadUInt()
     {
-        ReadOffset += 4;
-        return BitConverter.ToUInt32(_data, ReadOffset - 4);
+	    _readOffset += 4;
+        return BitConverter.ToUInt32(_data, _readOffset - 4);
     }
 
     public ushort ReadUShort()
     {
-        ReadOffset += 2;
-        return BitConverter.ToUInt16(_data, ReadOffset - 2);
+	    _readOffset += 2;
+        return BitConverter.ToUInt16(_data, _readOffset - 2);
     }
 
     public short ReadShort()
     {
-        ReadOffset += 2;
-        return BitConverter.ToInt16(_data, ReadOffset - 2);
+	    _readOffset += 2;
+        return BitConverter.ToInt16(_data, _readOffset - 2);
     }
 
     public float ReadFloat()
     {
-        ReadOffset += 4;
-        return BitConverter.ToSingle(_data, ReadOffset - 4);
+	    _readOffset += 4;
+        return BitConverter.ToSingle(_data, _readOffset - 4);
     }
 
     public Vector3 ReadVector3()
@@ -103,13 +109,13 @@ public class IO
 
     public byte ReadByte()
     {
-        ReadOffset += 1;
-        return _data[ReadOffset-1];
+	    _readOffset += 1;
+        return _data[_readOffset-1];
     }
 
     public char ReadChar()
     {
-        ReadOffset += 1;
-        return BitConverter.ToChar(_data, ReadOffset - 1);
+	    _readOffset += 1;
+        return BitConverter.ToChar(_data, _readOffset - 1);
     }
 }

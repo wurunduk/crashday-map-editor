@@ -12,17 +12,17 @@ public class P3DParser
     {
         P3DModel model = new P3DModel();
         IO io = new IO(data);
-        //skip 'p3d' text and version, cause i am a faggot
-        io.ReadOffset = 4;
+        //skip 'p3d' text and version, cause i am a bad guy
+        io.SetReadingOffest(4);
 
         model.P3DLength = io.ReadFloat();
         model.P3DHeight = io.ReadFloat();
         model.P3DDepth = io.ReadFloat();
 
         //skip 'tex' text
-        io.ReadOffset += 3;
+        io.AddReadingOffset(3);
         //4 reserved bytes
-        io.ReadOffset += 4;
+        io.AddReadingOffset(4);
 
         model.P3DNumTextures = io.ReadByte();
 
@@ -35,9 +35,9 @@ public class P3DParser
         }
 
         //skip lights test
-        io.ReadOffset += 6;
+        io.AddReadingOffset(6);
         //4 reserved bytes
-        io.ReadOffset += 4;
+        io.AddReadingOffset(4);
 
         model.P3DNumLights = io.ReadShort();
 
@@ -60,9 +60,9 @@ public class P3DParser
         }
 
         //skip meshes test
-        io.ReadOffset += 6;
+        io.AddReadingOffset(6);
         //4 reserved bytes
-        io.ReadOffset += 4;
+        io.AddReadingOffset(4);
 
         model.P3DNumMeshes = io.ReadShort();
 
@@ -70,9 +70,9 @@ public class P3DParser
         for (int m = 0; m < model.P3DNumMeshes; m++)
         {
             //skip submesh test
-            io.ReadOffset += 7;
+            io.AddReadingOffset(7);
             //4 reserved bytes
-            io.ReadOffset += 4;
+            io.AddReadingOffset(4);
 
             P3DModel.P3DMesh newP3DMesh = new P3DModel.P3DMesh(model.P3DNumTextures);
 
