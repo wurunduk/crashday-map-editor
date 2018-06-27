@@ -30,6 +30,9 @@ public class TrackManager : MonoBehaviour
         {
             Destroy(Map.GetChild(i).gameObject);
         }
+
+		GetComponent<TerrainManager>().GenerateTerrain();
+	    //return;
 			
         for (int y = 0; y < track.Height; y++)
         {
@@ -66,7 +69,7 @@ public class TrackManager : MonoBehaviour
 
 	                Tile tile = newTile.AddComponent<Tile>();
 					tile.SetupTile(track.TrackTiles [x, y], size, new Vector2(x, y), this);
-					tile.ApplyTerrain();
+					//tile.ApplyTerrain();
                 }
             }
         }
