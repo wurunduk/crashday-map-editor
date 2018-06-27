@@ -8,3 +8,4 @@ Current unity version: 5.4.5p5
 3. Adding tile tools
 4. Adding terrain tools
 5. Mod tiles support
+6. Fix stupid stuff

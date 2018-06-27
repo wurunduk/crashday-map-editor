@@ -49,9 +49,10 @@ public class TrackManager : MonoBehaviour
 					GameObject newTile = (GameObject) Instantiate(Dummy, new Vector3(x*TileSize, tileManager.tileModels[index].P3DMeshes[0].Height/2, y*TileSize), Quaternion.identity);
 
                     //get the size of the model in tiles
-                    string size = cflFIle[3];
-                    size = size.Remove(size.IndexOf("#")).Trim();
-                    size = size.Replace(" ", string.Empty);
+                    string sizeStr = cflFIle[3];
+	                sizeStr = sizeStr.Remove(sizeStr.IndexOf("#")).Trim();
+	                sizeStr = sizeStr.Replace(" ", string.Empty);
+					Vector2 size = new Vector2(sizeStr[0]-'0', sizeStr[1]-'0');
 
 					//get the name of the model
 	                string name = cflFIle[2];
