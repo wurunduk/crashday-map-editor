@@ -74,19 +74,42 @@ public class Tile : MonoBehaviour
 
 	public void ApplyTerrain()
 	{
-		/*Vector3[] verticies = GetComponent<MeshFilter>().mesh.vertices;
+		Vector3[] verticies = GetComponent<MeshFilter>().mesh.vertices;
 		for (int i = 0; i < verticies.Length; i++)
 		{
-			
-			int posX = Mathf.FloorToInt(GridPosition.x * 4 + verticies[i].x / 5*(_size[0]-'0') + 2);
-			int posY = Mathf.FloorToInt(GridPosition.y * 4 + verticies[i].z / 5*(_size[1]-'0') + 2);
+
+			float vertPosX = GridPosition.x * 4 + verticies[i].x / (5 * (_size[0] - '0')) + 2;
+			float vertPosY = GridPosition.y * 4 + verticies[i].z / (5 * (_size[1] - '0')) + 2;
+			int posX = Mathf.FloorToInt(vertPosX);
+			int posY = Mathf.FloorToInt(vertPosY);
 
 			if(posX < 0 || posY < 0 || posX> _tm.CurrentTrack.Width*4-1 || posY> _tm.CurrentTrack.Height*4-1) continue;
 
-			verticies[i].y +=  (_tm.CurrentTrack.Heightmap[posX+1, posY+1] - _tm.CurrentTrack.Heightmap[posX,posY])
-			                   *((verticies[i]+ new Vector3(10,0,0)*(_size[0]-'0') + new Vector3(0,0,10)*(_size[1]-'0')).magnitude*_tm.CurrentTrack.Height)/(20*Mathf.Sqrt(2));
+			//verticies[i].y +=  (_tm.CurrentTrack.Heightmap[posX+1, posY+1] - _tm.CurrentTrack.Heightmap[posX,posY])
+			//                   *((verticies[i]+ new Vector3(10,0,0)*(_size[0]-'0') + new Vector3(0,0,10)*(_size[1]-'0')).magnitude*_tm.CurrentTrack.Height)/(20*Mathf.Sqrt(2));
+
+			float height = 0.0f;
+
+			float dx = vertPosX - posX;
+			float dz = vertPosY - posY;
+
+			if ((dx + dz) < 1)
+			{
+				height = _tm.CurrentTrack.Heightmap[posX, posY];
+				height += (_tm.CurrentTrack.Heightmap[posX+1, posY] - _tm.CurrentTrack.Heightmap[posX, posY])* dx;
+				height += (_tm.CurrentTrack.Heightmap[posX, posY+1] - _tm.CurrentTrack.Heightmap[posX, posY])* dz;
+			}
+			else
+			{
+				height = _tm.CurrentTrack.Heightmap[posX+1, posY+1];
+				height += (_tm.CurrentTrack.Heightmap[posX+1, posY] - _tm.CurrentTrack.Heightmap[posX+1, posY+1]) * (1.0f - dz);
+				height += (_tm.CurrentTrack.Heightmap[posX, posY+1] - _tm.CurrentTrack.Heightmap[posX+1, posY+1]) * (1.0f - dx);
+			}
+
+			verticies[i].y += height*_tm.CurrentTrack.Height/20;
+
 		}
 			
-		GetComponent<MeshFilter>().mesh.vertices = verticies;*/
+		GetComponent<MeshFilter>().mesh.vertices = verticies;
 	}
 }

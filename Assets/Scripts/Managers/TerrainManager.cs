@@ -27,6 +27,7 @@ public class TerrainManager : MonoBehaviour
 		{
 			for (int x = 0; x < sizeX; x++)
 			{
+				//-10 is half of the TIle size to the center the terrain. According to thethe tile is divided every 5 meters
 				verticies[x+sizeX*y] = new Vector3(-10 + x*5, _tm.CurrentTrack.Heightmap[x,y]*_tm.CurrentTrack.Height/20, -10 + y*5);
 				normals[x + sizeX * y] = Vector3.down;
 				uvs[x+sizeX*y] = new Vector2(x*10%sizeX, y%sizeY);
