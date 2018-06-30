@@ -61,9 +61,9 @@ public class TrackManager : MonoBehaviour
                     
                     newTile.name = x + ":" + y + " " + name;
 
-                    MeshFilter mf = (MeshFilter)newTile.gameObject.GetComponent(typeof(MeshFilter));
-                    //MeshRenderer mr = (MeshRenderer)newTile.gameObject.GetComponent(typeof(MeshRenderer));
-					mf.mesh = tileManager.tileModels[index].CreateMeshes()[0];
+					newTile.GetComponent<MeshFilter>().mesh = tileManager.tileModels[index].CreateMeshes()[0];
+	                newTile.GetComponent<Renderer>().materials = tileManager.tileMaterials[index];
+					
 
 	                newTile.transform.SetParent(Map);
 

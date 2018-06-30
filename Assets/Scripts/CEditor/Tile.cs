@@ -27,7 +27,6 @@ public class Tile : MonoBehaviour
 
         if (_trackTileSavable.IsMirrored != 0)
         {
-			//ghetto way of flipping
             if (rotation == 1 || rotation == 3)
             {
                 transform.localScale = new Vector3(1, 1, -1);
@@ -97,6 +96,7 @@ public class Tile : MonoBehaviour
 				}
 			}
 
+			//GridPosition.x*4 + (vertPosition+10*size)/(5*size) = 
 			float vertPosX = GridPosition.x * 4 + vertPosRotated.x / (5 * _size.x) + 2;
 			float vertPosY = GridPosition.y * 4 + vertPosRotated.z / (5 * _size.y) + 2;
 			int posX = Mathf.FloorToInt(vertPosX);
@@ -112,8 +112,8 @@ public class Tile : MonoBehaviour
 			if ((dx + dz) < 1)
 			{
 				height = _tm.CurrentTrack.Heightmap[posX, posY];
-				height += (_tm.CurrentTrack.Heightmap[posX+1, posY] - _tm.CurrentTrack.Heightmap[posX, posY])* dx;
-				height += (_tm.CurrentTrack.Heightmap[posX, posY+1] - _tm.CurrentTrack.Heightmap[posX, posY])* dz;
+				height += (_tm.CurrentTrack.Heightmap[posX+1, posY] - _tm.CurrentTrack.Heightmap[posX, posY]) * dx;
+				height += (_tm.CurrentTrack.Heightmap[posX, posY+1] - _tm.CurrentTrack.Heightmap[posX, posY]) * dz;
 			}
 			else
 			{

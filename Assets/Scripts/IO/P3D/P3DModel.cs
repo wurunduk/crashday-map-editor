@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class P3DModel
@@ -97,7 +98,7 @@ public class P3DModel
     public byte P3DNumTextures;
     public RenderInfo[] P3DRenderInfo;
 
-    /*public static Texture2D LoadTextureDXT(byte[] ddsBytes, TextureFormat textureFormat)
+    public static Texture2D LoadTextureDXT(byte[] ddsBytes, TextureFormat textureFormat)
     {
         if (textureFormat != TextureFormat.DXT1 && textureFormat != TextureFormat.DXT5)
             Debug.LogError("Invalid TextureFormat. Only DXT1 and DXT5 formats are supported by this method.");
@@ -118,37 +119,38 @@ public class P3DModel
         texture.Apply();
 
         return (texture);
-    }*/
+    }
 
+	public Material[] CreateMaterials()
+	{
+		List<Material> materials = new List<Material>();
+		for (int i = 0; i < P3DNumTextures; i++)
+		{
+			byte[] data = System.IO.File.ReadAllBytes(IO.GetCrashdayPath() + "/data/content/textures/" + P3DRenderInfo[i].TextureFile.Remove(P3DRenderInfo[i].TextureFile.Length - 4) + ".dds");
+			Texture2D tex = LoadTextureDXT(data, TextureFormat.DXT5);
 
-    /*public Texture CreateTextures(string path)
-    {
-        Texture2DArray mainTexture = new Texture2DArray(1024, 1024, P3DNumTextures, TextureFormat.DXT5, false);
-        mainTexture.filterMode = FilterMode.Point;
-        mainTexture.wrapMode = TextureWrapMode.Clamp;
+			Material mat = new Material(Shader.Find("Standard"));
+			mat.mainTexture = tex;
+			materials.Add(mat);
+		}
 
-        for (int i = 0; i < P3DNumTextures; i++)
-        {
-            byte[] data = System.IO.File.ReadAllBytes(path + "/textures/" + P3DRenderInfo[i].TextureFile.Remove(P3DRenderInfo[i].TextureFile.Length - 4) + ".dds");
-            Texture2D tex = LoadTextureDXT(data, TextureFormat.DXT5);
-
-            mainTexture.SetPixels32(tex.GetPixels32(), i);
-        }
-
-        mainTexture.Apply();
-        return mainTexture;
-    }*/
+		return materials.ToArray();
+	}
 
     public Mesh[] CreateMeshes()
     {
         Mesh[] m = new Mesh[P3DNumMeshes];
         for (int i = 0; i < P3DNumMeshes; i++)
         {
+			//REMOVE THIS***************************************************************************************************************************///
+			//MADE FOR FASTER TESTING ONLY
+			//
+	        if (i != 0) continue;
+
             Mesh newMesh = new Mesh();
             newMesh.name = P3DMeshes[i].Name;
 
-
-            //ghetto memes
+			//unity requires models to have the same amount of vertices as polys.
             int size = 0;
             if (P3DMeshes[i].NumVertices > P3DMeshes[i].NumPolys)
             {
@@ -167,45 +169,44 @@ public class P3DModel
             }
             for (int v = P3DMeshes[i].NumVertices; v < size; v++)
             {
-                verts[v] = new Vector3(0f,0f,0f);
+				verts[v] = new Vector3(0f,0f,0f);
             }
 
-            
             newMesh.vertices = verts;
 
+	        List<string> textures = new List<string>();
+			List<Vector2> uv = new List<Vector2>();
+	        List<List<int>> tri = new List<List<int>>();
+	        for (int n = 0; n < P3DNumTextures; n++)
+	        {
+		        textures.Add(P3DRenderInfo[n].TextureFile);
+				tri.Add(new List<int>());
+	        }
 
-            List<Vector2> uv = new List<Vector2>();
-            //List<Vector2> uv2 = new List<Vector2>();
-            //List<Vector2> uv3 = new List<Vector2>();
-            List<int> tri = new List<int>();
             for (int v = 0; v < P3DMeshes[i].NumPolys; v++)
             {
-                //uv.Add(new Vector2(P3DMeshes[i].Poly[v].U1, P3DMeshes[i].Poly[v].V1));
-                //uv2.Add(new Vector2(P3DMeshes[i].Poly[v].U2, P3DMeshes[i].Poly[v].V2));
-                //uv3.Add(new Vector2(P3DMeshes[i].Poly[v].U3, P3DMeshes[i].Poly[v].V3));
-                uv.Add(new Vector2(0f, 0f));
+	            int index = textures.FindIndex(x => x.Contains(P3DMeshes[i].Poly[v].Texture));
+                tri[index].Add(P3DMeshes[i].Poly[v].P1);
+                tri[index].Add(P3DMeshes[i].Poly[v].P2);
+                tri[index].Add(P3DMeshes[i].Poly[v].P3);
 
-                tri.Add(P3DMeshes[i].Poly[v].P1);
-                tri.Add(P3DMeshes[i].Poly[v].P2);
-                tri.Add(P3DMeshes[i].Poly[v].P3);
+		        uv.Add(new Vector2(P3DMeshes[i].Poly[v].U1, P3DMeshes[i].Poly[v].V1));
+		        //uv.Add(new Vector2(P3DMeshes[i].Poly[v].U2, P3DMeshes[i].Poly[v].V2));
+		        //uv.Add(new Vector2(P3DMeshes[i].Poly[v].U3, P3DMeshes[i].Poly[v].V3));
             }
-            for (int v = P3DMeshes[i].NumPolys; v < size; v++)
-            {
-                uv.Add(new Vector2(0f, 0f));
-                //uv2.Add(new Vector2(0f, 0f));
-                //uv3.Add(new Vector2(0f, 0f));
-            }
-            newMesh.SetUVs(0, uv);
-            //newMesh.SetUVs(2, uv2);
-            //newMesh.SetUVs(3, uv3);
-            newMesh.SetTriangles(tri, 0);
+
+	        newMesh.subMeshCount = P3DNumTextures;
+
+	        newMesh.SetUVs(0, uv);
+	        for (int n = 0; n < P3DNumTextures; n++)
+	        {
+				newMesh.SetTriangles(tri[n], n);
+	        }
 
             newMesh.RecalculateNormals();
 
             m[i] = newMesh;
         }
-        
-
         return m;
     }
 }

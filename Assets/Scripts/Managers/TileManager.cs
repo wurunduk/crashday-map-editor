@@ -6,7 +6,7 @@ public class TileManager : MonoBehaviour
 {
 	public List<string>	tileNames;
 	public List<P3DModel> tileModels;
-	//public List<Mesh> tileMeshes;
+	public List<Material[]> tileMaterials;
 
 	private bool loaded = false;
 
@@ -24,14 +24,9 @@ public class TileManager : MonoBehaviour
 
 			tileNames = new List<string>();
 			tileModels = new List<P3DModel>();
-			//tileMeshes = new List<Mesh>();
+			tileMaterials = new List<Material[]>();
 
 			P3DParser parser = new P3DParser();
-
-			//fields.cat contains defenition of all used tiles.
-
-			//!!!turned out fields.cat does not contain defenition of ALL tiles, which led to tracks not loading
-			//string[] lines = System.IO.File.ReadAllLines (IO.GetCrashdayPath () + "/trkdata/editor/fields.cat");
 
 			string[] files = System.IO.Directory.GetFiles (IO.GetCrashdayPath () + "/data/content/tiles/");
 
@@ -54,11 +49,11 @@ public class TileManager : MonoBehaviour
 
 					//load model, create mesh
 					P3DModel model = parser.LoadFromFile (pathToModel);
-					//Mesh[] meshes = model.CreateMeshes ();
 
 					tileNames.Add (files [i].Substring (files [i].LastIndexOf ('/')+1));
 					tileModels.Add (model);
-					//tileMeshes.Add (meshes[0]);
+					//tileTextures.Add(model.CreateTextures());
+					tileMaterials.Add(model.CreateMaterials());
 				}
 			}
 		}
