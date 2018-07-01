@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Permissions;
 
@@ -9,6 +10,8 @@ public class TrackManager : MonoBehaviour
     public Transform Map;
     public Transform[,] Tiles;
 	public TrackSavable CurrentTrack;
+
+	public bool LoadedTrack = false;
 
     public static int TileSize = 20;
 	// Use this for initialization
@@ -25,6 +28,7 @@ public class TrackManager : MonoBehaviour
 
     public void LoadTrack(TrackSavable track)
     {
+	    LoadedTrack = false;
 	    CurrentTrack = track;
         for (int i = 0; i < Map.childCount; i++)
         {
@@ -41,38 +45,27 @@ public class TrackManager : MonoBehaviour
                 {
 					TileManager tileManager = GetComponent<TileManager> ();
 
-					int index = tileManager.tileNames.IndexOf (track.FieldFiles[track.TrackTiles [x, y].FieldId]);
-
-	                if (index < 0 || index >= tileManager.tileModels.Count) continue;
-
-                    string pathToCfl = IO.GetCrashdayPath() + "/data/content/tiles/" + track.FieldFiles[track.TrackTiles[x, y].FieldId];
-                    string[] cflFIle = System.IO.File.ReadAllLines(pathToCfl);
+					int index = tileManager.TileList.FindIndex(entry=>entry.Name == track.FieldFiles[track.TrackTiles [x, y].FieldId]);
 					
 					//The tile will be moved by the SetTile function later. The best moment to calcualte height is now.
-					GameObject newTile = (GameObject) Instantiate(Dummy, new Vector3(0, tileManager.tileModels[index].P3DMeshes[0].Height/2, 0), Quaternion.identity);
+					GameObject newTile = (GameObject) Instantiate(Dummy, new Vector3(0, tileManager.TileList[index].Model.P3DMeshes[0].Height/2, 0), Quaternion.identity);
 
-                    //get the size of the model in tiles
-                    string sizeStr = cflFIle[3];
-	                sizeStr = sizeStr.Remove(sizeStr.IndexOf("#")).Trim();
-	                sizeStr = sizeStr.Replace(" ", string.Empty);
-					IntVector2 size = new IntVector2(sizeStr[0]-'0', sizeStr[1]-'0');
+                    newTile.name = x + ":" + y + " " + tileManager.TileList[index].Name;
 
-					//get the name of the model
-	                string name = cflFIle[2];
-	                name = name.Remove(name.IndexOf(".p3d")).Trim();
-
-                    newTile.name = x + ":" + y + " " + name;
-
-					newTile.GetComponent<MeshFilter>().mesh = tileManager.tileModels[index].CreateMeshes()[0];
-	                newTile.GetComponent<Renderer>().materials = tileManager.tileMaterials[index];
+					newTile.GetComponent<MeshFilter>().mesh = tileManager.TileList[index].Model.CreateMeshes()[0];
+	                newTile.GetComponent<Renderer>().materials = tileManager.TileList[index].Materials;
 					
 	                newTile.transform.SetParent(Map);
 
 	                Tile tile = newTile.AddComponent<Tile>();
-					tile.SetupTile(track.TrackTiles [x, y], size, new Vector2(x, y), this);
+					tile.SetupTile(track.TrackTiles [x, y], tileManager.TileList[index].Size, new Vector2(x, y), this);
 					tile.ApplyTerrain();
                 }
             }
         }
+
+		FindObjectOfType<Camera>().gameObject.transform.localPosition = new Vector3(0, 100, 0);
+		FindObjectOfType<Camera>().transform.LookAt(new Vector3(CurrentTrack.Width*20, 0, CurrentTrack.Height*-20));
+	    LoadedTrack = true;
     }
 }

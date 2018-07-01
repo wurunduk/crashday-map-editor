@@ -2,13 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TileManager : MonoBehaviour 
+public class TileListEntry
 {
-	public List<string>	tileNames;
-	public List<P3DModel> tileModels;
-	public List<Material[]> tileMaterials;
+	public string Name;
+	public P3DModel Model;
+	public Material[] Materials;
+	public IntVector2 Size;
 
-	private bool loaded = false;
+	public TileListEntry(string name, P3DModel model, Material[] materials, IntVector2 size)
+	{
+		Name = name;
+		Model = model;
+		Materials = materials;
+		Size = size;
+	}
+}
+
+public class TileManager : MonoBehaviour
+{
+	public List<TileListEntry> TileList;
+
+	public bool Loaded = false;
 
 	void Start ()
 	{
@@ -18,13 +32,9 @@ public class TileManager : MonoBehaviour
 
 	public void LoadTiles()
 	{
-		if(!loaded)
+		if(!Loaded)
 		{
-			loaded = true;
-
-			tileNames = new List<string>();
-			tileModels = new List<P3DModel>();
-			tileMaterials = new List<Material[]>();
+			TileList = new List<TileListEntry>();
 
 			P3DParser parser = new P3DParser();
 
@@ -43,19 +53,20 @@ public class TileManager : MonoBehaviour
 					pathToModel = pathToModel.Remove(pathToModel.IndexOf("#")).Trim();
 					pathToModel = IO.GetCrashdayPath() + "/data/content/models/" + pathToModel;
 
-					//this one does not load for some reason
-					if (pathToModel.Contains ("chkpoint"))
-						continue;
+					//get the size of the model in tiles
+					string sizeStr = cflFIle[3];
+					sizeStr = sizeStr.Remove(sizeStr.IndexOf("#")).Trim();
+					sizeStr = sizeStr.Replace(" ", string.Empty);
+					IntVector2 size = new IntVector2(sizeStr[0]-'0', sizeStr[1]-'0');
 
 					//load model, create mesh
 					P3DModel model = parser.LoadFromFile (pathToModel);
 
-					tileNames.Add (files [i].Substring (files [i].LastIndexOf ('/')+1));
-					tileModels.Add (model);
-					//tileTextures.Add(model.CreateTextures());
-					tileMaterials.Add(model.CreateMaterials());
+					TileList.Add(new TileListEntry(files [i].Substring (files [i].LastIndexOf ('/')+1), model, model.CreateMaterials(), size));
 				}
 			}
+
+			Loaded = true;
 		}
 	}
 }

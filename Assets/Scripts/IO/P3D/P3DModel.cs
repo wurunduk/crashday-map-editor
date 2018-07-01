@@ -38,7 +38,6 @@ public class P3DModel
         public float Range;
         public int Color;
 
-        //theese were chars
         public byte ShowCorona;
         public byte ShowLensFlares;
 

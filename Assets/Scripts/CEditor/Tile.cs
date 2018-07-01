@@ -7,6 +7,7 @@ public class Tile : MonoBehaviour
     public TrackTileSavable _trackTileSavable;
     private IntVector2 _size;
 	private TrackManager _tm;
+	private Vector3[] _originalVerticies;
 
     public Vector2 GridPosition;
 
@@ -19,6 +20,13 @@ public class Tile : MonoBehaviour
 
 		SetRotation(trackTileSavable.Rotation);
     }
+
+	public void Rotate()
+	{
+		byte newRot = _trackTileSavable.Rotation++;
+		if (newRot > 3) newRot = 0;
+		SetRotation(newRot);
+	}
 
     public void SetRotation(byte rotation)
     {
@@ -43,9 +51,17 @@ public class Tile : MonoBehaviour
 	    }
     }
 
+	public void ChangeVerticies(Vector3[] newVerticies)
+	{
+		_originalVerticies = newVerticies;
+	}
+
 	public void ApplyTerrain()
 	{
 		Vector3[] vertices = GetComponent<MeshFilter>().mesh.vertices;
+
+		if (_originalVerticies == null)
+			_originalVerticies = vertices;
 
 		Quaternion rot = Quaternion.Euler(0, _trackTileSavable.Rotation*-90, 0);
 		for (int i = 0; i < vertices.Length; i++)
@@ -99,7 +115,7 @@ public class Tile : MonoBehaviour
 				height += (_tm.CurrentTrack.Heightmap[posX, posY+1] - _tm.CurrentTrack.Heightmap[posX+1, posY+1]) * (1.0f - dx);
 			}
 
-			vertices[i].y += height*_tm.CurrentTrack.Height/20;
+			vertices[i].y = _originalVerticies[i].y + height*_tm.CurrentTrack.Height/20;
 		}
 			
 		GetComponent<MeshFilter>().mesh.vertices = vertices;
