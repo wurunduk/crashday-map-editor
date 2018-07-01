@@ -9,9 +9,9 @@ public class Tile : MonoBehaviour
 	private TrackManager _tm;
 	private Vector3[] _originalVerticies;
 
-    public Vector2 GridPosition;
+    public IntVector2 GridPosition;
 
-    public void SetupTile(TrackTileSavable trackTileSavable, IntVector2 size, Vector2 gridPosition, TrackManager tm)
+    public void SetupTile(TrackTileSavable trackTileSavable, IntVector2 size, IntVector2 gridPosition, TrackManager tm)
     {
 		_trackTileSavable = trackTileSavable;
 	    _size = size;
@@ -23,8 +23,10 @@ public class Tile : MonoBehaviour
 
 	public void Rotate()
 	{
-		byte newRot = _trackTileSavable.Rotation++;
+		byte newRot = _trackTileSavable.Rotation;
+		newRot += 1;
 		if (newRot > 3) newRot = 0;
+
 		SetRotation(newRot);
 	}
 

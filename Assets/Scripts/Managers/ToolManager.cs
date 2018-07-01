@@ -11,11 +11,14 @@ public class ToolManager : MonoBehaviour
 	private TileManager _tileManager;
 	private TrackManager _trackManager;
 
+	private IntVector2 _gridPosition;
+
 	private Vector2 _scrollPosition = Vector2.zero;
 
 	// Use this for initialization
 	void Start ()
 	{
+		_gridPosition = new IntVector2(0,0);
 		_trackManager = GetComponent<TrackManager>();
 		_tileManager = GetComponent<TileManager>();
 		_currenTile = DummyShadowTile.GetComponent<Tile>();
@@ -32,13 +35,8 @@ public class ToolManager : MonoBehaviour
 	    plane.Raycast(ray, out outFloat);
 	    Vector3 pos = ray.GetPoint(outFloat);
 
-	    //pos.y = _tileManager.TileList[SelectedTileId].Model.P3DMeshes[0].Depth / 2;
-
-		pos.x = Mathf.RoundToInt(pos.x / 20) * 20;
-		pos.z = Mathf.RoundToInt(pos.z / 20) * 20;
-
-		pos.x = Mathf.Clamp(pos.x, 0, (_trackManager.CurrentTrack.Width-1) * 20);
-		pos.z = Mathf.Clamp(pos.z, (_trackManager.CurrentTrack.Height-1) * -20, 0);
+		IntVector2 newGridPosition = new IntVector2(Mathf.Clamp(Mathf.RoundToInt(pos.x / 20), 0, _trackManager.CurrentTrack.Width-1), 
+			Mathf.Clamp(-1*Mathf.RoundToInt(pos.z / 20), 0, _trackManager.CurrentTrack.Height-1));
 
 		if (Input.GetMouseButtonDown(1))
 		{
@@ -46,14 +44,14 @@ public class ToolManager : MonoBehaviour
 			_currenTile.ApplyTerrain();
 		}
 
-		if (Mathf.RoundToInt(DummyShadowTile.transform.position.x) != Mathf.RoundToInt(pos.x) || 
-		    Mathf.RoundToInt(DummyShadowTile.transform.position.z) != Mathf.RoundToInt(pos.z))
+		if (_gridPosition.x != newGridPosition.x || _gridPosition.y != newGridPosition.y)
 		{
-			_currenTile.GridPosition = new Vector2(Mathf.Clamp(pos.x/20.0f, 0, _trackManager.CurrentTrack.Width-1), -1*Mathf.Clamp(pos.z/20.0f, 0, _trackManager.CurrentTrack.Height-1));
+			_gridPosition = newGridPosition;
+			_currenTile.GridPosition = _gridPosition;
 			_currenTile.ApplyTerrain();
 		}
 
-        DummyShadowTile.transform.position = pos;
+        DummyShadowTile.transform.position = new Vector3(_gridPosition.x*20, DummyShadowTile.position.y ,_gridPosition.y*-20);
 	}
 
 	void OnGUI()
@@ -70,8 +68,9 @@ public class ToolManager : MonoBehaviour
 				DummyShadowTile.GetComponent<MeshFilter> ().mesh = _tileManager.TileList[i].Model.CreateMeshes()[0];
 				DummyShadowTile.GetComponent<Renderer>().materials = _tileManager.TileList[i].Materials;
 
-				_currenTile.SetupTile(new TrackTileSavable(), _tileManager.TileList[i].Size, 
-					new Vector2(Mathf.Clamp(DummyShadowTile.transform.position.x/20.0f, 0, _trackManager.CurrentTrack.Width-1), -1*Mathf.Clamp(DummyShadowTile.transform.position.z/20.0f, 0, _trackManager.CurrentTrack.Height-1)), _trackManager);
+				DummyShadowTile.position = new Vector3(DummyShadowTile.position.x, _tileManager.TileList[i].Model.P3DMeshes[0].Height/2, DummyShadowTile.position.z);
+
+				_currenTile.SetupTile(new TrackTileSavable(), _tileManager.TileList[i].Size, _gridPosition, _trackManager);
 				_currenTile.ChangeVerticies(_tileManager.TileList[i].Model.CreateMeshes()[0].vertices);
 				_currenTile.ApplyTerrain();
 			}

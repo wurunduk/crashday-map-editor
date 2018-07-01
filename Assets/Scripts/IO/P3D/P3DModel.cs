@@ -129,6 +129,7 @@ public class P3DModel
 			Texture2D tex = LoadTextureDXT(data, TextureFormat.DXT5);
 
 			Material mat = new Material(Shader.Find("Standard"));
+			mat.SetFloat("_Glossiness", 0);
 			mat.mainTexture = tex;
 			materials.Add(mat);
 		}

@@ -58,7 +58,7 @@ public class TrackManager : MonoBehaviour
 	                newTile.transform.SetParent(Map);
 
 	                Tile tile = newTile.AddComponent<Tile>();
-					tile.SetupTile(track.TrackTiles [x, y], tileManager.TileList[index].Size, new Vector2(x, y), this);
+					tile.SetupTile(track.TrackTiles [x, y], tileManager.TileList[index].Size, new IntVector2(x, y), this);
 					tile.ApplyTerrain();
                 }
             }
