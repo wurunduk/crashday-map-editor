@@ -27,8 +27,8 @@ public class TerrainManager : MonoBehaviour
 		{
 			for (int x = 0; x < sizeX; x++)
 			{
-				//-10 is half of the TIle size to the center the terrain. According to thethe tile is divided every 5 meters
-				verticies[x+sizeX*y] = new Vector3(-10 + x*5, _tm.CurrentTrack.Heightmap[x,y]*_tm.CurrentTrack.Height/20, -10 + y*5);
+				//-10 is half of the Tile size to the center the terrain. According to thethe tile is divided every 5 meters
+				verticies[x+sizeX*y] = new Vector3(-10 + x*5, _tm.CurrentTrack.Heightmap[x,y]*_tm.CurrentTrack.Height/20, 10 + y*-5);
 				normals[x + sizeX * y] = Vector3.down;
 				uvs[x+sizeX*y] = new Vector2(x*10%sizeX, y%sizeY);
 			}
@@ -41,13 +41,13 @@ public class TerrainManager : MonoBehaviour
 				continue;
 			}
 
-			tris[i * 6 + 0] = i;
-			tris[i * 6 + 1] = i + sizeX;
-			tris[i * 6 + 2] = i + sizeX + 1;
+			tris[i * 6 + 2] = i + sizeX;
+			tris[i * 6 + 1] = i + sizeX + 1;
+			tris[i * 6 + 0] = i + 1;
 			
-			tris[i * 6 + 3] = i + 1 + sizeX;
+			tris[i * 6 + 5] = i + sizeX;
 			tris[i * 6 + 4] = i + 1;
-			tris[i * 6 + 5] = i;
+			tris[i * 6 + 3] = i;
 		}
 
 		Terrain.GetComponent<MeshFilter>().mesh.vertices = verticies;

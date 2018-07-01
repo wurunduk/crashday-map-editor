@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    private TrackTileSavable _trackTileSavable;
-    private Vector2 _size;
+    public TrackTileSavable _trackTileSavable;
+    private IntVector2 _size;
 	private TrackManager _tm;
 
     public Vector2 GridPosition;
 
-    public void SetupTile(TrackTileSavable trackTileSavable, Vector2 size, Vector2 gridPosition, TrackManager tm)
+    public void SetupTile(TrackTileSavable trackTileSavable, IntVector2 size, Vector2 gridPosition, TrackManager tm)
     {
 		_trackTileSavable = trackTileSavable;
 	    _size = size;
@@ -23,82 +23,59 @@ public class Tile : MonoBehaviour
     public void SetRotation(byte rotation)
     {
         _trackTileSavable.Rotation = rotation;
-        transform.localRotation = Quaternion.Euler(0, (rotation - 1) * 90, 0);
+        transform.localRotation = Quaternion.Euler(0, rotation * 90, 0);
 
-        if (_trackTileSavable.IsMirrored != 0)
-        {
-            if (rotation == 1 || rotation == 3)
-            {
-                transform.localScale = new Vector3(1, 1, -1);
-            }
-            else
-            {
-                transform.localScale = new Vector3(-1, 1, 1);
-            }
-        }
+		if(_trackTileSavable.IsMirrored != 0)
+		{
+			if(rotation%2 == 1)
+				transform.localScale = new Vector3(1, 1, -1);
+			else
+				transform.localScale = new Vector3(-1, 1, 1);
+		}
 
-        if (_size.x == 1 && _size.y == 1)
-        {
-            transform.localPosition = new Vector3(GridPosition.y * TrackManager.TileSize, transform.localPosition.y, GridPosition.x * TrackManager.TileSize);
-        }
-        else if (_size.x == 2 && _size.y == 2)
-        {
-            transform.localPosition = new Vector3(GridPosition.y * TrackManager.TileSize + TrackManager.TileSize / 2.0f, transform.localPosition.y, GridPosition.x * TrackManager.TileSize + TrackManager.TileSize / 2.0f);
-        }
-        else if (_size.x == 2 && _size.y == 1)
-        {
-            if (rotation == 1 || rotation == 3)
-            {
-                transform.localPosition = new Vector3(GridPosition.y * TrackManager.TileSize + TrackManager.TileSize / 2.0f, transform.localPosition.y, GridPosition.x * TrackManager.TileSize);
-            }
-            else
-                transform.localPosition = new Vector3(GridPosition.y * TrackManager.TileSize, transform.localPosition.y, GridPosition.x * TrackManager.TileSize + TrackManager.TileSize - TrackManager.TileSize / 2.0f);
-        }
-        else
-        {
-            if (rotation == 1 || rotation == 3)
-            {
-                transform.localPosition = new Vector3(GridPosition.y * TrackManager.TileSize, transform.localPosition.y, GridPosition.x * TrackManager.TileSize + TrackManager.TileSize / 2.0f);
-            }
-            else
-                transform.localPosition = new Vector3(GridPosition.y * TrackManager.TileSize + TrackManager.TileSize, transform.localPosition.y, GridPosition.x * TrackManager.TileSize);
-        }
-
-    }
-
-    public void Flip()
-    {
-        
+	    if (_size.x + _size.y == 3 && rotation%2 == 1)
+	    {
+			transform.localPosition = new Vector3((GridPosition.x + (_size.y/2)/2.0f)*TrackManager.TileSize, transform.localPosition.y, -1*(GridPosition.y + (_size.x/2)/2.0f)*TrackManager.TileSize);
+	    }
+	    else
+	    {
+		    transform.localPosition = new Vector3((GridPosition.x + (_size.x/2)/2.0f)*TrackManager.TileSize, transform.localPosition.y, -1*(GridPosition.y + (_size.y/2)/2.0f)*TrackManager.TileSize);
+	    }
     }
 
 	public void ApplyTerrain()
 	{
 		Vector3[] vertices = GetComponent<MeshFilter>().mesh.vertices;
 
-		Quaternion rot = new Quaternion()
-		{
-			eulerAngles = new Vector3(0, (_trackTileSavable.Rotation-1) * 90, 0)
-		};
-
+		Quaternion rot = Quaternion.Euler(0, _trackTileSavable.Rotation*-90, 0);
 		for (int i = 0; i < vertices.Length; i++)
 		{
-			Vector3 vertPosRotated = rot*vertices[i];
+			Vector3 vertPosRotated = vertices[i];
 
-			if (_trackTileSavable.IsMirrored != 0)
+
+			//do you want to ask why this works? Well, i dont know
+			vertPosRotated.z *= -1;
+			vertPosRotated = rot*vertPosRotated;
+
+			if(_trackTileSavable.IsMirrored != 0)
 			{
-				if (_trackTileSavable.Rotation == 1 || _trackTileSavable.Rotation == 3)
-				{
-					vertPosRotated.z *= -1;
-				}
-				else
-				{
-					vertPosRotated.x *= -1;
-				}
+				vertPosRotated.x *= -1;
 			}
 
 			//GridPosition.x*4 + (vertPosition+10*size)/(5*size) = 
-			float vertPosX = GridPosition.x * 4 + vertPosRotated.x / (5 * _size.x) + 2;
-			float vertPosY = GridPosition.y * 4 + vertPosRotated.z / (5 * _size.y) + 2;
+			float vertPosX;
+			float vertPosY;
+			if(_trackTileSavable.Rotation%2 == 1 && _size.x + _size.y == 3)
+			{
+				vertPosX = ((GridPosition.x) * 20 + (vertPosRotated.x+10*_size.y))/5.0f;
+				vertPosY = ((GridPosition.y) * 20 + (vertPosRotated.z+10*_size.x))/5.0f;
+			}
+			else
+			{
+				vertPosX = ((GridPosition.x) * 20 + (vertPosRotated.x+10*_size.x))/5.0f;
+				vertPosY = ((GridPosition.y) * 20 + (vertPosRotated.z+10*_size.y))/5.0f;
+			}
+
 			int posX = Mathf.FloorToInt(vertPosX);
 			int posY = Mathf.FloorToInt(vertPosY);
 
@@ -106,19 +83,19 @@ public class Tile : MonoBehaviour
 
 			float height;
 
-			float dx = vertPosX - posX;
-			float dz = vertPosY - posY;
+			float dx = (vertPosX - posX);
+			float dy = (vertPosY - posY);
 
-			if ((dx + dz) < 1)
+			if ((dx + dy) < 1)
 			{
 				height = _tm.CurrentTrack.Heightmap[posX, posY];
 				height += (_tm.CurrentTrack.Heightmap[posX+1, posY] - _tm.CurrentTrack.Heightmap[posX, posY]) * dx;
-				height += (_tm.CurrentTrack.Heightmap[posX, posY+1] - _tm.CurrentTrack.Heightmap[posX, posY]) * dz;
+				height += (_tm.CurrentTrack.Heightmap[posX, posY+1] - _tm.CurrentTrack.Heightmap[posX, posY]) * dy;
 			}
 			else
 			{
 				height = _tm.CurrentTrack.Heightmap[posX+1, posY+1];
-				height += (_tm.CurrentTrack.Heightmap[posX+1, posY] - _tm.CurrentTrack.Heightmap[posX+1, posY+1]) * (1.0f - dz);
+				height += (_tm.CurrentTrack.Heightmap[posX+1, posY] - _tm.CurrentTrack.Heightmap[posX+1, posY+1]) * (1.0f - dy);
 				height += (_tm.CurrentTrack.Heightmap[posX, posY+1] - _tm.CurrentTrack.Heightmap[posX+1, posY+1]) * (1.0f - dx);
 			}
 
@@ -126,5 +103,6 @@ public class Tile : MonoBehaviour
 		}
 			
 		GetComponent<MeshFilter>().mesh.vertices = vertices;
+		GetComponent<MeshFilter>().mesh.RecalculateBounds();
 	}
 }

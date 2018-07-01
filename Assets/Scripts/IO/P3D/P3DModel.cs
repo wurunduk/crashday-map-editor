@@ -204,6 +204,7 @@ public class P3DModel
 	        }
 
             newMesh.RecalculateNormals();
+	        newMesh.RecalculateBounds();
 
             m[i] = newMesh;
         }
