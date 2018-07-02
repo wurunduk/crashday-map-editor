@@ -36,6 +36,8 @@ public class TrackManager : MonoBehaviour
         }
 
 		GetComponent<TerrainManager>().GenerateTerrain();
+
+		Tiles = new Transform[track.Width, track.Height];
 			
         for (int y = 0; y < track.Height; y++)
         {
@@ -60,6 +62,8 @@ public class TrackManager : MonoBehaviour
 	                Tile tile = newTile.AddComponent<Tile>();
 					tile.SetupTile(track.TrackTiles [x, y], tileManager.TileList[index].Size, new IntVector2(x, y), this);
 					tile.ApplyTerrain();
+
+	                Tiles[x, y] = newTile.transform;
                 }
             }
         }

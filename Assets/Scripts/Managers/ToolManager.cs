@@ -46,6 +46,9 @@ public class ToolManager : MonoBehaviour
 
 		if (_gridPosition.x != newGridPosition.x || _gridPosition.y != newGridPosition.y)
 		{
+			_trackManager.Tiles[_gridPosition.x, _gridPosition.y].GetComponent<Renderer>().enabled = true;
+			_trackManager.Tiles[newGridPosition.x, newGridPosition.y].GetComponent<Renderer>().enabled = false;
+
 			_gridPosition = newGridPosition;
 			_currenTile.GridPosition = _gridPosition;
 			_currenTile.ApplyTerrain();
