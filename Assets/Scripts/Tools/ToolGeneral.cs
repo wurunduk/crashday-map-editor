@@ -7,8 +7,6 @@ public class ToolGeneral : MonoBehaviour
     public string ToolName;
     public string ToolDescription;
 
-    public Texture ToolIcon;
-
     public void UpdateGUI()
     {
         

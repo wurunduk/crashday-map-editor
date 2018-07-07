@@ -30,6 +30,15 @@ public class Tile : MonoBehaviour
 		SetRotation(newRot);
 	}
 
+	public Vector3 GetTransformPosition()
+	{
+		if (_size.x + _size.y == 3 && _trackTileSavable.Rotation%2 == 1)
+		{
+			return new Vector3((GridPosition.x + (_size.y/2)/2.0f)*TrackManager.TileSize, transform.localPosition.y, -1*(GridPosition.y + (_size.x/2)/2.0f)*TrackManager.TileSize);
+		}
+		return new Vector3((GridPosition.x + (_size.x/2)/2.0f)*TrackManager.TileSize, transform.localPosition.y, -1*(GridPosition.y + (_size.y/2)/2.0f)*TrackManager.TileSize);
+	}
+
     public void SetRotation(byte rotation)
     {
         _trackTileSavable.Rotation = rotation;
@@ -43,14 +52,7 @@ public class Tile : MonoBehaviour
 				transform.localScale = new Vector3(-1, 1, 1);
 		}
 
-	    if (_size.x + _size.y == 3 && rotation%2 == 1)
-	    {
-			transform.localPosition = new Vector3((GridPosition.x + (_size.y/2)/2.0f)*TrackManager.TileSize, transform.localPosition.y, -1*(GridPosition.y + (_size.x/2)/2.0f)*TrackManager.TileSize);
-	    }
-	    else
-	    {
-		    transform.localPosition = new Vector3((GridPosition.x + (_size.x/2)/2.0f)*TrackManager.TileSize, transform.localPosition.y, -1*(GridPosition.y + (_size.y/2)/2.0f)*TrackManager.TileSize);
-	    }
+	    transform.localPosition = GetTransformPosition();
     }
 
 	public void ChangeVerticies(Vector3[] newVerticies)
@@ -80,7 +82,6 @@ public class Tile : MonoBehaviour
 				vertPosRotated.x *= -1;
 			}
 
-			//GridPosition.x*4 + (vertPosition+10*size)/(5*size) = 
 			float vertPosX;
 			float vertPosY;
 			if(_trackTileSavable.Rotation%2 == 1 && _size.x + _size.y == 3)

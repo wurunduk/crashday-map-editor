@@ -24,12 +24,6 @@ public class TileManager : MonoBehaviour
 
 	public bool Loaded = false;
 
-	void Start ()
-	{
-		
-	}
-
-
 	public void LoadTiles()
 	{
 		if(!Loaded)
