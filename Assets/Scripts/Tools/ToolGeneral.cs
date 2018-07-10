@@ -2,18 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ToolGeneral : MonoBehaviour
+public abstract class ToolGeneral
 {
     public string ToolName;
     public string ToolDescription;
 
-    public void UpdateGUI()
-    {
-        
-    }
+	public TrackManager TrackManager;
+	public TileManager TileManager;
+	public Transform SomePrefab;
 
-    public void Update()
-    {
-        
-    }
+	public abstract void OnSelected();
+	public abstract void OnDeselected();
+
+	public abstract void OnLMBDown(Vector2 point);
+	public abstract void OnRMBDown(Vector2 point);
+
+	public abstract void OnMouseOverTile(IntVector2 point);
+	public abstract void UpdateGUI();
+	public abstract void Update();
 }
