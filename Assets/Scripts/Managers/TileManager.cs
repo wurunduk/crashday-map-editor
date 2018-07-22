@@ -5,13 +5,34 @@ using UnityEngine;
 public class TileListEntry
 {
 	public string Name;
+	public string ModelPath;
 	public P3DModel Model;
 	public Material[] Materials;
 	public IntVector2 Size;
 
-	public TileListEntry(string name, P3DModel model, Material[] materials, IntVector2 size)
+	public LoadState CurrentLoadState;
+
+	public enum LoadState
 	{
+		Cflloaded,
+		ModelLoaded
+	}
+
+	public TileListEntry(string name, string modelPath, IntVector2 size)
+	{
+		CurrentLoadState = LoadState.Cflloaded;
+
 		Name = name;
+		ModelPath = modelPath;
+		Size = size;
+	}
+
+	public TileListEntry(string name, string modelPath, P3DModel model, Material[] materials, IntVector2 size)
+	{
+		CurrentLoadState = LoadState.ModelLoaded;
+
+		Name = name;
+		ModelPath = modelPath;
 		Model = model;
 		Materials = materials;
 		Size = size;
@@ -24,14 +45,25 @@ public class TileManager : MonoBehaviour
 
 	public bool Loaded;
 
+	public void LoadModelForTileId(int id)
+	{
+		if (TileList[id].CurrentLoadState == TileListEntry.LoadState.ModelLoaded) return;
+
+		P3DParser parser = new P3DParser();
+
+		P3DModel model = parser.LoadFromFile(TileList[id].ModelPath);
+		TileList[id].Model = model;
+		TileList[id].Materials = model.CreateMaterials();
+
+		TileList[id].CurrentLoadState = TileListEntry.LoadState.ModelLoaded;
+	}
+
 	public void LoadTiles()
 	{
 		if (Loaded) return;
 
 
-		TileList = new List<TileListEntry>();
-
-		P3DParser parser = new P3DParser();
+		TileList = new List<TileListEntry>(270);
 
 		string[] files = System.IO.Directory.GetFiles (IO.GetCrashdayPath () + "/data/content/tiles/");
 
@@ -55,9 +87,10 @@ public class TileManager : MonoBehaviour
 				IntVector2 size = new IntVector2(sizeStr[0]-'0', sizeStr[2]-'0');
 
 				//load model
-				P3DModel model = parser.LoadFromFile (pathToModel);
+				//P3DModel model = parser.LoadFromFile (pathToModel);
+				//model, model.CreateMaterials(),
 
-				TileList.Add(new TileListEntry(files [i].Substring (files [i].LastIndexOf ('/')+1), model, model.CreateMaterials(), size));
+				TileList.Add(new TileListEntry(files [i].Substring (files [i].LastIndexOf ('/')+1), pathToModel, size));
 			}
 		}
 

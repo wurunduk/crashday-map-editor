@@ -9,6 +9,9 @@ Current unity version: 2018.1.0b13
  - Needs correct UV loading
 3. Adding tile tools
 4. Adding terrain tools
-5. Mod tiles support
-6. Fix stupid stuff
-7. Better controls
+5. Optimisations
+6. Mod tiles support
+7. Fix stupid stuff
+8. Better controls
+
+9. Mobile version?

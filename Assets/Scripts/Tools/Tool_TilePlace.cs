@@ -63,7 +63,7 @@ public class Tool_TilePlace : ToolGeneral
 
 	public override void UpdateGUI()
 	{
-		_scrollPosition = GUI.BeginScrollView(new Rect(Screen.width - 120, 10, 110, Screen.height - 10), _scrollPosition, new Rect(Screen.width - 110, 20, 100, (TileManager.TileList.Count + 1) * 20));
+		_scrollPosition = GUI.BeginScrollView(new Rect(Screen.width - 120, 10, 110, Screen.height - 10), _scrollPosition, new Rect(Screen.width - 110, 20, 100, (TileManager.TileList.Count + 1) * 22));
 		for (int i = 0; i < TileManager.TileList.Count; i++)
 		{
 			if (GUI.Button(new Rect(Screen.width - 110, 22 * (i + 1), 100, 20), TileManager.TileList[i].Name))
@@ -77,6 +77,8 @@ public class Tool_TilePlace : ToolGeneral
 	private void SelectTile(int i)
 	{
 		if (i == SelectedTileId) return;
+
+		TileManager.LoadModelForTileId(i);
 
 		SomePrefab.GetComponent<MeshFilter>().mesh = TileManager.TileList[i].Model.CreateMeshes()[0];
 		SomePrefab.GetComponent<Renderer>().materials = TileManager.TileList[i].Materials;
