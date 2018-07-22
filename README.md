@@ -1,6 +1,6 @@
 ## crashday 3D map editor
 Crashday 3D editor made with unity.  
-Current unity version: 5.4.5p5
+Current unity version: 2018.1.0b13
 
 # Current TODO list
 1. ~~Heightmaps loading~~(done)
