@@ -58,9 +58,9 @@ public class Tile : MonoBehaviour
 	    transform.localPosition = GetTransformPosition();
     }
 
-	public void ChangeVerticies(Vector3[] newVerticies)
+	public void ForceVerticiesUpdate()
 	{
-		_originalVerticies = newVerticies;
+		_originalVerticies = null;
 	}
 
 	public void ApplyTerrain()

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections.Generic;
 
 public class TrackManager : MonoBehaviour
@@ -21,8 +22,43 @@ public class TrackManager : MonoBehaviour
 
 	public void SetTile(Tile tile)
 	{
-		//if(!CurrentTrack.FieldFiles.Contains(tile.FieldName))
+		int index = CurrentTrack.FieldFiles.FindIndex(entry=>entry == tile.FieldName);
+		if(index == -1)
+		{
+			CurrentTrack.FieldFiles.Add(tile.FieldName);
+			index = CurrentTrack.FieldFilesNumber;
+			CurrentTrack.FieldFilesNumber += 1;
+		}
 
+		tile._trackTileSavable.FieldId = Convert.ToUInt16(index);
+		CurrentTrack.TrackTiles[tile.GridPosition.y][tile.GridPosition.x] = tile._trackTileSavable;
+
+		UpdateTileAt(tile.GridPosition.x, tile.GridPosition.y);
+	}
+
+	public void UpdateTileAt(int x, int y)
+	{
+		if (CurrentTrack.TrackTiles[y][x].FieldId < CurrentTrack.FieldFilesNumber)
+		{
+			int index = _tm.TileList.FindIndex(entry=>entry.Name == CurrentTrack.FieldFiles[CurrentTrack.TrackTiles [y][x].FieldId]);
+					
+			//load our model in to the memory
+			_tm.LoadModelForTileId(index);
+
+			//The tile will be moved by the SetTile function later. The best moment to calcualte height is now.
+			Tiles[y][x].transform.position = new Vector3(0, _tm.TileList[index].Model.P3DMeshes[0].Height / 2, 0);
+
+			Tiles[y][x].name += _tm.TileList[index].Name;
+
+			//set the model and textures for the tile
+			Tiles[y][x].GetComponent<MeshFilter>().mesh = _tm.TileList[index].Model.CreateMeshes()[0];
+			Tiles[y][x].GetComponent<Renderer>().materials = _tm.TileList[index].Materials;
+
+			//Tile tile = Tiles[y][x].AddComponent<Tile>();
+			Tiles[y][x].GetComponent<Tile>().SetupTile(CurrentTrack.TrackTiles [y][x], _tm.TileList[index].Size, new IntVector2(x, y), this, _tm.TileList[index].Name);
+			Tiles[y][x].GetComponent<Tile>().ForceVerticiesUpdate();
+			Tiles[y][x].GetComponent<Tile>().ApplyTerrain();
+		}
 	}
 
     public void LoadTrack(TrackSavable track)
@@ -48,31 +84,12 @@ public class TrackManager : MonoBehaviour
 	            GameObject newTile = (GameObject) Instantiate(TilePrefab, Vector3.zero, Quaternion.identity);
 
 	            newTile.name = x + ":" + y + " ";
-
 	            newTile.transform.SetParent(MapParentTransform);
+	            newTile.AddComponent<Tile>();
 
 	            Tiles[y].Add(newTile.transform);
 
-                if (track.TrackTiles[y][x].FieldId < track.FieldFilesNumber)
-                {
-					int index = _tm.TileList.FindIndex(entry=>entry.Name == track.FieldFiles[track.TrackTiles [y][x].FieldId]);
-					
-					//load our model in to the memory
-					_tm.LoadModelForTileId(index);
-
-					//The tile will be moved by the SetTile function later. The best moment to calcualte height is now.
-	                newTile.transform.position = new Vector3(0, _tm.TileList[index].Model.P3DMeshes[0].Height / 2, 0);
-
-                    newTile.name += _tm.TileList[index].Name;
-
-					//set the model and textures for the tile
-					newTile.GetComponent<MeshFilter>().mesh = _tm.TileList[index].Model.CreateMeshes()[0];
-	                newTile.GetComponent<Renderer>().materials = _tm.TileList[index].Materials;
-
-	                Tile tile = newTile.AddComponent<Tile>();
-					tile.SetupTile(track.TrackTiles [y][x], _tm.TileList[index].Size, new IntVector2(x, y), this, _tm.TileList[index].Name);
-					tile.ApplyTerrain();
-                }
+				UpdateTileAt(x, y);
             }
         }
 

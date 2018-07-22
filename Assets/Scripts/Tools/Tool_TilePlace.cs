@@ -34,7 +34,8 @@ public class Tool_TilePlace : ToolGeneral
 
 	public override void OnLMBDown(Vector2 point)
 	{
-		TrackManager.CurrentTrack.TrackTiles[_gridPosition.y][_gridPosition.x] = _currentTile._trackTileSavable;
+		//TrackManager.CurrentTrack.TrackTiles[_gridPosition.y][_gridPosition.x] = _currentTile._trackTileSavable;
+		TrackManager.SetTile(_currentTile);
 	}
 
 	public override void OnMouseOverTile(IntVector2 point)
@@ -86,7 +87,7 @@ public class Tool_TilePlace : ToolGeneral
 		SomePrefab.position = new Vector3(SomePrefab.position.x, TileManager.TileList[i].Model.P3DMeshes[0].Height / 2, SomePrefab.position.z);
 
 		_currentTile.SetupTile(new TrackTileSavable(), TileManager.TileList[i].Size, _gridPosition, TrackManager, TileManager.TileList[i].Name);
-		_currentTile.ChangeVerticies(TileManager.TileList[i].Model.CreateMeshes()[0].vertices);
+		_currentTile.ForceVerticiesUpdate();
 		_currentTile.ApplyTerrain();
 	}
 }

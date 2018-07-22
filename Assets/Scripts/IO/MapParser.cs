@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 public class MapParser
@@ -160,10 +161,10 @@ public class MapParser
         {
             for (int x = 0; x < track.Width; x++)
             {
-	            io.WriteUShort(track.TrackTiles[x][y].FieldId);
-	            io.WriteByte(track.TrackTiles[x][y].Rotation);
-	            io.WriteByte(track.TrackTiles[x][y].IsMirrored);
-	            io.WriteByte(track.TrackTiles[x][y].Height);
+	            io.WriteUShort(track.TrackTiles[y][x].FieldId);
+	            io.WriteByte(track.TrackTiles[y][y].Rotation);
+	            io.WriteByte(track.TrackTiles[y][x].IsMirrored);
+	            io.WriteByte(track.TrackTiles[y][x].Height);
             }
         }
 
@@ -200,7 +201,7 @@ public class MapParser
         {
             for (int x = 0; x < track.Width * 4 + 1; x++)
             {
-                io.WriteFloat(track.Heightmap[x][y]);
+                io.WriteFloat(track.Heightmap[y][x]);
             }
         }
 
