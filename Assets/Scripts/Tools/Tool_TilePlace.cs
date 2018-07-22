@@ -16,6 +16,8 @@ public class Tool_TilePlace : ToolGeneral
 
 		_currentTile = SomePrefab.GetComponent<Tile>();
 		_currentTile.SetupTile(new TrackTileSavable(), new IntVector2(1,1), new IntVector2(0,0), TrackManager);
+
+		SelectTile(1);
 	}
 
 	public override void OnDeselected()
@@ -65,18 +67,23 @@ public class Tool_TilePlace : ToolGeneral
 		{
 			if (GUI.Button(new Rect(Screen.width - 110, 20 * (i + 1), 100, 18), TileManager.TileList[i].Name))
 			{
-				if (i == SelectedTileId) continue;
-
-				SomePrefab.GetComponent<MeshFilter>().mesh = TileManager.TileList[i].Model.CreateMeshes()[0];
-				SomePrefab.GetComponent<Renderer>().materials = TileManager.TileList[i].Materials;
-
-				SomePrefab.position = new Vector3(SomePrefab.position.x, TileManager.TileList[i].Model.P3DMeshes[0].Height / 2, SomePrefab.position.z);
-
-				_currentTile.SetupTile(new TrackTileSavable(), TileManager.TileList[i].Size, _gridPosition, TrackManager);
-				_currentTile.ChangeVerticies(TileManager.TileList[i].Model.CreateMeshes()[0].vertices);
-				_currentTile.ApplyTerrain();
+				SelectTile(i);
 			}
 		}
 		GUI.EndScrollView();
+	}
+
+	private void SelectTile(int i)
+	{
+		if (i == SelectedTileId) return;
+
+		SomePrefab.GetComponent<MeshFilter>().mesh = TileManager.TileList[i].Model.CreateMeshes()[0];
+		SomePrefab.GetComponent<Renderer>().materials = TileManager.TileList[i].Materials;
+
+		SomePrefab.position = new Vector3(SomePrefab.position.x, TileManager.TileList[i].Model.P3DMeshes[0].Height / 2, SomePrefab.position.z);
+
+		_currentTile.SetupTile(new TrackTileSavable(), TileManager.TileList[i].Size, _gridPosition, TrackManager);
+		_currentTile.ChangeVerticies(TileManager.TileList[i].Model.CreateMeshes()[0].vertices);
+		_currentTile.ApplyTerrain();
 	}
 }

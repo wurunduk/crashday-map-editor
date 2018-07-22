@@ -22,45 +22,45 @@ public class TileManager : MonoBehaviour
 {
 	public List<TileListEntry> TileList;
 
-	public bool Loaded = false;
+	public bool Loaded;
 
 	public void LoadTiles()
 	{
-		if(!Loaded)
+		if (Loaded) return;
+
+
+		TileList = new List<TileListEntry>();
+
+		P3DParser parser = new P3DParser();
+
+		string[] files = System.IO.Directory.GetFiles (IO.GetCrashdayPath () + "/data/content/tiles/");
+
+		for(int i = 0; i < files.Length; i++)
 		{
-			TileList = new List<TileListEntry>();
-
-			P3DParser parser = new P3DParser();
-
-			string[] files = System.IO.Directory.GetFiles (IO.GetCrashdayPath () + "/data/content/tiles/");
-
-			for(int i = 0; i < files.Length; i++)
+			//read only cfl files in tiles folder
+			if (files [i].Contains (".cfl"))
 			{
-				//read only cfl files in tiles folder
-				if (files [i].Contains (".cfl"))
-				{
-					//files[i] already contains crashday path, so we dont add it
-					string[] cflFIle = System.IO.File.ReadAllLines(files[i]);
+				//files[i] already contains crashday path, so we dont add it
+				string[] cflFIle = System.IO.File.ReadAllLines(files[i]);
 
-					//get model path from cfl file
-					string pathToModel = cflFIle[2];
-					pathToModel = pathToModel.Remove(pathToModel.IndexOf("#")).Trim();
-					pathToModel = IO.GetCrashdayPath() + "/data/content/models/" + pathToModel;
+				//get model path from cfl file
+				string pathToModel = cflFIle[2];
+				pathToModel = IO.GetCrashdayPath() + "/data/content/models/" + IO.RemoveComment(pathToModel);
 
-					//get the size of the model in tiles
-					string sizeStr = cflFIle[3];
-					sizeStr = sizeStr.Remove(sizeStr.IndexOf("#")).Trim();
-					sizeStr = sizeStr.Replace(" ", string.Empty);
-					IntVector2 size = new IntVector2(sizeStr[0]-'0', sizeStr[1]-'0');
+				//get the size of the model in tiles
+				//the size is stored in form of (w h #some comment maybe)
+				//so we just remove the coment and take the first adn third char
+				string sizeStr = cflFIle[3];
+				sizeStr = IO.RemoveComment(sizeStr);
+				IntVector2 size = new IntVector2(sizeStr[0]-'0', sizeStr[2]-'0');
 
-					//load model, create mesh
-					P3DModel model = parser.LoadFromFile (pathToModel);
+				//load model
+				P3DModel model = parser.LoadFromFile (pathToModel);
 
-					TileList.Add(new TileListEntry(files [i].Substring (files [i].LastIndexOf ('/')+1), model, model.CreateMaterials(), size));
-				}
+				TileList.Add(new TileListEntry(files [i].Substring (files [i].LastIndexOf ('/')+1), model, model.CreateMaterials(), size));
 			}
-
-			Loaded = true;
 		}
+
+		Loaded = true;
 	}
 }

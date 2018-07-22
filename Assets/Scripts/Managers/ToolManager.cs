@@ -41,7 +41,7 @@ public class ToolManager : MonoBehaviour
 		int i = 0;
 		foreach (var tool in _tools)
 		{
-			if (GUI.Button(new Rect(10, 20 * (i + 1) + 50, 100, 18), tool.ToolName))
+			if (GUI.Button(new Rect(10, 20 * (i + 1) + 55, 100, 18), tool.ToolName))
 			{
 				_currentTool.OnDeselected();
 				_currentTool = tool;
