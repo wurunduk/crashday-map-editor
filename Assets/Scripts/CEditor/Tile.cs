@@ -118,7 +118,7 @@ public class Tile : MonoBehaviour
 				height += (_tm.CurrentTrack.Heightmap[posX, posY+1] - _tm.CurrentTrack.Heightmap[posX+1, posY+1]) * (1.0f - dx);
 			}
 
-			vertices[i].y = _originalVerticies[i].y + height*_tm.CurrentTrack.Height/20;
+			vertices[i].y = _originalVerticies[i].y + height*_tm.CurrentTrack.GroundBumpyness*5;
 		}
 			
 		GetComponent<MeshFilter>().mesh.vertices = vertices;

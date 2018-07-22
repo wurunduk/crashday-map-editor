@@ -8,6 +8,7 @@ public class ToolManager : MonoBehaviour
 
 	private TileManager _tileManager;
 	private TrackManager _trackManager;
+	private TerrainManager _terrainManager;
 
 	private List<ToolGeneral> _tools;
 	private ToolGeneral _currentTool;
@@ -17,6 +18,7 @@ public class ToolManager : MonoBehaviour
 	{
 		_trackManager = GetComponent<TrackManager>();
 		_tileManager = GetComponent<TileManager>();
+		_terrainManager = GetComponent<TerrainManager>();
 
 		_tools = new List<ToolGeneral>();
 		InitializeTool(new Tool_TilePlace());
@@ -30,6 +32,7 @@ public class ToolManager : MonoBehaviour
 		_tools.Add(tool);
 		tool.TrackManager = _trackManager;
 		tool.TileManager = _tileManager;
+		tool.TerrainManager = _terrainManager;
 		tool.SomePrefab = SomePrefab;
 	}
 
@@ -38,7 +41,7 @@ public class ToolManager : MonoBehaviour
 		int i = 0;
 		foreach (var tool in _tools)
 		{
-			if (GUI.Button(new Rect(15, 20 * (i + 1) + 50, 100, 18), tool.ToolName))
+			if (GUI.Button(new Rect(10, 20 * (i + 1) + 50, 100, 18), tool.ToolName))
 			{
 				_currentTool.OnDeselected();
 				_currentTool = tool;
@@ -55,10 +58,9 @@ public class ToolManager : MonoBehaviour
 		if (!_tileManager.Loaded || !_trackManager.LoadedTrack) return;
 
 		Ray ray = Camera.main.ScreenPointToRay(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
-	    Plane plane = new Plane(Vector3.up, Vector3.zero);
-	    float outFloat;
-	    plane.Raycast(ray, out outFloat);
-	    Vector3 pos = ray.GetPoint(outFloat);
+		RaycastHit info;
+		_terrainManager.Terrain.GetComponent<MeshCollider>().Raycast(ray, out info, float.MaxValue);
+		Vector3 pos = info.point;
 
 		IntVector2 newGridPosition = new IntVector2(Mathf.Clamp(Mathf.RoundToInt(pos.x / 20), 0, _trackManager.CurrentTrack.Width-1), 
 			Mathf.Clamp(-1*Mathf.RoundToInt(pos.z / 20), 0, _trackManager.CurrentTrack.Height-1));

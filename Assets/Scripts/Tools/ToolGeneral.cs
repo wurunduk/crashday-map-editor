@@ -9,6 +9,7 @@ public abstract class ToolGeneral
 
 	public TrackManager TrackManager;
 	public TileManager TileManager;
+	public TerrainManager TerrainManager;
 	public Transform SomePrefab;
 
 	public abstract void OnSelected();
