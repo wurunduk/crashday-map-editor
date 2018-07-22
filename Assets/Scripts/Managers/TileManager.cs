@@ -49,7 +49,7 @@ public class TileManager : MonoBehaviour
 
 				//get the size of the model in tiles
 				//the size is stored in form of (w h #some comment maybe)
-				//so we just remove the coment and take the first adn third char
+				//so we just remove the coment and take the first and third char
 				string sizeStr = cflFIle[3];
 				sizeStr = IO.RemoveComment(sizeStr);
 				IntVector2 size = new IntVector2(sizeStr[0]-'0', sizeStr[2]-'0');

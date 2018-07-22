@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using UnityEditor;
 using UnityEngine;
 
 public class IO
 {
-    private int _readOffset = 0;
-    private int _writeOffset = 0;
+    private int _readOffset;
 
-    private readonly byte[] _data;
+    public List<byte> Data;
 
     public static string GetCrashdayPath()
     {
@@ -43,23 +44,9 @@ public class IO
 		return input.IndexOf('#') > 0 ? input.Remove (input.IndexOf ('#')).Trim () : input.Trim ();
 	}
 
-    public IO(byte[] data)
+    public IO(List<byte> data)
     {
-        _data = data;
-    }
-
-    public string ReadString()
-    {
-        for (var i = _readOffset; i < _data.Length; i++)
-        {
-            if (_data[i] == 0)
-            {
-                var oldOffset = _readOffset;
-	            _readOffset = i + 1;
-                return System.Text.Encoding.UTF8.GetString(_data, oldOffset, i - oldOffset);
-            }
-        }
-        return "";
+	    Data = data;
     }
 
 	public void SetReadingOffest(int newOffset)
@@ -72,50 +59,141 @@ public class IO
 		_readOffset += newOffest;
 	}
 
+	
+	//=======================
+	//	READ/WRITE STUFF HERE
+	//=======================
+
+	public void WriteEmpty(int amount)
+	{
+		for (int i = 0; i < amount; i++)
+		{
+			Data.Add(0);
+		}
+	}
+
+	//writes a string of given length
+	//does not apped null termination at the end
+	public void WriteFlag(string str)
+	{
+		Data.AddRange(Encoding.UTF8.GetBytes(str));
+	}
+
+	public void WriteString(string str)
+	{
+		WriteFlag(str);
+		//Data.AddRange(Encoding.UTF8.GetBytes("\0"));
+		Data.Add(0);
+	}
+
+    public string ReadString()
+    {
+        for (var i = _readOffset; i < Data.Count; i++)
+        {
+            if (Data[i] == 0)
+            {
+                var oldOffset = _readOffset;
+	            _readOffset = i + 1;
+                return Encoding.UTF8.GetString(Data.ToArray(), oldOffset, i - oldOffset);
+            }
+        }
+        return "";
+    }
+
+
+	public void WriteInt(int i)
+	{
+		Data.AddRange(BitConverter.GetBytes(i));
+	}
+
     public int ReadInt()
     {
 	    _readOffset += 4;
-        return BitConverter.ToInt32(_data, _readOffset - 4);
+        return BitConverter.ToInt32(Data.ToArray(), _readOffset - 4);
     }
+
+
+	public void WriteUInt(uint i)
+	{
+		Data.AddRange(BitConverter.GetBytes(i));
+	}
 
     public uint ReadUInt()
     {
 	    _readOffset += 4;
-        return BitConverter.ToUInt32(_data, _readOffset - 4);
+        return BitConverter.ToUInt32(Data.ToArray(), _readOffset - 4);
     }
+
+
+	public void WriteUShort(ushort i)
+	{
+		Data.AddRange(BitConverter.GetBytes(i));
+	}
 
     public ushort ReadUShort()
     {
 	    _readOffset += 2;
-        return BitConverter.ToUInt16(_data, _readOffset - 2);
+        return BitConverter.ToUInt16(Data.ToArray(), _readOffset - 2);
     }
+
+
+	public void WriteShort(short i)
+	{
+		Data.AddRange(BitConverter.GetBytes(i));
+	}
 
     public short ReadShort()
     {
 	    _readOffset += 2;
-        return BitConverter.ToInt16(_data, _readOffset - 2);
+        return BitConverter.ToInt16(Data.ToArray(), _readOffset - 2);
     }
+
+
+	public void WriteFloat(float i)
+	{
+		Data.AddRange(BitConverter.GetBytes(i));
+	}
 
     public float ReadFloat()
     {
 	    _readOffset += 4;
-        return BitConverter.ToSingle(_data, _readOffset - 4);
+        return BitConverter.ToSingle(Data.ToArray(), _readOffset - 4);
     }
+
+
+	public void WriteVector3(Vector3 i)
+	{
+		WriteFloat(i.x);
+		WriteFloat(i.y);
+		WriteFloat(i.z);
+	}
 
     public Vector3 ReadVector3()
     {
         return new Vector3(ReadFloat(), ReadFloat(), ReadFloat());
     }
 
+
+	public void WriteByte(byte i)
+	{
+		Data.Add(i);
+	}
+
     public byte ReadByte()
     {
 	    _readOffset += 1;
-        return _data[_readOffset-1];
+        return Data[_readOffset-1];
     }
+
+
+	public void WriteChar(char i)
+	{
+		Data.AddRange(BitConverter.GetBytes(i));
+	}
 
     public char ReadChar()
     {
 	    _readOffset += 1;
-        return BitConverter.ToChar(_data, _readOffset - 1);
+        return BitConverter.ToChar(Data.ToArray(), _readOffset - 1);
     }
 }

@@ -1,5 +1,5 @@
-﻿using System.Diagnostics;
-using UnityEngine;
+﻿using System.Collections.Generic;
+using System.IO;
 
 public class MapParser
 {
@@ -7,7 +7,7 @@ public class MapParser
     public TrackSavable ReadMap(string path)
     {
         TrackSavable Track = new TrackSavable();
-        byte[] data = System.IO.File.ReadAllBytes(path);
+        List<byte> data = new List<byte>(File.ReadAllBytes(path));
         IO io = new IO(data);
 
         //ignore "CDTRK" string in the start of the file
@@ -110,4 +110,98 @@ public class MapParser
 
         return Track;
     }
+
+	public void SaveMap(TrackSavable track, string path)
+	{
+		List<byte> bytes = new List<byte>();
+		IO io = new IO(bytes);
+
+		 //ignore "CDTRK" string in the start of the file
+        io.WriteFlag("CDTRK");
+
+        //unused current time thing
+		io.WriteInt(track.CurrentTime);
+
+        //author
+        io.WriteString(track.Author);
+
+        //comment
+        io.WriteString(track.Comment);
+
+        //skip unneeded block
+        for (int n = 0; n < 20; n++)
+        {
+	        io.WriteInt(1);
+	        io.WriteString("CDTrack editor by Wurunduk");
+        }
+
+        //track style (race, derby, htf)
+	    io.WriteByte(track.Style);
+
+        //ambience
+        io.WriteString(track.Ambience);
+
+        //amount of fileds used on map
+       io.WriteUShort(track.FieldFilesNumber);
+
+        //name of fields
+        for (int n = 0; n < track.FieldFilesNumber; n++)
+        {
+            io.WriteString(track.FieldFiles[n]);
+        }
+
+        //width and height in tiles
+		io.WriteUShort(track.Width);
+		io.WriteUShort(track.Height);
+
+        for (int y = 0; y < track.Height; y++)
+        {
+            for (int x = 0; x < track.Width; x++)
+            {
+	            io.WriteUShort(track.TrackTiles[x,y].FieldId);
+	            io.WriteByte(track.TrackTiles[x,y].Rotation);
+	            io.WriteByte(track.TrackTiles[x,y].IsMirrored);
+	            io.WriteByte(track.TrackTiles[x,y].Height);
+            }
+        }
+
+		io.WriteUShort(track.DynamicObjectFilesNumber);
+
+        for (int i = 0; i < track.DynamicObjectFilesNumber; i++)
+        {
+	        io.WriteString(track.DynamicObjectFiles[i]);
+        }
+
+		io.WriteUShort(track.DynamicObjectsNumber);
+
+        for (int i = 0; i < track.DynamicObjectsNumber; i++)
+        {
+	        io.WriteUShort(track.DynamicObjects[i].ObjectId);
+	        io.WriteVector3(track.DynamicObjects[i].Position);
+	        io.WriteFloat(track.DynamicObjects[i].Rotation);
+        }
+
+
+        io.WriteUShort(track.CheckpointsNumber);
+        for (int i = 0; i < track.CheckpointsNumber; i++)
+        {
+	        io.WriteUShort(track.Checkpoints[i]);
+        }
+
+		io.WriteByte(track.Permission);
+
+		io.WriteFloat(track.GroundBumpyness);
+
+		io.WriteByte(track.Scenery);
+
+        for (int y = 0; y < track.Height * 4 + 1; y++)
+        {
+            for (int x = 0; x < track.Width * 4 + 1; x++)
+            {
+                io.WriteFloat(track.Heightmap[x,y]);
+            }
+        }
+
+		File.WriteAllBytes(path, io.Data.ToArray());
+	}
 }

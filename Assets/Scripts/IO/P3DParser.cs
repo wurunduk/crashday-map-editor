@@ -1,14 +1,15 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class P3DParser
 {
     public P3DModel LoadFromFile(string path)
     {
-        byte[] data = System.IO.File.ReadAllBytes(path);
+        List<byte> data = new List<byte>(System.IO.File.ReadAllBytes(path));
         return LoadFromBytes(data);
     }
 
-    public P3DModel LoadFromBytes(byte[] data)
+    public P3DModel LoadFromBytes(List<byte> data)
     {
         P3DModel model = new P3DModel();
         IO io = new IO(data);
