@@ -4,6 +4,7 @@ using System.Collections;
 public class Tool_TilePlace : ToolGeneral
 {
 	private Vector3 _scrollPosition;
+
 	private IntVector2 _gridPosition;
 	private Tile _currentTile;
 
@@ -15,7 +16,7 @@ public class Tool_TilePlace : ToolGeneral
 		_gridPosition = new IntVector2(0, 0);
 
 		_currentTile = SomePrefab.GetComponent<Tile>();
-		_currentTile.SetupTile(new TrackTileSavable(), new IntVector2(1,1), new IntVector2(0,0), TrackManager);
+		_currentTile.SetupTile(new TrackTileSavable(), new IntVector2(1,1), new IntVector2(0,0), TrackManager, "floor.cfl");
 
 		SelectTile(1);
 	}
@@ -33,7 +34,7 @@ public class Tool_TilePlace : ToolGeneral
 
 	public override void OnLMBDown(Vector2 point)
 	{
-		TrackManager.CurrentTrack.TrackTiles[_gridPosition.x, _gridPosition.y] = _currentTile._trackTileSavable;
+		TrackManager.CurrentTrack.TrackTiles[_gridPosition.y][_gridPosition.x] = _currentTile._trackTileSavable;
 	}
 
 	public override void OnMouseOverTile(IntVector2 point)
@@ -41,11 +42,11 @@ public class Tool_TilePlace : ToolGeneral
 		if (_gridPosition.x != point.x || _gridPosition.y != point.y)
 		{
 			//placeholder to turn on/off tile rendering under current tile
-			if(TrackManager.Tiles[_gridPosition.x, _gridPosition.y] != null)
-				TrackManager.Tiles[_gridPosition.x, _gridPosition.y].GetComponent<Renderer>().enabled = true;
+			if(TrackManager.Tiles[_gridPosition.y][_gridPosition.x] != null)
+				TrackManager.Tiles[_gridPosition.y][_gridPosition.x].GetComponent<Renderer>().enabled = true;
 
-			if(TrackManager.Tiles[point.x, point.y] != null)
-				TrackManager.Tiles[point.x, point.y].GetComponent<Renderer>().enabled = false;
+			if(TrackManager.Tiles[point.y][point.x] != null)
+				TrackManager.Tiles[point.y][point.x].GetComponent<Renderer>().enabled = false;
 
 			_gridPosition = point;
 			_currentTile.GridPosition = _gridPosition;
@@ -65,7 +66,7 @@ public class Tool_TilePlace : ToolGeneral
 		_scrollPosition = GUI.BeginScrollView(new Rect(Screen.width - 120, 10, 110, Screen.height - 10), _scrollPosition, new Rect(Screen.width - 110, 20, 100, (TileManager.TileList.Count + 1) * 20));
 		for (int i = 0; i < TileManager.TileList.Count; i++)
 		{
-			if (GUI.Button(new Rect(Screen.width - 110, 20 * (i + 1), 100, 18), TileManager.TileList[i].Name))
+			if (GUI.Button(new Rect(Screen.width - 110, 22 * (i + 1), 100, 20), TileManager.TileList[i].Name))
 			{
 				SelectTile(i);
 			}
@@ -82,7 +83,7 @@ public class Tool_TilePlace : ToolGeneral
 
 		SomePrefab.position = new Vector3(SomePrefab.position.x, TileManager.TileList[i].Model.P3DMeshes[0].Height / 2, SomePrefab.position.z);
 
-		_currentTile.SetupTile(new TrackTileSavable(), TileManager.TileList[i].Size, _gridPosition, TrackManager);
+		_currentTile.SetupTile(new TrackTileSavable(), TileManager.TileList[i].Size, _gridPosition, TrackManager, TileManager.TileList[i].Name);
 		_currentTile.ChangeVerticies(TileManager.TileList[i].Model.CreateMeshes()[0].vertices);
 		_currentTile.ApplyTerrain();
 	}

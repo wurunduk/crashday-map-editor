@@ -39,20 +39,21 @@ public class MapParser
         Track.FieldFilesNumber = io.ReadUShort();
 
         //name of fields
-        Track.FieldFiles = new string[Track.FieldFilesNumber];
+        Track.FieldFiles = new List<string>(Track.FieldFilesNumber);
         for (int n = 0; n < Track.FieldFilesNumber; n++)
         {
-            Track.FieldFiles[n] = io.ReadString();
+            Track.FieldFiles.Add(io.ReadString());
         }
 
         //width and height in tiles
         Track.Width = io.ReadUShort();
         Track.Height = io.ReadUShort();
 
-        Track.TrackTiles = new TrackTileSavable[Track.Width, Track.Height];
+        Track.TrackTiles = new List<List<TrackTileSavable>>(Track.Height);
 
         for (int y = 0; y < Track.Height; y++)
         {
+			Track.TrackTiles.Add(new List<TrackTileSavable>(Track.Width));
             for (int x = 0; x < Track.Width; x++)
             {
                 TrackTileSavable newTile = new TrackTileSavable();
@@ -61,35 +62,35 @@ public class MapParser
                 newTile.IsMirrored = io.ReadByte();
                 newTile.Height = io.ReadByte();
 
-                Track.TrackTiles[x, y] = newTile;
+                Track.TrackTiles[y].Add(newTile);
             }
         }
 
 
         Track.DynamicObjectFilesNumber = io.ReadUShort();
-        Track.DynamicObjectFiles = new string[Track.DynamicObjectFilesNumber];
+        Track.DynamicObjectFiles = new List<string>(Track.DynamicObjectFilesNumber);
         for (int i = 0; i < Track.DynamicObjectFilesNumber; i++)
         {
-            Track.DynamicObjectFiles[i] = io.ReadString();
+            Track.DynamicObjectFiles.Add(io.ReadString());
         }
 
         Track.DynamicObjectsNumber = io.ReadUShort();
-        Track.DynamicObjects = new DynamicObjectSavable[Track.DynamicObjectsNumber];
+        Track.DynamicObjects = new List<DynamicObjectSavable>(Track.DynamicObjectsNumber);
         for (int i = 0; i < Track.DynamicObjectsNumber; i++)
         {
             DynamicObjectSavable newDynamicObject = new DynamicObjectSavable();
             newDynamicObject.ObjectId = io.ReadUShort();
             newDynamicObject.Position = io.ReadVector3();
             newDynamicObject.Rotation = io.ReadFloat();
-            Track.DynamicObjects[i] = newDynamicObject;
+            Track.DynamicObjects.Add(newDynamicObject);
         }
 
 
         Track.CheckpointsNumber = io.ReadUShort();
-        Track.Checkpoints = new ushort[Track.CheckpointsNumber];
+        Track.Checkpoints = new List<ushort>(Track.CheckpointsNumber);
         for (int i = 0; i < Track.CheckpointsNumber; i++)
         {
-            Track.Checkpoints[i] = io.ReadUShort();
+            Track.Checkpoints.Add(io.ReadUShort());
         }
 
         Track.Permission = io.ReadByte();
@@ -98,13 +99,14 @@ public class MapParser
 
         Track.Scenery = io.ReadByte();
 
-        Track.Heightmap = new float[Track.Width * 4 + 1, Track.Height * 4 + 1];
+        Track.Heightmap = new List<List<float>>();
         
         for (int y = 0; y < Track.Height * 4 + 1; y++)
         {
+	        Track.Heightmap.Add(new List<float>());
             for (int x = 0; x < Track.Width * 4 + 1; x++)
             {
-                Track.Heightmap[x, y] = io.ReadFloat();
+                Track.Heightmap[y].Add(io.ReadFloat());
             }
         }
 
@@ -158,10 +160,10 @@ public class MapParser
         {
             for (int x = 0; x < track.Width; x++)
             {
-	            io.WriteUShort(track.TrackTiles[x,y].FieldId);
-	            io.WriteByte(track.TrackTiles[x,y].Rotation);
-	            io.WriteByte(track.TrackTiles[x,y].IsMirrored);
-	            io.WriteByte(track.TrackTiles[x,y].Height);
+	            io.WriteUShort(track.TrackTiles[x][y].FieldId);
+	            io.WriteByte(track.TrackTiles[x][y].Rotation);
+	            io.WriteByte(track.TrackTiles[x][y].IsMirrored);
+	            io.WriteByte(track.TrackTiles[x][y].Height);
             }
         }
 
@@ -198,7 +200,7 @@ public class MapParser
         {
             for (int x = 0; x < track.Width * 4 + 1; x++)
             {
-                io.WriteFloat(track.Heightmap[x,y]);
+                io.WriteFloat(track.Heightmap[x][y]);
             }
         }
 

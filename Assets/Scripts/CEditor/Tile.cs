@@ -5,18 +5,21 @@ using UnityEngine;
 public class Tile : MonoBehaviour
 {
     public TrackTileSavable _trackTileSavable;
-    private IntVector2 _size;
+	public string FieldName;
+
+	private IntVector2 _size;
 	private TrackManager _tm;
 	private Vector3[] _originalVerticies;
 
     public IntVector2 GridPosition;
 
-    public void SetupTile(TrackTileSavable trackTileSavable, IntVector2 size, IntVector2 gridPosition, TrackManager tm)
+    public void SetupTile(TrackTileSavable trackTileSavable, IntVector2 size, IntVector2 gridPosition, TrackManager tm, string fieldName)
     {
 		_trackTileSavable = trackTileSavable;
 	    _size = size;
 	    GridPosition = gridPosition;
 	    _tm = tm;
+	    FieldName = fieldName;
 
 		SetRotation(trackTileSavable.Rotation);
     }
@@ -107,15 +110,15 @@ public class Tile : MonoBehaviour
 
 			if ((dx + dy) < 1)
 			{
-				height = _tm.CurrentTrack.Heightmap[posX, posY];
-				height += (_tm.CurrentTrack.Heightmap[posX+1, posY] - _tm.CurrentTrack.Heightmap[posX, posY]) * dx;
-				height += (_tm.CurrentTrack.Heightmap[posX, posY+1] - _tm.CurrentTrack.Heightmap[posX, posY]) * dy;
+				height = _tm.CurrentTrack.Heightmap[posY][posX];
+				height += (_tm.CurrentTrack.Heightmap[posY][posX+1] - _tm.CurrentTrack.Heightmap[posY][posX]) * dx;
+				height += (_tm.CurrentTrack.Heightmap[posY+1][posX] - _tm.CurrentTrack.Heightmap[posY][posX]) * dy;
 			}
 			else
 			{
-				height = _tm.CurrentTrack.Heightmap[posX+1, posY+1];
-				height += (_tm.CurrentTrack.Heightmap[posX+1, posY] - _tm.CurrentTrack.Heightmap[posX+1, posY+1]) * (1.0f - dy);
-				height += (_tm.CurrentTrack.Heightmap[posX, posY+1] - _tm.CurrentTrack.Heightmap[posX+1, posY+1]) * (1.0f - dx);
+				height = _tm.CurrentTrack.Heightmap[posY+1][posX+1];
+				height += (_tm.CurrentTrack.Heightmap[posY][posX+1] - _tm.CurrentTrack.Heightmap[posY+1][posX+1]) * (1.0f - dy);
+				height += (_tm.CurrentTrack.Heightmap[posY+1][posX] - _tm.CurrentTrack.Heightmap[posY+1][posX+1]) * (1.0f - dx);
 			}
 
 			vertices[i].y = _originalVerticies[i].y + height*_tm.CurrentTrack.GroundBumpyness*5;

@@ -1,4 +1,6 @@
-﻿public class TrackSavable
+﻿using System.Collections.Generic;
+
+public class TrackSavable
 {
     public int CurrentTime;         //unused
     public string Author;           
@@ -19,20 +21,20 @@
     public string Ambience;
 
     public ushort FieldFilesNumber;
-    public string[] FieldFiles;
+    public List<string> FieldFiles;
     public ushort Width;
     public ushort Height;
-    public TrackTileSavable[,] TrackTiles;
+    public List<List<TrackTileSavable>> TrackTiles;
 
     public ushort DynamicObjectFilesNumber;
-    public string[] DynamicObjectFiles;
+    public List<string> DynamicObjectFiles;
     public ushort DynamicObjectsNumber;
-    public DynamicObjectSavable[] DynamicObjects;
+    public List<DynamicObjectSavable> DynamicObjects;
 
     public ushort CheckpointsNumber;
-    public ushort[] Checkpoints;
+    public List<ushort> Checkpoints;
     public byte Permission;
     public float GroundBumpyness;
     public byte Scenery;
-    public float[,] Heightmap;
+    public List<List<float>> Heightmap;
 }
