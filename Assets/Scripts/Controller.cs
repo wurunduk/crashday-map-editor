@@ -12,6 +12,7 @@ public class Controller : MonoBehaviour
 	{
 	    CrashdayPath = IO.GetCrashdayPath();
 		GetComponent<TileManager>().LoadTiles();
+		GetComponent<TrackManager>().LoadTrack();
 	}
 
     void OnGUI()

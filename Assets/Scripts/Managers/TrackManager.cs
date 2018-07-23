@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 public class TrackManager : MonoBehaviour
 {
@@ -9,19 +10,28 @@ public class TrackManager : MonoBehaviour
     public List<List<Transform>> Tiles;
 	public TrackSavable CurrentTrack;
 
-	public bool LoadedTrack;
+	public enum TrackState
+	{
+		TrackEmpty,
+		TrackStart,
+		TracckLoaded
+	};
+
+	public TrackState CurrentTrackState;
 
     public static int TileSize = 20;
 
 	private TileManager _tm;
 
-	void Start()
+	void Awake()
 	{
 		_tm = GetComponent<TileManager>();
 	}
 
 	public void SetTile(Tile tile)
 	{
+		if (CurrentTrackState == TrackState.TrackEmpty) return;
+
 		int index = CurrentTrack.FieldFiles.FindIndex(entry=>entry == tile.FieldName);
 		if(index == -1)
 		{
@@ -46,9 +56,9 @@ public class TrackManager : MonoBehaviour
 			_tm.LoadModelForTileId(index);
 
 			//The tile will be moved by the SetTile function later. The best moment to calcualte height is now.
-			Tiles[y][x].transform.position = new Vector3(0, _tm.TileList[index].Model.P3DMeshes[0].Height / 2, 0);
+			Tiles[y][x].position = new Vector3(0, _tm.TileList[index].Model.P3DMeshes[0].Height / 2, 0);
 
-			Tiles[y][x].name += _tm.TileList[index].Name;
+			Tiles[y][x].name = x + ":" + y + " " + _tm.TileList[index].Name;
 
 			//set the model and textures for the tile
 			Tiles[y][x].GetComponent<MeshFilter>().mesh = _tm.TileList[index].Model.CreateMeshes()[0];
@@ -61,9 +71,73 @@ public class TrackManager : MonoBehaviour
 		}
 	}
 
+	public TrackSavable GenerateStartTrack()
+	{
+		TrackSavable track = new TrackSavable();
+		track.Author = "Author";
+		track.Comment = "A track made in 3d editor";
+		track.Style = 0;
+		track.Ambience = "day.amb";
+
+		track.FieldFilesNumber = 2;
+		track.FieldFiles = new List<string>(2);
+		track.FieldFiles.Add("field.cfl");
+		track.FieldFiles.Add("chkpoint.cfl");
+
+		track.Height = 5;
+		track.Width = 5;
+
+		track.TrackTiles = new List<List<TrackTileSavable>>(5);
+
+		for (int y = 0; y < track.Height; y++)
+		{
+			track.TrackTiles.Add(new List<TrackTileSavable>(5));
+			for (int x = 0; x < track.Width; x++)
+			{
+				TrackTileSavable tile = new TrackTileSavable(0,0,0,0);
+				if(x == 2 && y == 2)
+					tile = new TrackTileSavable(1,0,0,0);
+				track.TrackTiles[y].Add(tile);
+			}
+		}
+
+		track.DynamicObjectFilesNumber = 0;
+		track.DynamicObjectFiles = new List<string>();
+
+		track.DynamicObjectsNumber = 0;
+		track.DynamicObjects = new List<DynamicObjectSavable>();
+
+		track.CheckpointsNumber = 1;
+		track.Checkpoints = new List<ushort>();
+		track.Checkpoints.Add(12);
+
+		track.Permission = 0;
+		track.GroundBumpyness = 1.0f;
+		track.Scenery = 0;
+
+		track.Heightmap = new List<List<float>>(21);
+
+		for (int y = 0; y < track.Height*4 + 1; y++)
+		{
+			track.Heightmap.Add(new List<float>(21));
+			for (int x = 0; x < track.Width*4 + 1; x++)
+			{
+				track.Heightmap[y].Add(0.0f);
+			}
+		}
+
+		return track;
+	}
+
+	public void LoadTrack()
+	{
+		LoadTrack(GenerateStartTrack());
+		CurrentTrackState = TrackState.TrackStart;
+	}
+
     public void LoadTrack(TrackSavable track)
     {
-	    LoadedTrack = false;
+	    CurrentTrackState = TrackState.TrackEmpty;
 	    CurrentTrack = track;
 
 		//clear tiles left from the old loaded track
@@ -95,6 +169,7 @@ public class TrackManager : MonoBehaviour
 
 		FindObjectOfType<Camera>().gameObject.transform.localPosition = new Vector3(CurrentTrack.Width*10, 100, CurrentTrack.Height*-10);
 		FindObjectOfType<Camera>().transform.LookAt(new Vector3(CurrentTrack.Width*20, 0, CurrentTrack.Height*-20));
-	    LoadedTrack = true;
+
+	    CurrentTrackState = TrackState.TracckLoaded;
     }
 }

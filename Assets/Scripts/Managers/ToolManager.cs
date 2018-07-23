@@ -13,14 +13,17 @@ public class ToolManager : MonoBehaviour
 	private List<ToolGeneral> _tools;
 	private ToolGeneral _currentTool;
 
-	// Use this for initialization
-	void Start ()
+	void Awake()
 	{
 		_trackManager = GetComponent<TrackManager>();
 		_tileManager = GetComponent<TileManager>();
 		_terrainManager = GetComponent<TerrainManager>();
 
 		_tools = new List<ToolGeneral>();
+	}
+
+	void Start ()
+	{
 		InitializeTool(new Tool_TilePlace());
 
 		_currentTool = _tools[0];
@@ -55,7 +58,7 @@ public class ToolManager : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		if (!_tileManager.Loaded || !_trackManager.LoadedTrack) return;
+		if (!_tileManager.Loaded || _trackManager.CurrentTrackState == TrackManager.TrackState.TrackEmpty) return;
 
 		Ray ray = Camera.main.ScreenPointToRay(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
 		RaycastHit info;

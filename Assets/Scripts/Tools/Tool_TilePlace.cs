@@ -16,7 +16,7 @@ public class Tool_TilePlace : ToolGeneral
 		_gridPosition = new IntVector2(0, 0);
 
 		_currentTile = SomePrefab.GetComponent<Tile>();
-		_currentTile.SetupTile(new TrackTileSavable(), new IntVector2(1,1), new IntVector2(0,0), TrackManager, "floor.cfl");
+		_currentTile.SetupTile(new TrackTileSavable(), new IntVector2(1,1), new IntVector2(0,0), TrackManager, "field.cfl");
 
 		SelectTile(1);
 	}

@@ -6,7 +6,7 @@ public class TerrainManager : MonoBehaviour
 	private TrackManager _tm;
 	public Transform Terrain;
 
-	void Start()
+	void Awake()
 	{
 		_tm = GetComponent<TrackManager>();
 	}

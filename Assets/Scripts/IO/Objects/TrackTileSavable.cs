@@ -11,4 +11,17 @@ public class TrackTileSavable
     public byte IsMirrored;
 	[XmlAttribute("height")]
     public byte Height;
+
+	public TrackTileSavable()
+	{
+	}
+
+	public TrackTileSavable(ushort id, byte rotation, byte isMirrored, byte height)
+	{
+		FieldId = id;
+		Rotation = rotation;
+		IsMirrored = isMirrored;
+		Height = height;
+	}
+
 }

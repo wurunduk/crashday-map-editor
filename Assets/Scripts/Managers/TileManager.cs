@@ -86,10 +86,6 @@ public class TileManager : MonoBehaviour
 				sizeStr = IO.RemoveComment(sizeStr);
 				IntVector2 size = new IntVector2(sizeStr[0]-'0', sizeStr[2]-'0');
 
-				//load model
-				//P3DModel model = parser.LoadFromFile (pathToModel);
-				//model, model.CreateMaterials(),
-
 				TileList.Add(new TileListEntry(files [i].Substring (files [i].LastIndexOf ('/')+1), pathToModel, size));
 			}
 		}
