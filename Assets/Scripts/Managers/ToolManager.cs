@@ -26,6 +26,7 @@ public class ToolManager : MonoBehaviour
 	void Start ()
 	{
 		InitializeTool(new Tool_TilePlace());
+		InitializeTool(new Tool_TileEdit());
 
 		_currentTool = _tools[0];
 		_currentTool.OnSelected();
@@ -45,7 +46,7 @@ public class ToolManager : MonoBehaviour
 		int i = 0;
 		foreach (var tool in _tools)
 		{
-			if (GUI.Button(new Rect(10, 20 * (i + 1) + 55, 100, 18), tool.ToolName))
+			if (GUI.Button(new Rect(10, 20 * (i++ + 1) + 55, 100, 18), tool.ToolName))
 			{
 				_currentTool.OnDeselected();
 				_currentTool = tool;
@@ -56,7 +57,6 @@ public class ToolManager : MonoBehaviour
 		_currentTool.UpdateGUI();
 	}
 	
-	// Update is called once per frame
 	void Update ()
 	{
 		if (!_tileManager.Loaded || _trackManager.CurrentTrackState == TrackManager.TrackState.TrackEmpty) return;
