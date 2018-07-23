@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour 
 {
-	public int speed;
-
-	public int rotateSpeed;
-
 	void Start()
 	{
 		
@@ -15,50 +11,20 @@ public class CameraMovement : MonoBehaviour
 
 	void Update ()
 	{
-		if(Input.GetKey(KeyCode.A))
+		if (Input.GetMouseButton(2))
 		{
-			transform.Translate (new Vector3 (-speed*Time.deltaTime, 0, 0), Space.Self);
-		}
-		else if(Input.GetKey(KeyCode.D))
-		{
-			transform.Translate (new Vector3 (speed*Time.deltaTime, 0, 0), Space.Self);
-		}
-
-		if(Input.GetKey(KeyCode.W))
-		{
-			transform.Translate (new Vector3 (0, 0, speed*Time.deltaTime), Space.Self);
-		}
-		else if(Input.GetKey(KeyCode.S))
-		{
-			transform.Translate (new Vector3 (0, 0, -speed*Time.deltaTime), Space.Self);
+			if (Input.GetButton("Shift"))
+			{
+				transform.Rotate(Vector3.left, Input.GetAxis("Mouse Y")*5, Space.Self);
+				transform.Rotate(Vector3.up, Input.GetAxis("Mouse X")*5, Space.World);
+			}
+			else
+			{
+				Vector3 vec = new Vector3(Input.GetAxis("Mouse X")*-4, Input.GetAxis("Mouse Y")*-4, 0);
+				transform.Translate(vec, Space.Self);
+			}
 		}
 
-		if(Input.GetKey(KeyCode.LeftShift))
-		{
-			transform.Translate (new Vector3 (0, speed*Time.deltaTime, 0), Space.Self);
-		}
-		else if(Input.GetKey(KeyCode.LeftControl))
-		{
-			transform.Translate (new Vector3 (0, -speed*Time.deltaTime, 0), Space.Self);
-		}
-
-
-		if(Input.GetKey(KeyCode.LeftArrow))
-		{
-			transform.Rotate(new Vector3(0, -rotateSpeed*Time.deltaTime, 0), Space.World);
-		}
-		else if(Input.GetKey(KeyCode.RightArrow))
-		{
-			transform.Rotate(new Vector3(0, rotateSpeed*Time.deltaTime, 0), Space.World);
-		}
-
-		if(Input.GetKey(KeyCode.UpArrow))
-		{
-			transform.Rotate(new Vector3(-rotateSpeed*Time.deltaTime, 0, 0), Space.Self);
-		}
-		else if(Input.GetKey(KeyCode.DownArrow))
-		{
-			transform.Rotate(new Vector3(rotateSpeed*Time.deltaTime, 0, 0), Space.Self);
-		}
+		transform.Translate(Vector3.forward*Input.GetAxis("Mouse ScrollWheel")*100, Space.Self);
 	}
 }
