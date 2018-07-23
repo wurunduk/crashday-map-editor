@@ -4,9 +4,9 @@ Current unity version: 2018.1.0b13
 
 ## Current TODO list
 1. ~~Heightmaps loading~~(done)
- - Some tiles still have holes when connecting
+ *- Some tiles still have holes when connecting
 2. ~~Texture loading~~(partialy done)
- - Needs correct UV loading
+ *- Needs correct UV loading
 3. Adding tile tools
 4. Adding terrain tools
 5. Optimisations
