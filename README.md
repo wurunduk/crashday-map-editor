@@ -12,5 +12,5 @@ Current unity version: 2018.1.0b13
 5. Optimisations
 6. Mod tiles support
 7. Fix stupid stuff
-8. Better controls
+8. ~~Better controls~~
 9. Mobile version?
