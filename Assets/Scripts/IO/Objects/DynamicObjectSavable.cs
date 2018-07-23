@@ -1,10 +1,14 @@
-﻿using UnityEngine;
+﻿using System.Xml.Serialization;
+using UnityEngine;
 
+[System.Serializable]
 public class DynamicObjectSavable
 {
     //uint16_t objid, vector3 pos, float rotation
-    //vector3 is a struct of float x, float y float z[total 12 bytes]
+	[XmlAttribute("id")]
     public ushort ObjectId;
+	[XmlAttribute("position")]
     public Vector3 Position;
+	[XmlAttribute("rotation")]
     public float Rotation;
 }
