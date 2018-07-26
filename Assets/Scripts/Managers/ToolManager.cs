@@ -27,7 +27,7 @@ public class ToolManager : MonoBehaviour
 	{
 		InitializeTool(new Tool_ChangeMapSize());
 		InitializeTool(new Tool_TilePlace());
-		InitializeTool(new Tool_TileEdit());
+		InitializeTool(new Tool_TileRemove());
 
 		_currentTool = _tools[0];
 		_currentTool.OnSelected();

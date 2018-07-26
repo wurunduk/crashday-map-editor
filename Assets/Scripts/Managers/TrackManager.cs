@@ -28,6 +28,15 @@ public class TrackManager : MonoBehaviour
 		_tm = GetComponent<TileManager>();
 	}
 
+	public void SetTileByAtlasId(ushort atlasId, IntVector2 position)
+	{
+		if (CurrentTrackState == TrackState.TrackEmpty || atlasId >= CurrentTrack.FieldFilesNumber) return;
+
+		CurrentTrack.TrackTiles[position.y][position.x] = new TrackTileSavable(atlasId,0,0,0);
+
+		UpdateTileAt(position.x, position.y);
+	}
+
 	public void SetTile(Tile tile)
 	{
 		if (CurrentTrackState == TrackState.TrackEmpty) return;
