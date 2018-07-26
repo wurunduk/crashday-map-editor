@@ -24,7 +24,11 @@ public class CameraMovement : MonoBehaviour
 				transform.Translate(vec, Space.Self);
 			}
 		}
+	}
 
-		transform.Translate(Vector3.forward*Input.GetAxis("Mouse ScrollWheel")*100, Space.Self);
+	void LateUpdate()
+	{
+		if(GUIUtility.hotControl == 0)
+			transform.Translate(Vector3.forward*Input.GetAxis("Mouse ScrollWheel")*100, Space.Self);
 	}
 }

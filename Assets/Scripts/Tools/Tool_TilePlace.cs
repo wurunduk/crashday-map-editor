@@ -10,11 +10,15 @@ public class Tool_TilePlace : ToolGeneral
 
 	public int SelectedTileId;
 
-	public override void OnSelected()
+	public override void Initialize()
 	{
 		ToolName = "Place Tiles";
 		_gridPosition = new IntVector2(0, 0);
+	}
 
+	public override void OnSelected()
+	{
+		SomePrefab.GetComponent<MeshRenderer>().enabled = true;
 		_currentTile = SomePrefab.GetComponent<Tile>();
 		_currentTile.SetupTile(new TrackTileSavable(), new IntVector2(1,1), new IntVector2(0,0), TrackManager, "field.cfl");
 
@@ -23,7 +27,10 @@ public class Tool_TilePlace : ToolGeneral
 
 	public override void OnDeselected()
 	{
+		SomePrefab.GetComponent<MeshRenderer>().enabled = false;
 
+		if(TrackManager.Tiles[_gridPosition.y][_gridPosition.x] != null)
+			TrackManager.Tiles[_gridPosition.y][_gridPosition.x].GetComponent<Renderer>().enabled = true;
 	}
 
 	public override void OnRMBDown(Vector2 point)
@@ -34,7 +41,6 @@ public class Tool_TilePlace : ToolGeneral
 
 	public override void OnLMBDown(Vector2 point)
 	{
-		//TrackManager.CurrentTrack.TrackTiles[_gridPosition.y][_gridPosition.x] = _currentTile._trackTileSavable;
 		TrackManager.SetTile(_currentTile);
 	}
 
@@ -64,10 +70,10 @@ public class Tool_TilePlace : ToolGeneral
 
 	public override void UpdateGUI()
 	{
-		_scrollPosition = GUI.BeginScrollView(new Rect(Screen.width - 120, 10, 110, Screen.height - 10), _scrollPosition, new Rect(Screen.width - 110, 20, 100, (TileManager.TileList.Count + 1) * 22));
+		_scrollPosition = GUI.BeginScrollView(new Rect(5, 160, 330, Screen.height - 165), _scrollPosition, new Rect(5, 160, 310, (TileManager.TileList.Count/3 + 1) * 24), false, false);
 		for (int i = 0; i < TileManager.TileList.Count; i++)
 		{
-			if (GUI.Button(new Rect(Screen.width - 110, 22 * (i + 1), 100, 20), TileManager.TileList[i].Name))
+			if (GUI.Button(new Rect(5 + (i%3)*105, 160 + 24 * (i/3), 100, 22), TileManager.TileList[i].Name.Remove(TileManager.TileList[i].Name.Length-4)))
 			{
 				SelectTile(i);
 			}

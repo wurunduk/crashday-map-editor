@@ -25,6 +25,7 @@ public class ToolManager : MonoBehaviour
 
 	void Start ()
 	{
+		InitializeTool(new Tool_ChangeMapSize());
 		InitializeTool(new Tool_TilePlace());
 		InitializeTool(new Tool_TileEdit());
 
@@ -39,14 +40,18 @@ public class ToolManager : MonoBehaviour
 		tool.TileManager = _tileManager;
 		tool.TerrainManager = _terrainManager;
 		tool.SomePrefab = SomePrefab;
+		tool.Initialize();
 	}
 
 	void OnGUI()
 	{
+		GUI.Box(new Rect(0, 0, 340, Screen.height), "");
+
 		int i = 0;
+		//draw button for every tool
 		foreach (var tool in _tools)
 		{
-			if (GUI.Button(new Rect(10, 20 * (i++ + 1) + 55, 100, 18), tool.ToolName))
+			if (GUI.Button(new Rect(5, 22 * (i++) + 45, 100, 20), tool.ToolName))
 			{
 				_currentTool.OnDeselected();
 				_currentTool = tool;
@@ -54,6 +59,7 @@ public class ToolManager : MonoBehaviour
 			}
 		}
 
+		//draw gui of the current tool
 		_currentTool.UpdateGUI();
 	}
 	
@@ -61,16 +67,20 @@ public class ToolManager : MonoBehaviour
 	{
 		if (!_tileManager.Loaded || _trackManager.CurrentTrackState == TrackManager.TrackState.TrackEmpty) return;
 
+		//get the point on the Terrain where our mouse currenlty points
 		Ray ray = Camera.main.ScreenPointToRay(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
 		RaycastHit info;
 		_terrainManager.Terrain.GetComponent<MeshCollider>().Raycast(ray, out info, float.MaxValue);
 		Vector3 pos = info.point;
 
+		//calcualte tile position from position on the terrain
 		IntVector2 newGridPosition = new IntVector2(Mathf.Clamp(Mathf.RoundToInt(pos.x / 20), 0, _trackManager.CurrentTrack.Width-1), 
 			Mathf.Clamp(-1*Mathf.RoundToInt(pos.z / 20), 0, _trackManager.CurrentTrack.Height-1));
 
+		//send updated information to the tool
 		_currentTool.OnMouseOverTile(newGridPosition);
 
+		//only pass click events to tools if the click was in the world and not on UI
 		if (GUIUtility.hotControl != 0) return;
 
 		if(Input.GetMouseButtonDown(0))

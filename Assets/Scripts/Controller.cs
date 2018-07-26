@@ -19,9 +19,9 @@ public class Controller : MonoBehaviour
 
     void OnGUI()
     {
-	    GUI.skin = Skin;
+	    //GUI.skin = Skin;
 
-        if (GUI.Button(new Rect(10, 5, 100, 30), "Load map"))
+        if (GUI.Button(new Rect(5, 5, 160, 35), "Load map"))
         {
             string path = EditorUtility.OpenFilePanel("Open trk file", CrashdayPath + "/user/", "trk");
             if (path.Length != 0)
@@ -33,7 +33,7 @@ public class Controller : MonoBehaviour
             }
         }
 
-	    if (PlayerPrefs.HasKey("lastmappath"))
+	    /*if (PlayerPrefs.HasKey("lastmappath"))
 	    {
 		    string LastMapPath = PlayerPrefs.GetString("lastmappath");
 		    if (File.Exists(LastMapPath))
@@ -45,9 +45,9 @@ public class Controller : MonoBehaviour
 				    GetComponent<TrackManager>().LoadTrack(Track);
 			    }
 		    }
-	    }
+	    }*/
 
-	    if (GUI.Button(new Rect(220, 5, 100, 30), "Save map"))
+	    if (GUI.Button(new Rect(175, 5, 160, 35), "Save map"))
 	    {
 		    string path = EditorUtility.SaveFilePanel("Save trk file", CrashdayPath + "/user/", "my_awesome_track", "trk");
 			MapParser mapParser = new MapParser();

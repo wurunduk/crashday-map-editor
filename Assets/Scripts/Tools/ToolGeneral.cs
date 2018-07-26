@@ -12,6 +12,8 @@ public abstract class ToolGeneral
 	public TerrainManager TerrainManager;
 	public Transform SomePrefab;
 
+	public abstract void Initialize();
+
 	public abstract void OnSelected();
 	public abstract void OnDeselected();
 

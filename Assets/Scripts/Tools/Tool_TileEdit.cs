@@ -8,11 +8,14 @@ public class Tool_TileEdit : ToolGeneral
 
 	public int SelectedTileId;
 
-	public override void OnSelected()
+	public override void Initialize()
 	{
 		ToolName = "Edit Tiles";
 		_gridPosition = new IntVector2(0, 0);
+	}
 
+	public override void OnSelected()
+	{
 		_currentTile = TrackManager.CurrentTrack.TrackTiles[0][0];
 	}
 
