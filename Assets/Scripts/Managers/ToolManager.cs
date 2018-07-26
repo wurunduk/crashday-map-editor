@@ -71,6 +71,8 @@ public class ToolManager : MonoBehaviour
 
 		_currentTool.OnMouseOverTile(newGridPosition);
 
+		if (GUIUtility.hotControl != 0) return;
+
 		if(Input.GetMouseButtonDown(0))
 			_currentTool.OnLMBDown(pos);
 

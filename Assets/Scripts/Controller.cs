@@ -8,6 +8,8 @@ public class Controller : MonoBehaviour
     public P3DModel Model;
     public string CrashdayPath = "";
 
+	public GUISkin Skin;
+
 	void Start ()
 	{
 	    CrashdayPath = IO.GetCrashdayPath();
@@ -17,6 +19,8 @@ public class Controller : MonoBehaviour
 
     void OnGUI()
     {
+	    GUI.skin = Skin;
+
         if (GUI.Button(new Rect(10, 5, 100, 30), "Load map"))
         {
             string path = EditorUtility.OpenFilePanel("Open trk file", CrashdayPath + "/user/", "trk");
