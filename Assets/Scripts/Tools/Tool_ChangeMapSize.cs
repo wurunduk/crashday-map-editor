@@ -25,8 +25,8 @@ public class Tool_ChangeMapSize : ToolGeneral
 		_greenMaterial = Resources.Load<Material>("GreenTransparent");
 
 		_parent = new GameObject("Map size parent");
-		_mapSizers = new GameObject[8];
-		for (int i = 0; i < 8; i++)
+		_mapSizers = new GameObject[9];
+		for (int i = 0; i < 9; i++)
 		{
 			List<Type> test = new List<Type>();
 			test.Add(typeof(MeshRenderer));
@@ -38,22 +38,30 @@ public class Tool_ChangeMapSize : ToolGeneral
 		}
 	}
 
-	public override void OnSelected()
+	private void ResetSizeChanges()
 	{
 		_addRight = _oldAddLeft = 0;
 		_addLeft  = _oldAddLeft = 0;
 		_addDown = _oldAddDown = 0;
 		_addUp = _oldAddUp = 0;
+	}
 
-		for (int i = 0; i < 8; i++)
+	public override void OnSelected()
+	{
+		ResetSizeChanges();
+
+		for (int i = 0; i < 9; i++)
 		{
 			_mapSizers[i].GetComponent<MeshRenderer>().enabled = true;
 		}
+
+		//turn off the middle sizer
+		_mapSizers[4].GetComponent<MeshRenderer>().enabled = false;
 	}
 
 	public override void OnDeselected()
 	{
-		for (int i = 0; i < 8; i++)
+		for (int i = 0; i < 9; i++)
 		{
 			_mapSizers[i].GetComponent<MeshRenderer>().enabled = false;
 		}
@@ -74,14 +82,65 @@ public class Tool_ChangeMapSize : ToolGeneral
 
 	}
 
+	private int S(int a, int firstChoice, int secChoice, int thirdChoice)
+	{
+		if (a < 0) 
+			return firstChoice;
+
+		if (a > 0) 
+			return secChoice;
+
+		return thirdChoice;
+	}
+
+	private void UpdateMapSizer(int id)
+	{
+		int x = id % 3 - 1;
+		int y = id / 3 - 1;
+		_mapSizers[id].transform.position = new Vector3(x*(10*S(x, _addLeft, _addRight, 0) + 10) + (x+1)*(TrackManager.CurrentTrack.Width-1)*10, 
+			5, 
+			-1*(y*(10*S(y, _addUp, _addDown, 0) + 10) + (y+1)*(TrackManager.CurrentTrack.Height-1)*10));
+
+		_mapSizers[id].GetComponent<MeshFilter>().mesh = MeshGenerator.GenerateCubeMesh(1, new Vector3(
+			Mathf.Abs(S(x, _addLeft, _addRight, TrackManager.CurrentTrack.Width))*20, 
+			10, 
+			Mathf.Abs(S(y, _addUp, _addDown, TrackManager.CurrentTrack.Height))*20 ) );
+
+		_mapSizers[id].GetComponent<MeshRenderer>().materials = S(x, _addLeft, _addRight, 0) >= 0 && S(y, _addUp, _addDown, 0) >= 0 ? new[] {_greenMaterial} : new[] {_redMaterial};
+	}
+
 	public override void Update()
 	{
 		if (_oldAddLeft != _addLeft)
 		{
 			_oldAddLeft = _addLeft;
-			_mapSizers[3].transform.position = new Vector3(-20*_addLeft,5,-1*TrackManager.CurrentTrack.Height*10);
-			_mapSizers[3].GetComponent<MeshFilter>().mesh = MeshGenerator.GenerateCubeMesh(1, new Vector3(Mathf.Abs(_addLeft)*20, 10, TrackManager.CurrentTrack.Height*20));
-			_mapSizers[3].GetComponent<MeshRenderer>().materials = _addLeft > 0 ? new[] {_greenMaterial} : new[] {_redMaterial};
+			UpdateMapSizer(0);
+			UpdateMapSizer(3);
+			UpdateMapSizer(6);
+		}
+
+		if (_oldAddRight != _addRight)
+		{
+			_oldAddRight = _addRight;
+			UpdateMapSizer(2);
+			UpdateMapSizer(5);
+			UpdateMapSizer(8);
+		}
+
+		if (_oldAddUp != _addUp)
+		{
+			_oldAddUp = _addUp;
+			UpdateMapSizer(0);
+			UpdateMapSizer(1);
+			UpdateMapSizer(2);
+		}
+
+		if (_oldAddDown != _addDown)
+		{
+			_oldAddDown = _addDown;
+			UpdateMapSizer(6);
+			UpdateMapSizer(7);
+			UpdateMapSizer(8);
 		}
 	}
 
@@ -90,18 +149,25 @@ public class Tool_ChangeMapSize : ToolGeneral
 		GUI.Label(new Rect(5, 160, 60, 30), "Right");
 		_addRight = DrawIntSlider(_addRight, new Rect(5 + 65, 160, 60, 30));
 
-		GUI.Label(new Rect(5, 160 + 60, 60, 30), "Left");
-		_addLeft = DrawIntSlider(_addLeft, new Rect(5 + 65, 160 + 60, 60, 30));
+		GUI.Label(new Rect(5, 160 + 40, 60, 30), "Left");
+		_addLeft = DrawIntSlider(_addLeft, new Rect(5 + 65, 160 + 40, 60, 30));
 
-		GUI.Label(new Rect(5, 160 + 120, 60, 30), "Up");
-		_addUp = DrawIntSlider(_addUp, new Rect(5 + 65, 160 + 120, 60, 30));
+		GUI.Label(new Rect(5, 160 + 80, 60, 30), "Up");
+		_addUp = DrawIntSlider(_addUp, new Rect(5 + 65, 160 + 80, 60, 30));
 
-		GUI.Label(new Rect(5, 160 + 180, 60, 30), "Down");
-		_addDown = DrawIntSlider(_addDown, new Rect(5 + 65, 160 + 180, 60, 30));
+		GUI.Label(new Rect(5, 160 + 120, 60, 30), "Down");
+		_addDown = DrawIntSlider(_addDown, new Rect(5 + 65, 160 + 120, 60, 30));
 
-		if (GUI.Button(new Rect(5, 160 + 210, 330, 45), "APPLY"))
+		GUI.Label(new Rect(5, 160 + 160, 200, 330),
+			"Current map size: " + TrackManager.CurrentTrack.Width + "x" + TrackManager.CurrentTrack.Height + "\n" + 
+			"New map size: " + (TrackManager.CurrentTrack.Width + _addLeft + _addRight) + "x" + (TrackManager.CurrentTrack.Height + _addUp + _addDown));
+
+		if (GUI.Button(new Rect(5, 160 + 410, 330, 45), "APPLY"))
 		{
-
+			TrackManager.UpdateTrackSize(_addLeft, _addRight, _addUp, _addDown);
+			ResetSizeChanges();
+			for(int i = 0; i < 9; i++)
+				UpdateMapSizer(i);
 		}
 	}
 

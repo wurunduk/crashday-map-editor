@@ -14,3 +14,4 @@ Current unity version: 2018.1.0b13
 7. Fix stupid stuff
 8. ~~Better controls~~
 9. Mobile version?
+10. Move objects and CPs after map resize

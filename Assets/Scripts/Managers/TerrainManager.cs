@@ -50,13 +50,16 @@ public class TerrainManager : MonoBehaviour
 			tris[i * 6 + 3] = i;
 		}
 
-		Terrain.GetComponent<MeshFilter>().mesh.vertices = verticies;
-		Terrain.GetComponent<MeshFilter>().mesh.triangles = tris;
-		Terrain.GetComponent<MeshFilter>().mesh.normals = normals;
-		Terrain.GetComponent<MeshFilter>().mesh.RecalculateNormals();
-		Terrain.GetComponent<MeshFilter>().mesh.uv = uvs;
+		Mesh m = new Mesh();
+		m.vertices = verticies;
+		m.triangles = tris;
+		m.normals = normals;
+		m.uv = uvs;
+		m.RecalculateNormals();
+		m.RecalculateBounds();
+		Terrain.GetComponent<MeshFilter>().mesh = m;
+		
 
 		Terrain.GetComponent<MeshCollider>().sharedMesh = Terrain.GetComponent<MeshFilter>().sharedMesh;
-
 	}
 }

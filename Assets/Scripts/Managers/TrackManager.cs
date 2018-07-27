@@ -28,6 +28,142 @@ public class TrackManager : MonoBehaviour
 		_tm = GetComponent<TileManager>();
 	}
 
+	public void UpdateTrackSize(int addLeft, int addRight, int addUp, int addDown)
+	{
+		//insert new tiles and heightmap points at the start if we are adding to the left
+		for (int y = 0; y < CurrentTrack.Height; y++)
+		{
+			List<TrackTileSavable> row = new List<TrackTileSavable>();
+			List<float> hmrow = new List<float>();
+			for (int x = 0; x < addLeft; x++)
+			{
+				row.Add(new TrackTileSavable(0, 0, 0, 0));
+				hmrow.Add(0.0f);
+				hmrow.Add(0.0f);
+				hmrow.Add(0.0f);
+				hmrow.Add(0.0f);
+			}
+
+			CurrentTrack.TrackTiles[y].InsertRange(0, row);
+			for (int i = 0; i < 4 + y / (CurrentTrack.Height - 1); i++)
+				CurrentTrack.Heightmap[y*4 + i].InsertRange(0, hmrow);
+
+		}
+
+		//if we are adding negative, remove tiles on the left
+		if (addLeft < 0)
+		{
+			for (int y = 0; y < CurrentTrack.Height; y++)
+			{
+				CurrentTrack.TrackTiles[y].RemoveRange(0, -addLeft);
+				for (int i = 0; i < 4 + y / (CurrentTrack.Height - 1); i++)
+					CurrentTrack.Heightmap[y*4 + i].RemoveRange(0, -addLeft*4);
+			}
+				
+		}
+
+
+		//same at the right
+		for (int x = 0; x < addRight; x++)
+		{
+			for (int y = 0; y < CurrentTrack.Height; y++)
+			{
+				CurrentTrack.TrackTiles[y].Add(new TrackTileSavable(0,0,0,0));
+				for (int i = 0; i < 4 + y/(CurrentTrack.Height-1); i++)
+				{
+					CurrentTrack.Heightmap[y*4 + i].Add(0.0f);
+					CurrentTrack.Heightmap[y*4 + i].Add(0.0f);
+					CurrentTrack.Heightmap[y*4 + i].Add(0.0f);
+					CurrentTrack.Heightmap[y*4 + i].Add(0.0f);
+				}
+			}
+		}
+
+		if (addRight < 0)
+		{
+			for (int y = 0; y < CurrentTrack.Height; y++)
+			{
+				CurrentTrack.TrackTiles[y].RemoveRange(CurrentTrack.Width+addRight, -addRight);
+				for (int i = 0; i < 4 + y / (CurrentTrack.Height - 1); i++)
+					CurrentTrack.Heightmap[y*4 + i].RemoveRange((CurrentTrack.Width+addRight)*4 + 1, -addRight*4);
+			}	
+		}
+
+
+		//add or remove tiles on top
+		List<List<TrackTileSavable>> ups = new List<List<TrackTileSavable>>();
+		List<List<float>> hmups = new List<List<float>>();
+		for (int y = 0; y < addUp; y++)
+		{
+			List<TrackTileSavable> row = new List<TrackTileSavable>();
+			List<float> hmrow = new List<float>();
+			for (int x = 0; x < addLeft + addRight + CurrentTrack.Width; x++)
+			{
+				row.Add(new TrackTileSavable(0,0,0,0));
+				hmrow.Add(0.0f);
+				hmrow.Add(0.0f);
+				hmrow.Add(0.0f);
+				hmrow.Add(0.0f);
+			}
+
+			hmrow.Add(0.0f);
+			ups.Add(row);
+			hmups.Add(hmrow);
+		}
+
+		CurrentTrack.TrackTiles.InsertRange(0, ups);
+		CurrentTrack.Heightmap.InsertRange(0, hmups);
+		CurrentTrack.Heightmap.InsertRange(0, hmups);
+		CurrentTrack.Heightmap.InsertRange(0, hmups);
+		CurrentTrack.Heightmap.InsertRange(0, hmups);
+
+		if (addUp < 0)
+		{
+			CurrentTrack.TrackTiles.RemoveRange(0, -addUp);
+			CurrentTrack.Heightmap.RemoveRange(0, -addUp*4);
+		}
+
+
+		//now remove or add no the bottom
+		List<List<TrackTileSavable>> downs = new List<List<TrackTileSavable>>();
+		List<List<float>> hmdowns = new List<List<float>>();
+		for (int y = 0; y < addDown; y++)
+		{
+			List<TrackTileSavable> row = new List<TrackTileSavable>();
+			List<float> hmrow = new List<float>();
+			for (int x = 0; x < addLeft + addRight + CurrentTrack.Width; x++)
+			{
+				row.Add(new TrackTileSavable(0,0,0,0));
+				hmrow.Add(0.0f);
+				hmrow.Add(0.0f);
+				hmrow.Add(0.0f);
+				hmrow.Add(0.0f);
+			}
+
+			hmrow.Add(0.0f);
+			downs.Add(row);
+			hmdowns.Add(hmrow);
+		}
+
+		CurrentTrack.TrackTiles.AddRange(downs);
+		CurrentTrack.Heightmap.AddRange(hmdowns);
+		CurrentTrack.Heightmap.AddRange(hmdowns);
+		CurrentTrack.Heightmap.AddRange(hmdowns);
+		CurrentTrack.Heightmap.AddRange(hmdowns);
+
+		if (addDown < 0)
+		{
+			CurrentTrack.TrackTiles.RemoveRange(0, -addDown);
+			CurrentTrack.Heightmap.RemoveRange(0, -addDown*4);
+		}
+
+
+		CurrentTrack.Height += (ushort)(addUp + addDown);
+		CurrentTrack.Width += (ushort)(addLeft + addRight);
+
+		LoadTrack(CurrentTrack);
+	}
+
 	public void SetTileByAtlasId(ushort atlasId, IntVector2 position)
 	{
 		if (CurrentTrackState == TrackState.TrackEmpty || atlasId >= CurrentTrack.FieldFilesNumber) return;
@@ -175,9 +311,6 @@ public class TrackManager : MonoBehaviour
 				UpdateTileAt(x, y);
             }
         }
-
-		FindObjectOfType<Camera>().gameObject.transform.localPosition = new Vector3(CurrentTrack.Width*10, 100, CurrentTrack.Height*-10);
-		FindObjectOfType<Camera>().transform.LookAt(new Vector3(CurrentTrack.Width*20, 0, CurrentTrack.Height*-20));
 
 	    CurrentTrackState = TrackState.TracckLoaded;
     }
