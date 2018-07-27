@@ -30,138 +30,51 @@ public class TrackManager : MonoBehaviour
 
 	public void UpdateTrackSize(int addLeft, int addRight, int addUp, int addDown)
 	{
-		//insert new tiles and heightmap points at the start if we are adding to the left
-		for (int y = 0; y < CurrentTrack.Height; y++)
+		TrackSavable newTrack = new TrackSavable(CurrentTrack);
+
+		newTrack.Width += (ushort) (addLeft + addRight);
+		newTrack.Height += (ushort) (addUp + addDown);
+
+		newTrack.TrackTiles = new List<List<TrackTileSavable>>(newTrack.Height);
+
+		for (int y = 0; y < newTrack.Height; y++)
 		{
-			List<TrackTileSavable> row = new List<TrackTileSavable>();
-			List<float> hmrow = new List<float>();
-			for (int x = 0; x < addLeft; x++)
+			newTrack.TrackTiles.Add(new List<TrackTileSavable>(newTrack.Width));
+			for (int x = 0; x < newTrack.Width; x++)
 			{
-				row.Add(new TrackTileSavable(0, 0, 0, 0));
-				hmrow.Add(0.0f);
-				hmrow.Add(0.0f);
-				hmrow.Add(0.0f);
-				hmrow.Add(0.0f);
-			}
-
-			CurrentTrack.TrackTiles[y].InsertRange(0, row);
-			for (int i = 0; i < 4 + y / (CurrentTrack.Height - 1); i++)
-				CurrentTrack.Heightmap[y*4 + i].InsertRange(0, hmrow);
-
-		}
-
-		//if we are adding negative, remove tiles on the left
-		if (addLeft < 0)
-		{
-			for (int y = 0; y < CurrentTrack.Height; y++)
-			{
-				CurrentTrack.TrackTiles[y].RemoveRange(0, -addLeft);
-				for (int i = 0; i < 4 + y / (CurrentTrack.Height - 1); i++)
-					CurrentTrack.Heightmap[y*4 + i].RemoveRange(0, -addLeft*4);
-			}
-				
-		}
-
-
-		//same at the right
-		for (int x = 0; x < addRight; x++)
-		{
-			for (int y = 0; y < CurrentTrack.Height; y++)
-			{
-				CurrentTrack.TrackTiles[y].Add(new TrackTileSavable(0,0,0,0));
-				for (int i = 0; i < 4 + y/(CurrentTrack.Height-1); i++)
+				TrackTileSavable tile;
+				if (x - addLeft > 0 && y - addUp > 0 && x - addLeft < CurrentTrack.Width && y - addUp < CurrentTrack.Height)
 				{
-					CurrentTrack.Heightmap[y*4 + i].Add(0.0f);
-					CurrentTrack.Heightmap[y*4 + i].Add(0.0f);
-					CurrentTrack.Heightmap[y*4 + i].Add(0.0f);
-					CurrentTrack.Heightmap[y*4 + i].Add(0.0f);
+					tile = new TrackTileSavable(CurrentTrack.TrackTiles[y-addUp][x-addLeft]);
+				}
+				else
+				{
+					tile = new TrackTileSavable(0, 0, 0, 0);
+				}
+
+				newTrack.TrackTiles[y].Add(tile);
+			}
+		}
+
+		newTrack.Heightmap = new List<List<float>>(newTrack.Height*4+1);
+
+		for (int y = 0; y < newTrack.Height*4+1; y++)
+		{
+			newTrack.Heightmap.Add(new List<float>(newTrack.Width*4+1));
+			for (int x = 0; x < newTrack.Width*4+1; x++)
+			{
+				if (x + addLeft*4 > 0 && y + addUp*4 > 0 && x + addLeft*4 < CurrentTrack.Width*4+1 && y + addUp*4 < CurrentTrack.Height*4+1)
+				{
+					newTrack.Heightmap[y].Add(CurrentTrack.Heightmap[y + addUp*4][x + addLeft*4]);
+				}
+				else
+				{
+					newTrack.Heightmap[y].Add(0.0f);
 				}
 			}
 		}
 
-		if (addRight < 0)
-		{
-			for (int y = 0; y < CurrentTrack.Height; y++)
-			{
-				CurrentTrack.TrackTiles[y].RemoveRange(CurrentTrack.Width+addRight, -addRight);
-				for (int i = 0; i < 4 + y / (CurrentTrack.Height - 1); i++)
-					CurrentTrack.Heightmap[y*4 + i].RemoveRange((CurrentTrack.Width+addRight)*4 + 1, -addRight*4);
-			}	
-		}
-
-
-		//add or remove tiles on top
-		List<List<TrackTileSavable>> ups = new List<List<TrackTileSavable>>();
-		List<List<float>> hmups = new List<List<float>>();
-		for (int y = 0; y < addUp; y++)
-		{
-			List<TrackTileSavable> row = new List<TrackTileSavable>();
-			List<float> hmrow = new List<float>();
-			for (int x = 0; x < addLeft + addRight + CurrentTrack.Width; x++)
-			{
-				row.Add(new TrackTileSavable(0,0,0,0));
-				hmrow.Add(0.0f);
-				hmrow.Add(0.0f);
-				hmrow.Add(0.0f);
-				hmrow.Add(0.0f);
-			}
-
-			hmrow.Add(0.0f);
-			ups.Add(row);
-			hmups.Add(hmrow);
-		}
-
-		CurrentTrack.TrackTiles.InsertRange(0, ups);
-		CurrentTrack.Heightmap.InsertRange(0, hmups);
-		CurrentTrack.Heightmap.InsertRange(0, hmups);
-		CurrentTrack.Heightmap.InsertRange(0, hmups);
-		CurrentTrack.Heightmap.InsertRange(0, hmups);
-
-		if (addUp < 0)
-		{
-			CurrentTrack.TrackTiles.RemoveRange(0, -addUp);
-			CurrentTrack.Heightmap.RemoveRange(0, -addUp*4);
-		}
-
-
-		//now remove or add no the bottom
-		List<List<TrackTileSavable>> downs = new List<List<TrackTileSavable>>();
-		List<List<float>> hmdowns = new List<List<float>>();
-		for (int y = 0; y < addDown; y++)
-		{
-			List<TrackTileSavable> row = new List<TrackTileSavable>();
-			List<float> hmrow = new List<float>();
-			for (int x = 0; x < addLeft + addRight + CurrentTrack.Width; x++)
-			{
-				row.Add(new TrackTileSavable(0,0,0,0));
-				hmrow.Add(0.0f);
-				hmrow.Add(0.0f);
-				hmrow.Add(0.0f);
-				hmrow.Add(0.0f);
-			}
-
-			hmrow.Add(0.0f);
-			downs.Add(row);
-			hmdowns.Add(hmrow);
-		}
-
-		CurrentTrack.TrackTiles.AddRange(downs);
-		CurrentTrack.Heightmap.AddRange(hmdowns);
-		CurrentTrack.Heightmap.AddRange(hmdowns);
-		CurrentTrack.Heightmap.AddRange(hmdowns);
-		CurrentTrack.Heightmap.AddRange(hmdowns);
-
-		if (addDown < 0)
-		{
-			CurrentTrack.TrackTiles.RemoveRange(0, -addDown);
-			CurrentTrack.Heightmap.RemoveRange(0, -addDown*4);
-		}
-
-
-		CurrentTrack.Height += (ushort)(addUp + addDown);
-		CurrentTrack.Width += (ushort)(addLeft + addRight);
-
-		LoadTrack(CurrentTrack);
+		LoadTrack(newTrack);
 	}
 
 	public void SetTileByAtlasId(ushort atlasId, IntVector2 position)
@@ -216,67 +129,9 @@ public class TrackManager : MonoBehaviour
 		}
 	}
 
-	public TrackSavable GenerateStartTrack()
-	{
-		TrackSavable track = new TrackSavable();
-		track.Author = "Author";
-		track.Comment = "A track made in 3d editor";
-		track.Style = 0;
-		track.Ambience = "day.amb";
-
-		track.FieldFilesNumber = 2;
-		track.FieldFiles = new List<string>(2);
-		track.FieldFiles.Add("field.cfl");
-		track.FieldFiles.Add("chkpoint.cfl");
-
-		track.Height = 5;
-		track.Width = 5;
-
-		track.TrackTiles = new List<List<TrackTileSavable>>(5);
-
-		for (int y = 0; y < track.Height; y++)
-		{
-			track.TrackTiles.Add(new List<TrackTileSavable>(5));
-			for (int x = 0; x < track.Width; x++)
-			{
-				TrackTileSavable tile = new TrackTileSavable(0,0,0,0);
-				if(x == 2 && y == 2)
-					tile = new TrackTileSavable(1,0,0,0);
-				track.TrackTiles[y].Add(tile);
-			}
-		}
-
-		track.DynamicObjectFilesNumber = 0;
-		track.DynamicObjectFiles = new List<string>();
-
-		track.DynamicObjectsNumber = 0;
-		track.DynamicObjects = new List<DynamicObjectSavable>();
-
-		track.CheckpointsNumber = 1;
-		track.Checkpoints = new List<ushort>();
-		track.Checkpoints.Add(12);
-
-		track.Permission = 0;
-		track.GroundBumpyness = 1.0f;
-		track.Scenery = 0;
-
-		track.Heightmap = new List<List<float>>(21);
-
-		for (int y = 0; y < track.Height*4 + 1; y++)
-		{
-			track.Heightmap.Add(new List<float>(21));
-			for (int x = 0; x < track.Width*4 + 1; x++)
-			{
-				track.Heightmap[y].Add(0.0f);
-			}
-		}
-
-		return track;
-	}
-
 	public void LoadTrack()
 	{
-		LoadTrack(GenerateStartTrack());
+		LoadTrack(new TrackSavable());
 		CurrentTrackState = TrackState.TrackStart;
 	}
 

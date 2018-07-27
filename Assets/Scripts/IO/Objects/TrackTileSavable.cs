@@ -16,6 +16,14 @@ public class TrackTileSavable
 	{
 	}
 
+	public TrackTileSavable(TrackTileSavable old)
+	{
+		FieldId = old.FieldId;
+		Rotation = old.Rotation;
+		IsMirrored = old.IsMirrored;
+		Height = old.Height;
+	}
+
 	public TrackTileSavable(ushort id, byte rotation, byte isMirrored, byte height)
 	{
 		FieldId = id;
