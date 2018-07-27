@@ -38,6 +38,18 @@ public class TrackManager : MonoBehaviour
 		newTrack.Width += (ushort) (addLeft + addRight);
 		newTrack.Height += (ushort) (addUp + addDown);
 
+		for (int i = 0; i < newTrack.CheckpointsNumber; i++)
+		{
+			int newPosX = newTrack.Checkpoints[i] % CurrentTrack.Width;
+			int newPosY = newTrack.Checkpoints[i] / CurrentTrack.Height;
+
+			newPosX += addLeft;
+			newPosY += addUp;
+
+			newTrack.Checkpoints[i] = (ushort)(newPosY * newTrack.Width + newPosX);
+		}
+
+
 		newTrack.TrackTiles = new List<List<TrackTileSavable>>(newTrack.Height);
 
 		for (int y = 0; y < newTrack.Height; y++)
@@ -58,6 +70,8 @@ public class TrackManager : MonoBehaviour
 				newTrack.TrackTiles[y].Add(tile);
 			}
 		}
+
+
 
 		newTrack.Heightmap = new List<List<float>>(newTrack.Height*4+1);
 
