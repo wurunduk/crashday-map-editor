@@ -94,7 +94,7 @@ public class Tool_TilePlace : ToolGeneral
 		TileManager.LoadModelForTileId(i);
 
 		SomePrefab.GetComponent<MeshFilter>().mesh = TileManager.TileList[i].Model.CreateMeshes()[0];
-		SomePrefab.GetComponent<Renderer>().materials = TileManager.TileList[i].Materials;
+		SomePrefab.GetComponent<Renderer>().materials = TileManager.TileList[i].Materials.ToArray();
 
 		SomePrefab.position = new Vector3(SomePrefab.position.x, TileManager.TileList[i].Model.P3DMeshes[0].Height / 2, SomePrefab.position.z);
 

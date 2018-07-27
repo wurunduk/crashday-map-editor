@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class P3DModel
@@ -125,16 +124,21 @@ public class P3DModel
 		List<Material> materials = new List<Material>();
 		for (int i = 0; i < P3DNumTextures; i++)
 		{
-			byte[] data = System.IO.File.ReadAllBytes(IO.GetCrashdayPath() + "/data/content/textures/" + P3DRenderInfo[i].TextureFile.Remove(P3DRenderInfo[i].TextureFile.Length - 4) + ".dds");
-			Texture2D tex = LoadTextureDXT(data, TextureFormat.DXT5);
-
-			Material mat = new Material(Shader.Find("Standard"));
-			mat.SetFloat("_Glossiness", 0);
-			mat.mainTexture = tex;
-			materials.Add(mat);
+			materials.Add(CreateMaterial(i));
 		}
 
 		return materials.ToArray();
+	}
+
+	public Material CreateMaterial(int id)
+	{
+		byte[] data = System.IO.File.ReadAllBytes(IO.GetCrashdayPath() + "/data/content/textures/" + P3DRenderInfo[id].TextureFile.Remove(P3DRenderInfo[id].TextureFile.Length - 4) + ".dds");
+		Texture2D tex = LoadTextureDXT(data, TextureFormat.DXT5);
+
+		Material mat = new Material(Shader.Find("Standard"));
+		mat.SetFloat("_Glossiness", 0);
+		mat.mainTexture = tex;
+		return mat;
 	}
 
     public Mesh[] CreateMeshes()
@@ -175,7 +179,7 @@ public class P3DModel
             newMesh.vertices = verts;
 
 	        List<string> textures = new List<string>();
-			List<Vector2> uv = new List<Vector2>();
+	        List<Vector2> uv = new List<Vector2>();
 	        List<List<int>> tri = new List<List<int>>();
 	        for (int n = 0; n < P3DNumTextures; n++)
 	        {
@@ -191,8 +195,6 @@ public class P3DModel
                 tri[index].Add(P3DMeshes[i].Poly[v].P3);
 
 		        uv.Add(new Vector2(P3DMeshes[i].Poly[v].U1, P3DMeshes[i].Poly[v].V1));
-		        //uv.Add(new Vector2(P3DMeshes[i].Poly[v].U2, P3DMeshes[i].Poly[v].V2));
-		        //uv.Add(new Vector2(P3DMeshes[i].Poly[v].U3, P3DMeshes[i].Poly[v].V3));
             }
 
 	        newMesh.subMeshCount = P3DNumTextures;

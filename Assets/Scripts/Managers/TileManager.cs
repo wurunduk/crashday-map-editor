@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class TileListEntry
@@ -7,7 +8,7 @@ public class TileListEntry
 	public string Name;
 	public string ModelPath;
 	public P3DModel Model;
-	public Material[] Materials;
+	public List<Material> Materials;
 	public IntVector2 Size;
 
 	public LoadState CurrentLoadState;
@@ -27,7 +28,7 @@ public class TileListEntry
 		Size = size;
 	}
 
-	public TileListEntry(string name, string modelPath, P3DModel model, Material[] materials, IntVector2 size)
+	public TileListEntry(string name, string modelPath, P3DModel model, List<Material> materials, IntVector2 size)
 	{
 		CurrentLoadState = LoadState.ModelLoaded;
 
@@ -39,9 +40,18 @@ public class TileListEntry
 	}
 }
 
+public class MaterialListEntry
+{
+	public string Name;
+	public Material Material;
+}
+
+
 public class TileManager : MonoBehaviour
 {
 	public List<TileListEntry> TileList;
+
+	public List<MaterialListEntry> Materials;
 
 	public bool Loaded;
 
@@ -53,7 +63,21 @@ public class TileManager : MonoBehaviour
 
 		P3DModel model = parser.LoadFromFile(TileList[id].ModelPath);
 		TileList[id].Model = model;
-		TileList[id].Materials = model.CreateMaterials();
+
+		TileList[id].Materials = new List<Material>(model.P3DNumTextures);
+		for (int i = 0; i < model.P3DNumTextures; i++)
+		{
+			MaterialListEntry m = Materials.FirstOrDefault(x => x.Name == model.P3DRenderInfo[i].TextureFile);
+			if (m == default(MaterialListEntry))
+			{
+				m = new MaterialListEntry();
+				m.Material = model.CreateMaterial(i);
+				m.Name = model.P3DRenderInfo[i].TextureFile;
+				Materials.Add(m);
+			}
+
+			TileList[id].Materials.Add(m.Material);
+		}
 
 		TileList[id].CurrentLoadState = TileListEntry.LoadState.ModelLoaded;
 	}
@@ -64,6 +88,7 @@ public class TileManager : MonoBehaviour
 
 
 		TileList = new List<TileListEntry>(270);
+		Materials = new List<MaterialListEntry>(30);
 
 		string[] files = System.IO.Directory.GetFiles (IO.GetCrashdayPath () + "/data/content/tiles/");
 

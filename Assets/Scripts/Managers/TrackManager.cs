@@ -123,7 +123,7 @@ public class TrackManager : MonoBehaviour
 
 			//set the model and textures for the tile
 			Tiles[y][x].GetComponent<MeshFilter>().mesh = _tm.TileList[index].Model.CreateMeshes()[0];
-			Tiles[y][x].GetComponent<Renderer>().materials = _tm.TileList[index].Materials;
+			Tiles[y][x].GetComponent<Renderer>().materials = _tm.TileList[index].Materials.ToArray();
 
 			//Tile tile = Tiles[y][x].AddComponent<Tile>();
 			Tiles[y][x].GetComponent<Tile>().SetupTile(CurrentTrack.TrackTiles [y][x], _tm.TileList[index].Size, new IntVector2(x, y), this, _tm.TileList[index].Name);
