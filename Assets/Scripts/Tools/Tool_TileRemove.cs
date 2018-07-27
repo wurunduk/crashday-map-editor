@@ -19,7 +19,7 @@ public class Tool_TileRemove : ToolGeneral
 
 	public override void OnSelected()
 	{
-		SomePrefab.GetComponent<MeshFilter>().mesh = MeshGenerator.GenerateCubeMesh(3, 20);
+		SomePrefab.GetComponent<MeshFilter>().mesh = MeshGenerator.GenerateCubeMesh(3, new Vector3(20, 10, 20));
 		SomePrefab.GetComponent<MeshRenderer>().materials = new[]{mat};
 
 		SomePrefab.GetComponent<MeshRenderer>().enabled = true;
@@ -47,7 +47,7 @@ public class Tool_TileRemove : ToolGeneral
 			_gridPosition = point;
 		}
 
-		SomePrefab.transform.position = new Vector3(point.x*TrackManager.TileSize, 10, -1*point.y*TrackManager.TileSize);
+		SomePrefab.transform.position = new Vector3(point.x*TrackManager.TileSize, 5, -1*point.y*TrackManager.TileSize);
 	}
 
 	public override void Update()

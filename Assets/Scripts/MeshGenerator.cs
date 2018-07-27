@@ -17,7 +17,7 @@ public static class MeshGenerator
 		}
 	}
 
-	public static MeshData GeneratePlane(MeshData md, int sizeX, int sizeY, int size, Vector3 rotation)
+	public static MeshData GeneratePlane(MeshData md, int sizeX, int sizeY, Vector3 d, Vector3 rotation)
 	{
 		Quaternion rot = Quaternion.Euler(rotation);
 
@@ -27,10 +27,10 @@ public static class MeshGenerator
 		{
 			for (int x = 0; x < sizeX; x++)
 			{
-				Vector3 pos = new Vector3(-size / 2 + x * (size / (sizeX-1)), size/2, size / 2 + -1 * y * (size / (sizeY-1)));
+				Vector3 pos = new Vector3(-d.x / 2 + x * (d.x / (sizeX-1)), d.y/2, d.z / 2 + -1 * y * (d.z / (sizeY-1)));
 				pos = rot*pos;
 				md.Verticies.Add(pos);
-				md.Uvs.Add(new Vector2(x*(size/2)%sizeX, y%sizeY));
+				md.Uvs.Add(new Vector2(x*(d.x/2)%sizeX, y%sizeY));
 			}
 		}
 
@@ -53,22 +53,22 @@ public static class MeshGenerator
 		return md;
 	}
 
-	public static MeshData GeneratePlane(int sizeX, int sizeY, int size, Vector3 rotation)
+	public static MeshData GeneratePlane(int sizeX, int sizeY, Vector3 dimensions, Vector3 rotation)
 	{
 		MeshData md = new MeshData();
 
-		return GeneratePlane(md, sizeX, sizeY, size, rotation);
+		return GeneratePlane(md, sizeX, sizeY, dimensions, rotation);
 	}
 
-	public static Mesh GenerateCubeMesh(int subdivisions, int s)
+	public static Mesh GenerateCubeMesh(int subdivisions, Vector3 d)
 	{
 		int length = (subdivisions + 2);
 
-		MeshData md = GeneratePlane(length, length, s, Vector3.zero);
-		md = GeneratePlane(md, length, 2, s, new Vector3(90,0,-90));
-		md = GeneratePlane(md, length, 2, s, new Vector3(90,90,-90));
-		md = GeneratePlane(md, length, 2, s, new Vector3(90,180,-90));
-		md = GeneratePlane(md, length, 2, s, new Vector3(90,270,-90));
+		MeshData md = GeneratePlane(length, length, d, Vector3.zero);
+		md = GeneratePlane(md, length, 2, new Vector3(d.z, d.x, d.y),  new Vector3(90,0,-90));
+		md = GeneratePlane(md, length, 2, new Vector3(d.z, d.x, d.y),  new Vector3(90,90,-90));
+		md = GeneratePlane(md, length, 2, new Vector3(d.z, d.x, d.y),  new Vector3(90,180,-90));
+		md = GeneratePlane(md, length, 2, new Vector3(d.z, d.x, d.y),  new Vector3(90,270,-90));
 
 		Mesh mesh = new Mesh();
 		mesh.vertices = md.Verticies.ToArray();
