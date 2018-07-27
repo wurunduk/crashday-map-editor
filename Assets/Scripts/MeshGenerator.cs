@@ -66,9 +66,9 @@ public static class MeshGenerator
 
 		MeshData md = GeneratePlane(length, length, d, Vector3.zero);
 		md = GeneratePlane(md, length, 2, new Vector3(d.z, d.x, d.y),  new Vector3(90,0,-90));
-		md = GeneratePlane(md, length, 2, new Vector3(d.z, d.x, d.y),  new Vector3(90,90,-90));
+		md = GeneratePlane(md, length, 2, new Vector3(d.x, d.z, d.y),  new Vector3(90,90,-90));
 		md = GeneratePlane(md, length, 2, new Vector3(d.z, d.x, d.y),  new Vector3(90,180,-90));
-		md = GeneratePlane(md, length, 2, new Vector3(d.z, d.x, d.y),  new Vector3(90,270,-90));
+		md = GeneratePlane(md, length, 2, new Vector3(d.x, d.z, d.y),  new Vector3(90,270,-90));
 
 		Mesh mesh = new Mesh();
 		mesh.vertices = md.Verticies.ToArray();

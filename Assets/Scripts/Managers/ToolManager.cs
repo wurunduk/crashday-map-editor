@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 public class ToolManager : MonoBehaviour 
 {
 	public Transform SomePrefab;
+	public GameObject ModelPrefab;
 
 	private TileManager _tileManager;
 	private TrackManager _trackManager;
@@ -40,6 +41,7 @@ public class ToolManager : MonoBehaviour
 		tool.TileManager = _tileManager;
 		tool.TerrainManager = _terrainManager;
 		tool.SomePrefab = SomePrefab;
+		tool.ModelPrefab = ModelPrefab;
 		tool.Initialize();
 	}
 
@@ -79,6 +81,8 @@ public class ToolManager : MonoBehaviour
 
 		//send updated information to the tool
 		_currentTool.OnMouseOverTile(newGridPosition);
+
+		_currentTool.Update();
 
 		//only pass click events to tools if the click was in the world and not on UI
 		if (GUIUtility.hotControl != 0) return;
