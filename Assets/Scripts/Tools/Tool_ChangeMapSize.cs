@@ -53,6 +53,7 @@ public class Tool_ChangeMapSize : ToolGeneral
 		for (int i = 0; i < 9; i++)
 		{
 			_mapSizers[i].GetComponent<MeshRenderer>().enabled = true;
+			UpdateMapSizer(i);
 		}
 
 		//turn off the middle sizer

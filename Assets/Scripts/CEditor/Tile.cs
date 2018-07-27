@@ -42,20 +42,39 @@ public class Tile : MonoBehaviour
 		return new Vector3((GridPosition.x + (_size.x/2)/2.0f)*TrackManager.TileSize, transform.localPosition.y, -1*(GridPosition.y + (_size.y/2)/2.0f)*TrackManager.TileSize);
 	}
 
-    public void SetRotation(byte rotation)
-    {
-        _trackTileSavable.Rotation = rotation;
-        transform.localRotation = Quaternion.Euler(0, rotation * 90, 0);
+	public void UpdateTransform()
+	{
+		transform.localRotation = Quaternion.Euler(0, _trackTileSavable.Rotation * 90, 0);
 
 		if(_trackTileSavable.IsMirrored != 0)
 		{
-			if(rotation%2 == 1)
+			if(_trackTileSavable.Rotation%2 == 1)
 				transform.localScale = new Vector3(1, 1, -1);
 			else
 				transform.localScale = new Vector3(-1, 1, 1);
 		}
+		else
+		{
+			transform.localScale = new Vector3(1,1,1);
+		}
 
-	    transform.localPosition = GetTransformPosition();
+		transform.localPosition = GetTransformPosition();
+	}
+
+	public void Flip()
+	{
+		if (_trackTileSavable.IsMirrored != 0)
+			_trackTileSavable.IsMirrored = 0;
+		else
+			_trackTileSavable.IsMirrored = 1;
+
+		UpdateTransform();
+	}
+
+    public void SetRotation(byte rotation)
+    {
+        _trackTileSavable.Rotation = rotation;
+        UpdateTransform();
     }
 
 	public void ForceVerticiesUpdate()

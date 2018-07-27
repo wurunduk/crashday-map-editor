@@ -65,11 +65,17 @@ public class Tool_TilePlace : ToolGeneral
 
 	public override void Update()
 	{
-
+		if (Input.GetButtonDown("Control"))
+		{
+			_currentTile.Flip();
+			_currentTile.ApplyTerrain();
+		}
 	}
 
 	public override void UpdateGUI()
 	{
+		GUI.Label(new Rect(5, 140, 300, 20), "Current tile: " + _currentTile.FieldName);
+
 		_scrollPosition = GUI.BeginScrollView(new Rect(5, 160, 330, Screen.height - 165), _scrollPosition, new Rect(5, 160, 310, (TileManager.TileList.Count/3 + 1) * 24), false, false);
 		for (int i = 0; i < TileManager.TileList.Count; i++)
 		{

@@ -28,8 +28,11 @@ public class TrackManager : MonoBehaviour
 		_tm = GetComponent<TileManager>();
 	}
 
+
 	public void UpdateTrackSize(int addLeft, int addRight, int addUp, int addDown)
 	{
+		//TODO:
+		//Move DynamicObjects
 		TrackSavable newTrack = new TrackSavable(CurrentTrack);
 
 		newTrack.Width += (ushort) (addLeft + addRight);
