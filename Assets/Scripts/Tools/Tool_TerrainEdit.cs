@@ -1,12 +1,13 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-public class Tool_TileEdit : ToolGeneral
+public class Tool_TerrainEdit : ToolGeneral
 {
 
 	public override void Initialize()
 	{
-		ToolName = "Edit Tiles";
+		ToolName = "Edit Terrain";
 	}
 
 	public override void OnSelected()

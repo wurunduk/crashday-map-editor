@@ -29,6 +29,7 @@ public class ToolManager : MonoBehaviour
 		InitializeTool(new Tool_ChangeMapSize());
 		InitializeTool(new Tool_TilePlace());
 		InitializeTool(new Tool_TileRemove());
+		InitializeTool(new Tool_TerrainEdit());
 
 		_currentTool = _tools[0];
 		_currentTool.OnSelected();
@@ -72,8 +73,19 @@ public class ToolManager : MonoBehaviour
 		//get the point on the Terrain where our mouse currenlty points
 		Ray ray = Camera.main.ScreenPointToRay(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
 		RaycastHit info;
-		_terrainManager.Terrain.GetComponent<MeshCollider>().Raycast(ray, out info, float.MaxValue);
-		Vector3 pos = info.point;
+		Vector3 pos;
+		if (_terrainManager.Terrain.GetComponent<MeshCollider>().Raycast(ray, out info, float.MaxValue))
+		{
+			pos = info.point;
+		}
+		else
+		{
+			Plane plane = new Plane(Vector3.up, Vector3.zero);
+			float outFloat;
+			plane.Raycast(ray, out outFloat);
+			pos = ray.GetPoint(outFloat);
+		}
+		
 
 		//calcualte tile position from position on the terrain
 		IntVector2 newGridPosition = new IntVector2(Mathf.Clamp(Mathf.RoundToInt(pos.x / 20), 0, _trackManager.CurrentTrack.Width-1), 
