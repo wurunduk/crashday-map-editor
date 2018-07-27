@@ -91,6 +91,8 @@ public class Tool_TilePlace : ToolGeneral
 	{
 		if (i == SelectedTileId) return;
 
+		SelectedTileId = i;
+
 		TileManager.LoadModelForTileId(i);
 
 		SomePrefab.GetComponent<MeshFilter>().mesh = TileManager.TileList[i].Model.CreateMeshes()[0];
