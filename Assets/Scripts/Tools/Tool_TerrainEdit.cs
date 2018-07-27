@@ -12,12 +12,12 @@ public class Tool_TerrainEdit : ToolGeneral
 
 	public override void OnSelected()
 	{
-
+		TerrainManager.Terrain.GetComponent<MeshRenderer>().enabled = true;
 	}
 
 	public override void OnDeselected()
 	{
-
+		TerrainManager.Terrain.GetComponent<MeshRenderer>().enabled = false;
 	}
 
 	public override void OnRMBDown(Vector2 point)
