@@ -162,7 +162,7 @@ public class MapParser
             for (int x = 0; x < track.Width; x++)
             {
 	            io.WriteUShort(track.TrackTiles[y][x].FieldId);
-	            io.WriteByte(track.TrackTiles[y][y].Rotation);
+	            io.WriteByte(track.TrackTiles[y][x].Rotation);
 	            io.WriteByte(track.TrackTiles[y][x].IsMirrored);
 	            io.WriteByte(track.TrackTiles[y][x].Height);
             }
