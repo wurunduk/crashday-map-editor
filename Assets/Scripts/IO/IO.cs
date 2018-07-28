@@ -10,6 +10,7 @@ public class IO
     private int _readOffset;
 
     public List<byte> Data;
+	public byte[] DataBytes;
 
     public static string GetCrashdayPath()
     {
@@ -47,6 +48,7 @@ public class IO
     public IO(List<byte> data)
     {
 	    Data = data;
+	    DataBytes = data.ToArray();
     }
 
 	public void SetReadingOffest(int newOffset)
@@ -59,6 +61,11 @@ public class IO
 		_readOffset += newOffest;
 	}
 
+	public void ResetData()
+	{
+		Data = new List<byte>();
+		DataBytes = Data.ToArray();
+	}
 	
 	//=======================
 	//	READ/WRITE STUFF HERE
@@ -109,7 +116,7 @@ public class IO
     public int ReadInt()
     {
 	    _readOffset += 4;
-        return BitConverter.ToInt32(Data.ToArray(), _readOffset - 4);
+        return BitConverter.ToInt32(DataBytes, _readOffset - 4);
     }
 
 
@@ -121,7 +128,7 @@ public class IO
     public uint ReadUInt()
     {
 	    _readOffset += 4;
-        return BitConverter.ToUInt32(Data.ToArray(), _readOffset - 4);
+        return BitConverter.ToUInt32(DataBytes, _readOffset - 4);
     }
 
 
@@ -133,7 +140,7 @@ public class IO
     public ushort ReadUShort()
     {
 	    _readOffset += 2;
-        return BitConverter.ToUInt16(Data.ToArray(), _readOffset - 2);
+        return BitConverter.ToUInt16(DataBytes, _readOffset - 2);
     }
 
 
@@ -145,7 +152,7 @@ public class IO
     public short ReadShort()
     {
 	    _readOffset += 2;
-        return BitConverter.ToInt16(Data.ToArray(), _readOffset - 2);
+        return BitConverter.ToInt16(DataBytes, _readOffset - 2);
     }
 
 
@@ -157,7 +164,7 @@ public class IO
     public float ReadFloat()
     {
 	    _readOffset += 4;
-        return BitConverter.ToSingle(Data.ToArray(), _readOffset - 4);
+        return BitConverter.ToSingle(DataBytes, _readOffset - 4);
     }
 
 
@@ -194,6 +201,6 @@ public class IO
     public char ReadChar()
     {
 	    _readOffset += 1;
-        return BitConverter.ToChar(Data.ToArray(), _readOffset - 1);
+        return BitConverter.ToChar(DataBytes, _readOffset - 1);
     }
 }
