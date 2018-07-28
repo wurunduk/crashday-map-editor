@@ -28,7 +28,9 @@ public class CameraMovement : MonoBehaviour
 
 	void LateUpdate()
 	{
-		if(GUIUtility.hotControl == 0)
+		//welcome to the ghetto
+		//this is the size of the left GUI panel
+		if(Input.mousePosition.x > 340)
 			transform.Translate(Vector3.forward*Input.GetAxis("Mouse ScrollWheel")*100, Space.Self);
 	}
 }
