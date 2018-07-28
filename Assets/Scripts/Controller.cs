@@ -1,6 +1,6 @@
 ﻿using System.IO;
+using SFB;
 using UnityEngine;
-using UnityEditor;
 
 public class Controller : MonoBehaviour
 {
@@ -23,7 +23,7 @@ public class Controller : MonoBehaviour
 
         if (GUI.Button(new Rect(5, 5, 160, 35), "Load map"))
         {
-            string path = EditorUtility.OpenFilePanel("Open trk file", CrashdayPath + "/user/", "trk");
+            string path = StandaloneFileBrowser.OpenFilePanel("Open trk file", CrashdayPath + "/user/", "trk", false)[0];
             if (path.Length != 0)
             {
 				PlayerPrefs.SetString("lastmappath", path);
@@ -49,7 +49,7 @@ public class Controller : MonoBehaviour
 
 	    if (GUI.Button(new Rect(175, 5, 160, 35), "Save map"))
 	    {
-		    string path = EditorUtility.SaveFilePanel("Save trk file", CrashdayPath + "/user/", "my_awesome_track", "trk");
+		    string path = StandaloneFileBrowser.SaveFilePanel("Save trk file", CrashdayPath + "/user/", "my_awesome_track", "trk");
 			MapParser mapParser = new MapParser();
 			mapParser.SaveMap(GetComponent<TrackManager>().CurrentTrack, path);
 	    }
