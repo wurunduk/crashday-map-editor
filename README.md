@@ -1,8 +1,8 @@
-# crashday 3D map editor
+# Crashday 3D map editor
 Crashday 3D editor made with unity.  
 Current unity version: 2018.1.0b13
 
-## HOW-TO SETUP
+## How to setup
 1. go to your crashday's data folder
  * steamapps/common/crashday/data/
 2. You need to extract data000, 002, 005, 006 cpk's to this folder, so it will look like
@@ -13,9 +13,9 @@ Current unity version: 2018.1.0b13
 
 ## Usage
 ### General
-Hold middle mouse and drag to move around.  
-Shift+middle mouse to rotate view.  
-scroll wheel to move forwards/backwards.  
+Hold middle mouse and drag to move around  
+Shift+middle mouse to rotate view  
+scroll wheel to move forwards/backwards  
 ### Place tool
 Left mouse click to place a tile  
 Right mouse to rotate  
