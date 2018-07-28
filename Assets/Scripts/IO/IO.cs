@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using UnityEditor;
+using SFB;
 using UnityEngine;
 
 public class IO
@@ -21,13 +21,13 @@ public class IO
 	        crashdayPath = PlayerPrefs.GetString("crashpath");
             if (!Directory.Exists(crashdayPath))
             {
-	            crashdayPath = EditorUtility.OpenFolderPanel("Select crashday folder", "", "");
+	            crashdayPath = StandaloneFileBrowser.OpenFolderPanel("Select crashday folder", "", false)[0];
                 PlayerPrefs.SetString("crashpath", crashdayPath);
             }
         }
         else
         {
-	        crashdayPath = EditorUtility.OpenFolderPanel("Select crashday folder", "", "");
+	        crashdayPath = StandaloneFileBrowser.OpenFolderPanel("Select crashday folder", "", false)[0];
             PlayerPrefs.SetString("crashpath", crashdayPath);
         }
 

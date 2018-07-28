@@ -23,6 +23,7 @@ $RECYCLE.BIN/
 [Oo]bj/
 [Bb]uild/
 [Bb]uilds/
+[Cc]deditor/
 Assets/AssetStoreTools*
 
 # Visual Studio cache directory
