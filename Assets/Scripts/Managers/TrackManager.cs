@@ -92,6 +92,8 @@ public class TrackManager : MonoBehaviour
 		}
 
 		LoadTrack(newTrack);
+
+		GetComponent<ToolManager>().OnMapSizeChange();
 	}
 
 	public void SetTileByAtlasId(ushort atlasId, IntVector2 position)
@@ -183,6 +185,8 @@ public class TrackManager : MonoBehaviour
 				UpdateTileAt(x, y);
             }
         }
+
+	    GetComponent<ToolManager>().OnMapSizeChange();
 
 	    CurrentTrackState = TrackState.TracckLoaded;
     }

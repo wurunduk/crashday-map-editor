@@ -15,6 +15,12 @@ public class ToolManager : MonoBehaviour
 	private List<ToolGeneral> _tools;
 	private ToolGeneral _currentTool;
 
+	public void OnMapSizeChange()
+	{
+		if(_currentTool != null)
+			_currentTool.OnMapSizeChange();
+	}
+
 	void Awake()
 	{
 		_trackManager = GetComponent<TrackManager>();

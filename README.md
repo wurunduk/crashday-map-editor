@@ -5,8 +5,8 @@ Current unity version: 2018.1.0b13
 ## How to setup
 1. go to your crashday's data folder
  * steamapps/common/crashday/data/
-2. You need to extract data000, 002, 005, 006 cpk's to this folder, so it will look like
- crashay/data/content/ *files*
+2. You need to extract data000, 002, 005, 006 cpk's to this folder  
+ (take the content folders from the dat---'s and put them in the /data folder)
 3. Additinally you can install mods by finding their archives and unzipping them too (Highly untested!)
 4. Launch the editor
 5. First time editor will ask for the CD installation folder (the one with the .exe)
@@ -15,7 +15,7 @@ Current unity version: 2018.1.0b13
 ### General
 Hold middle mouse and drag to move around  
 Shift+middle mouse to rotate view  
-scroll wheel to move forwards/backwards  
+Scroll wheel to move forwards/backwards  
 ### Place tool
 Left mouse click to place a tile  
 Right mouse to rotate  

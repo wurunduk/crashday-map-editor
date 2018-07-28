@@ -42,6 +42,11 @@ public abstract class ToolGeneral
 	{
 	}
 
+	public virtual void OnMapSizeChange()
+	{
+
+	}
+
 	public virtual void OnMouseOverTile(IntVector2 point)
 	{
 	}

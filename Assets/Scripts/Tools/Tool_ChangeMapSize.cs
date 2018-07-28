@@ -71,6 +71,11 @@ public class Tool_ChangeMapSize : ToolGeneral
 		}
 	}
 
+	public override void OnMapSizeChange()
+	{
+		ResetSizeChangers();
+	}
+
 	private int S(int a, int firstChoice, int secChoice, int thirdChoice)
 	{
 		if (a < 0) 
