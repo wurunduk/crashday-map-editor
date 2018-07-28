@@ -19,29 +19,4 @@ public class Tool_TerrainEdit : ToolGeneral
 	{
 		TerrainManager.Terrain.GetComponent<MeshRenderer>().enabled = false;
 	}
-
-	public override void OnRMBDown(Vector2 point)
-	{
-		
-	}
-
-	public override void OnLMBDown(Vector2 point)
-	{
-		
-	}
-
-	public override void OnMouseOverTile(IntVector2 point)
-	{
-	
-	}
-
-	public override void Update()
-	{
-		
-	}
-
-	public override void UpdateGUI()
-	{
-		
-	}
 }

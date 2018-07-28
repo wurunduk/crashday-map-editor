@@ -14,15 +14,43 @@ public abstract class ToolGeneral
 
 	public GameObject ModelPrefab;
 
-	public abstract void Initialize();
+	public virtual void Initialize()
+	{
+	}
 
-	public abstract void OnSelected();
-	public abstract void OnDeselected();
+	public virtual void OnSelected()
+	{
+	}
 
-	public abstract void OnLMBDown(Vector2 point);
-	public abstract void OnRMBDown(Vector2 point);
+	public virtual void OnDeselected()
+	{
+	}
 
-	public abstract void OnMouseOverTile(IntVector2 point);
-	public abstract void UpdateGUI();
-	public abstract void Update();
+	public virtual void OnLMBDown(Vector2 point)
+	{
+	}
+
+	public virtual void OnLMB(Vector2 point)
+	{
+	}
+
+	public virtual void OnRMBDown(Vector2 point)
+	{
+	}
+
+	public virtual void OnRMB(Vector2 point)
+	{
+	}
+
+	public virtual void OnMouseOverTile(IntVector2 point)
+	{
+	}
+
+	public virtual void UpdateGUI()
+	{
+	}
+
+	public virtual void Update()
+	{
+	}
 }

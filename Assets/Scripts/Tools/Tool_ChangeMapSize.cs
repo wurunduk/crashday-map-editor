@@ -38,17 +38,20 @@ public class Tool_ChangeMapSize : ToolGeneral
 		}
 	}
 
-	private void ResetSizeChanges()
+	private void ResetSizeChangers()
 	{
 		_addRight = _oldAddLeft = 0;
 		_addLeft  = _oldAddLeft = 0;
 		_addDown = _oldAddDown = 0;
 		_addUp = _oldAddUp = 0;
+
+		for(int i = 0; i < 9; i++)
+			UpdateMapSizer(i);
 	}
 
 	public override void OnSelected()
 	{
-		ResetSizeChanges();
+		ResetSizeChangers();
 
 		for (int i = 0; i < 9; i++)
 		{
@@ -66,21 +69,6 @@ public class Tool_ChangeMapSize : ToolGeneral
 		{
 			_mapSizers[i].GetComponent<MeshRenderer>().enabled = false;
 		}
-	}
-
-	public override void OnRMBDown(Vector2 point)
-	{
-		
-	}
-
-	public override void OnLMBDown(Vector2 point)
-	{
-		
-	}
-
-	public override void OnMouseOverTile(IntVector2 point)
-	{
-
 	}
 
 	private int S(int a, int firstChoice, int secChoice, int thirdChoice)
@@ -166,9 +154,7 @@ public class Tool_ChangeMapSize : ToolGeneral
 		if (GUI.Button(new Rect(5, 160 + 410, 330, 45), "APPLY"))
 		{
 			TrackManager.UpdateTrackSize(_addLeft, _addRight, _addUp, _addDown);
-			ResetSizeChanges();
-			for(int i = 0; i < 9; i++)
-				UpdateMapSizer(i);
+			ResetSizeChangers();
 		}
 	}
 

@@ -30,11 +30,6 @@ public class Tool_TileRemove : ToolGeneral
 		SomePrefab.GetComponent<MeshRenderer>().enabled = false;
 	}
 
-	public override void OnRMBDown(Vector2 point)
-	{
-		
-	}
-
 	public override void OnLMBDown(Vector2 point)
 	{
 		TrackManager.SetTileByAtlasId(0, _gridPosition);
@@ -48,15 +43,5 @@ public class Tool_TileRemove : ToolGeneral
 		}
 
 		SomePrefab.transform.position = new Vector3(point.x*TrackManager.TileSize, 5, -1*point.y*TrackManager.TileSize);
-	}
-
-	public override void Update()
-	{
-
-	}
-
-	public override void UpdateGUI()
-	{
-		
 	}
 }

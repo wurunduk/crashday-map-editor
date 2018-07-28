@@ -102,7 +102,13 @@ public class ToolManager : MonoBehaviour
 		if(Input.GetMouseButtonDown(0))
 			_currentTool.OnLMBDown(pos);
 
+		if(Input.GetMouseButton(0))
+			_currentTool.OnLMB(pos);
+
 		if(Input.GetMouseButtonDown(1))
 			_currentTool.OnRMBDown(pos);
+
+		if(Input.GetMouseButton(1))
+			_currentTool.OnRMB(pos);
 	}
 }
