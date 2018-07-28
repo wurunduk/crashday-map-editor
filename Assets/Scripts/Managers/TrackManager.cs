@@ -21,6 +21,8 @@ public class TrackManager : MonoBehaviour
 
     public static int TileSize = 20;
 
+	public static int MaxMapSizeLimit = 2000;
+
 	private TileManager _tm;
 
 	void Awake()

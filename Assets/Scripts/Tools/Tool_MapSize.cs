@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Tool_ChangeMapSize : ToolGeneral
+public class Tool_MapSize : ToolGeneral
 {
 	public int SelectedTileId;
 
@@ -105,84 +105,77 @@ public class Tool_ChangeMapSize : ToolGeneral
 
 	public override void Update()
 	{
-		if (_oldAddLeft != _addLeft)
-		{
-			_oldAddLeft = _addLeft;
-			UpdateMapSizer(0);
-			UpdateMapSizer(3);
-			UpdateMapSizer(6);
-		}
+		
+	}
 
-		if (_oldAddRight != _addRight)
+	public override void UpdateGUI(Rect guiRect)
+	{
+		GUI.Label(new Rect(guiRect.x, guiRect.y, 60, 30), "Right");
+		if(CustomGuiControls.DrawIntSlider(new Rect(guiRect.x + 65, guiRect.y, 60, 30), ref _addRight))
 		{
+			int newWidth = TrackManager.CurrentTrack.Width + _addLeft + _addRight;
+			int newHeight = TrackManager.CurrentTrack.Height + _addUp + _addDown;
+			if ( newWidth <= 2 || newHeight*newWidth > TrackManager.MaxMapSizeLimit)
+				_addRight = _oldAddRight;
+
 			_oldAddRight = _addRight;
 			UpdateMapSizer(2);
 			UpdateMapSizer(5);
 			UpdateMapSizer(8);
 		}
 
-		if (_oldAddUp != _addUp)
+		GUI.Label(new Rect(guiRect.x, guiRect.y + 40, 60, 30), "Left");
+		if (CustomGuiControls.DrawIntSlider(new Rect(guiRect.x + 65, guiRect.y + 40, 60, 30), ref _addLeft))
 		{
+			int newWidth = TrackManager.CurrentTrack.Width + _addLeft + _addRight;
+			int newHeight = TrackManager.CurrentTrack.Height + _addUp + _addDown;
+			if ( newWidth <= 2 || newHeight*newWidth > TrackManager.MaxMapSizeLimit)
+				_addLeft = _oldAddLeft;
+
+			_oldAddLeft = _addLeft;
+			UpdateMapSizer(0);
+			UpdateMapSizer(3);
+			UpdateMapSizer(6);
+		}
+
+		GUI.Label(new Rect(guiRect.x, guiRect.y + 80, 60, 30), "Up");
+		if (CustomGuiControls.DrawIntSlider(new Rect(guiRect.x + 65, guiRect.y + 80, 60, 30), ref _addUp))
+		{
+			int newWidth = TrackManager.CurrentTrack.Width + _addLeft + _addRight;
+			int newHeight = TrackManager.CurrentTrack.Height + _addUp + _addDown;
+			if ( newHeight <= 2 || newHeight*newWidth > TrackManager.MaxMapSizeLimit)
+				_addUp = _oldAddUp;
+
 			_oldAddUp = _addUp;
 			UpdateMapSizer(0);
 			UpdateMapSizer(1);
 			UpdateMapSizer(2);
 		}
 
-		if (_oldAddDown != _addDown)
+		GUI.Label(new Rect(guiRect.x, guiRect.y + 120, 60, 30), "Down");
+		if(CustomGuiControls.DrawIntSlider(new Rect(guiRect.x + 65, guiRect.y + 120, 60, 30), ref _addDown))
 		{
+			int newWidth = TrackManager.CurrentTrack.Width + _addLeft + _addRight;
+			int newHeight = TrackManager.CurrentTrack.Height + _addUp + _addDown;
+			if ( newHeight <= 2 || newHeight*newWidth > TrackManager.MaxMapSizeLimit)
+				_addDown = _oldAddDown;
+
 			_oldAddDown = _addDown;
 			UpdateMapSizer(6);
 			UpdateMapSizer(7);
 			UpdateMapSizer(8);
 		}
-	}
 
-	public override void UpdateGUI()
-	{
-		GUI.Label(new Rect(5, 160, 60, 30), "Right");
-		_addRight = DrawIntSlider(_addRight, new Rect(5 + 65, 160, 60, 30));
+		GUI.Label(new Rect(guiRect.x, guiRect.y + 160, guiRect.width, 100),
+			"Current map size: " + TrackManager.CurrentTrack.Width + "x" + TrackManager.CurrentTrack.Height + 
+			" = " + (TrackManager.CurrentTrack.Height*TrackManager.CurrentTrack.Width)+ "\n\n" + 
+			"New map size: " + (TrackManager.CurrentTrack.Width + _addLeft + _addRight) + "x" + (TrackManager.CurrentTrack.Height + _addUp + _addDown) +
+			" = " + (TrackManager.CurrentTrack.Width + _addLeft + _addRight)*(TrackManager.CurrentTrack.Height + _addDown + _addUp)+"/"+TrackManager.MaxMapSizeLimit);
 
-		GUI.Label(new Rect(5, 160 + 40, 60, 30), "Left");
-		_addLeft = DrawIntSlider(_addLeft, new Rect(5 + 65, 160 + 40, 60, 30));
-
-		GUI.Label(new Rect(5, 160 + 80, 60, 30), "Up");
-		_addUp = DrawIntSlider(_addUp, new Rect(5 + 65, 160 + 80, 60, 30));
-
-		GUI.Label(new Rect(5, 160 + 120, 60, 30), "Down");
-		_addDown = DrawIntSlider(_addDown, new Rect(5 + 65, 160 + 120, 60, 30));
-
-		GUI.Label(new Rect(5, 160 + 160, 200, 330),
-			"Current map size: " + TrackManager.CurrentTrack.Width + "x" + TrackManager.CurrentTrack.Height + "\n" + 
-			"New map size: " + (TrackManager.CurrentTrack.Width + _addLeft + _addRight) + "x" + (TrackManager.CurrentTrack.Height + _addUp + _addDown));
-
-		if (GUI.Button(new Rect(5, 160 + 410, 330, 45), "APPLY"))
+		if (GUI.Button(new Rect(guiRect.x, guiRect.y + 220, guiRect.width, 45), "APPLY"))
 		{
 			TrackManager.UpdateTrackSize(_addLeft, _addRight, _addUp, _addDown);
 			ResetSizeChangers();
 		}
-	}
-
-	public static int DrawIntSlider(int number, Rect position)
-	{
-
-		string fieldText = GUI.TextField(new Rect(position.x + 30, position.y, 85, 25), number.ToString());
-
-		int answer;
-
-		//if we completely removed everything from the field, change it to 0
-		if (string.IsNullOrEmpty(fieldText))
-			fieldText = "0";
-
-		if(!int.TryParse(fieldText, out answer))
-			answer = number;
-
-		if (GUI.Button(new Rect(position.x, position.y, 25, 25), "-"))
-			answer -= 1;
-
-		if (GUI.Button(new Rect(position.x + 120, position.y, 25, 25), "+"))
-			answer += 1;
-
-		return answer;
 	}
 }

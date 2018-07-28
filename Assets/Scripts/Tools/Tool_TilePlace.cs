@@ -72,14 +72,15 @@ public class Tool_TilePlace : ToolGeneral
 		}
 	}
 
-	public override void UpdateGUI()
+	public override void UpdateGUI(Rect guiRect)
 	{
-		GUI.Label(new Rect(5, 140, 300, 20), "Current tile: " + _currentTile.FieldName);
+		GUI.Label(new Rect(guiRect.x, guiRect.y, guiRect.width, 20), "Current tile: " + _currentTile.FieldName);
 
-		_scrollPosition = GUI.BeginScrollView(new Rect(5, 160, 330, Screen.height - 165), _scrollPosition, new Rect(5, 160, 310, (TileManager.TileList.Count/3 + 1) * 24), false, false);
+		_scrollPosition = GUI.BeginScrollView(new Rect(guiRect.x, guiRect.y + 25, guiRect.width, Screen.height - 165), _scrollPosition, 
+			new Rect(guiRect.x, guiRect.y + 25, guiRect.width-10, (TileManager.TileList.Count/3 + 1) * 24), false, false);
 		for (int i = 0; i < TileManager.TileList.Count; i++)
 		{
-			if (GUI.Button(new Rect(5 + (i%3)*105, 160 + 24 * (i/3), 100, 22), TileManager.TileList[i].Name.Remove(TileManager.TileList[i].Name.Length-4)))
+			if (GUI.Button(new Rect(guiRect.x + (i%3)*105, guiRect.y + 25 + 24 * (i/3), guiRect.width/3 - 10, 22), TileManager.TileList[i].Name.Remove(TileManager.TileList[i].Name.Length-4)))
 			{
 				SelectTile(i);
 			}

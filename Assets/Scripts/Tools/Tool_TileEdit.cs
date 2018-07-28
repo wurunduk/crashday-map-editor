@@ -28,5 +28,5 @@ public class Tool_TileEdit : ToolGeneral
 
 	public override void Update() {}
 
-	public override void UpdateGUI() {}
+	public override void UpdateGUI(Rect guiRect) {}
 }

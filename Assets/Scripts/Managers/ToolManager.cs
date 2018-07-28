@@ -32,7 +32,8 @@ public class ToolManager : MonoBehaviour
 
 	void Start ()
 	{
-		InitializeTool(new Tool_ChangeMapSize());
+		InitializeTool(new Tool_MapSettings());
+		InitializeTool(new Tool_MapSize());
 		InitializeTool(new Tool_TilePlace());
 		InitializeTool(new Tool_TileRemove());
 		InitializeTool(new Tool_TerrainEdit());
@@ -60,7 +61,7 @@ public class ToolManager : MonoBehaviour
 		//draw button for every tool
 		foreach (var tool in _tools)
 		{
-			if (GUI.Button(new Rect(5, 22 * (i++) + 45, 100, 20), tool.ToolName))
+			if (GUI.Button(new Rect(5 + (i%3)*105, 22 * (i++/3) + 45, 100, 20), tool.ToolName))
 			{
 				_currentTool.OnDeselected();
 				_currentTool = tool;
@@ -69,7 +70,7 @@ public class ToolManager : MonoBehaviour
 		}
 
 		//draw gui of the current tool
-		_currentTool.UpdateGUI();
+		_currentTool.UpdateGUI(new Rect(5, 22 * (i++) + 45, 330, Screen.height));
 	}
 	
 	void Update ()

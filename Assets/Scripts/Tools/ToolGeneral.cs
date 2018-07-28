@@ -51,7 +51,7 @@ public abstract class ToolGeneral
 	{
 	}
 
-	public virtual void UpdateGUI()
+	public virtual void UpdateGUI(Rect guiRect)
 	{
 	}
 
