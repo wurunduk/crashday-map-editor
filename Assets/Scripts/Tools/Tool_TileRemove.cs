@@ -20,6 +20,7 @@ public class Tool_TileRemove : ToolGeneral
 	public override void OnSelected()
 	{
 		SomePrefab.GetComponent<MeshFilter>().mesh = MeshGenerator.GenerateCubeMesh(3, new Vector3(20, 10, 20));
+		TerrainManager.ApplyTerrainToMesh(SomePrefab.GetComponent<MeshFilter>().mesh, _gridPosition, 0, new IntVector2(1,1), false);
 		SomePrefab.GetComponent<MeshRenderer>().materials = new[]{_mat};
 
 		SomePrefab.GetComponent<MeshRenderer>().enabled = true;
@@ -30,7 +31,7 @@ public class Tool_TileRemove : ToolGeneral
 		SomePrefab.GetComponent<MeshRenderer>().enabled = false;
 	}
 
-	public override void OnLMBDown(Vector2 point)
+	public override void OnLMBDown(Vector3 point)
 	{
 		TrackManager.SetTileByAtlasId(0, _gridPosition);
 	}
@@ -40,8 +41,9 @@ public class Tool_TileRemove : ToolGeneral
 		if (_gridPosition.x != point.x || _gridPosition.y != point.y)
 		{
 			_gridPosition = point;
+			SomePrefab.transform.position = new Vector3(point.x*TrackManager.TileSize, 5, -1*point.y*TrackManager.TileSize);
+			SomePrefab.GetComponent<MeshFilter>().mesh = MeshGenerator.GenerateCubeMesh(3, new Vector3(20, 10, 20));
+			TerrainManager.ApplyTerrainToMesh(SomePrefab.GetComponent<MeshFilter>().mesh, _gridPosition, 0, new IntVector2(1,1), false);
 		}
-
-		SomePrefab.transform.position = new Vector3(point.x*TrackManager.TileSize, 5, -1*point.y*TrackManager.TileSize);
 	}
 }

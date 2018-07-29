@@ -77,22 +77,7 @@ public class ToolManager : MonoBehaviour
 	{
 		if (!_tileManager.Loaded || _trackManager.CurrentTrackState == TrackManager.TrackState.TrackEmpty) return;
 
-		//get the point on the Terrain where our mouse currenlty points
-		Ray ray = Camera.main.ScreenPointToRay(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0));
-		RaycastHit info;
-		Vector3 pos;
-		if (_terrainManager.Terrain.GetComponent<MeshCollider>().Raycast(ray, out info, float.MaxValue))
-		{
-			pos = info.point;
-		}
-		else
-		{
-			Plane plane = new Plane(Vector3.up, Vector3.zero);
-			float outFloat;
-			plane.Raycast(ray, out outFloat);
-			pos = ray.GetPoint(outFloat);
-		}
-		
+		Vector3 pos = _terrainManager.GetMousePointOnTerrain();
 
 		//calcualte tile position from position on the terrain
 		IntVector2 newGridPosition = new IntVector2(Mathf.Clamp(Mathf.RoundToInt(pos.x / 20), 0, _trackManager.CurrentTrack.Width-1), 

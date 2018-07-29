@@ -16,13 +16,13 @@ public class Tool_TileEdit : ToolGeneral
 
 	public override void OnDeselected() {}
 
-	public override void OnRMBDown(Vector2 point) {}
+	public override void OnRMBDown(Vector3 point) {}
 
-	public override void OnLMBDown(Vector2 point) {}
+	public override void OnLMBDown(Vector3 point) {}
 
-	public override void OnLMB(Vector2 point) { }
+	public override void OnLMB(Vector3 point) { }
 
-	public override void OnRMB(Vector2 point) { }
+	public override void OnRMB(Vector3 point) { }
 
 	public override void OnMouseOverTile(IntVector2 point) {}
 

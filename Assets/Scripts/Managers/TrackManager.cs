@@ -24,10 +24,12 @@ public class TrackManager : MonoBehaviour
 	public static int MaxMapSizeLimit = 2000;
 
 	private TileManager _tm;
+	private TerrainManager _terrainManager;
 
 	void Awake()
 	{
 		_tm = GetComponent<TileManager>();
+		_terrainManager = GetComponent<TerrainManager>();
 	}
 
 
@@ -149,7 +151,7 @@ public class TrackManager : MonoBehaviour
 			Tiles[y][x].GetComponent<Renderer>().materials = _tm.TileList[index].Materials.ToArray();
 
 			//Tile tile = Tiles[y][x].AddComponent<Tile>();
-			Tiles[y][x].GetComponent<Tile>().SetupTile(CurrentTrack.TrackTiles [y][x], _tm.TileList[index].Size, new IntVector2(x, y), this, _tm.TileList[index].Name);
+			Tiles[y][x].GetComponent<Tile>().SetupTile(CurrentTrack.TrackTiles [y][x], _tm.TileList[index].Size, new IntVector2(x, y), _terrainManager, _tm.TileList[index].Name);
 			Tiles[y][x].GetComponent<Tile>().ForceVerticiesUpdate();
 			Tiles[y][x].GetComponent<Tile>().ApplyTerrain();
 		}

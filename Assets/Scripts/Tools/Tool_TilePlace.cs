@@ -20,7 +20,7 @@ public class Tool_TilePlace : ToolGeneral
 	{
 		SomePrefab.GetComponent<MeshRenderer>().enabled = true;
 		_currentTile = SomePrefab.GetComponent<Tile>();
-		_currentTile.SetupTile(new TrackTileSavable(), new IntVector2(1,1), new IntVector2(0,0), TrackManager, "field.cfl");
+		_currentTile.SetupTile(new TrackTileSavable(), new IntVector2(1,1), new IntVector2(0,0), TerrainManager, "field.cfl");
 
 		SelectTile(1);
 	}
@@ -33,13 +33,13 @@ public class Tool_TilePlace : ToolGeneral
 			TrackManager.Tiles[_gridPosition.y][_gridPosition.x].GetComponent<Renderer>().enabled = true;
 	}
 
-	public override void OnRMBDown(Vector2 point)
+	public override void OnRMBDown(Vector3 point)
 	{
 		_currentTile.Rotate();
 		_currentTile.ApplyTerrain();
 	}
 
-	public override void OnLMBDown(Vector2 point)
+	public override void OnLMBDown(Vector3 point)
 	{
 		TrackManager.SetTile(_currentTile);
 	}
@@ -101,7 +101,7 @@ public class Tool_TilePlace : ToolGeneral
 
 		SomePrefab.position = new Vector3(SomePrefab.position.x, TileManager.TileList[i].Model.P3DMeshes[0].Height / 2, SomePrefab.position.z);
 
-		_currentTile.SetupTile(new TrackTileSavable(), TileManager.TileList[i].Size, _gridPosition, TrackManager, TileManager.TileList[i].Name);
+		_currentTile.SetupTile(new TrackTileSavable(), TileManager.TileList[i].Size, _gridPosition, TerrainManager, TileManager.TileList[i].Name);
 		_currentTile.ForceVerticiesUpdate();
 		_currentTile.ApplyTerrain();
 	}

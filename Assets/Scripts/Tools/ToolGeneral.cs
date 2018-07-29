@@ -26,19 +26,19 @@ public abstract class ToolGeneral
 	{
 	}
 
-	public virtual void OnLMBDown(Vector2 point)
+	public virtual void OnLMBDown(Vector3 point)
 	{
 	}
 
-	public virtual void OnLMB(Vector2 point)
+	public virtual void OnLMB(Vector3 point)
 	{
 	}
 
-	public virtual void OnRMBDown(Vector2 point)
+	public virtual void OnRMBDown(Vector3 point)
 	{
 	}
 
-	public virtual void OnRMB(Vector2 point)
+	public virtual void OnRMB(Vector3 point)
 	{
 	}
 
