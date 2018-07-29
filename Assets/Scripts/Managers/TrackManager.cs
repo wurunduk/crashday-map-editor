@@ -40,16 +40,21 @@ public class TrackManager : MonoBehaviour
 		newTrack.Width += (ushort) (addLeft + addRight);
 		newTrack.Height += (ushort) (addUp + addDown);
 
-		for (int i = 0; i < newTrack.CheckpointsNumber; i++)
+		List<ushort> newCPs = new List<ushort>();
+
+		for (int i = 0; i < CurrentTrack.CheckpointsNumber; i++)
 		{
-			int newPosX = newTrack.Checkpoints[i] % CurrentTrack.Width;
-			int newPosY = newTrack.Checkpoints[i] / CurrentTrack.Height;
+			int newPosX = CurrentTrack.Checkpoints[i] % CurrentTrack.Width;
+			int newPosY = CurrentTrack.Checkpoints[i] / CurrentTrack.Height;
 
 			newPosX += addLeft;
 			newPosY += addUp;
-
-			newTrack.Checkpoints[i] = (ushort)(newPosY * newTrack.Width + newPosX);
+			if(newPosX >= 0 && newPosX < newTrack.Width && newPosY >= 0 && newPosY < newTrack.Height)
+				newCPs.Add((ushort)(newPosY * newTrack.Width + newPosX));
 		}
+
+		newTrack.CheckpointsNumber = (ushort)newCPs.Count;
+		newTrack.Checkpoints = newCPs;
 
 
 		newTrack.TrackTiles = new List<List<TrackTileSavable>>(newTrack.Height);
@@ -60,7 +65,7 @@ public class TrackManager : MonoBehaviour
 			for (int x = 0; x < newTrack.Width; x++)
 			{
 				TrackTileSavable tile;
-				if (x - addLeft > 0 && y - addUp > 0 && x - addLeft < CurrentTrack.Width && y - addUp < CurrentTrack.Height)
+				if (x - addLeft >= 0 && y - addUp >= 0 && x - addLeft < CurrentTrack.Width && y - addUp < CurrentTrack.Height)
 				{
 					tile = new TrackTileSavable(CurrentTrack.TrackTiles[y-addUp][x-addLeft]);
 				}
@@ -82,7 +87,7 @@ public class TrackManager : MonoBehaviour
 			newTrack.Heightmap.Add(new List<float>(newTrack.Width*4+1));
 			for (int x = 0; x < newTrack.Width*4+1; x++)
 			{
-				if (x + addLeft*4 > 0 && y + addUp*4 > 0 && x + addLeft*4 < CurrentTrack.Width*4+1 && y + addUp*4 < CurrentTrack.Height*4+1)
+				if (x + addLeft*4 >= 0 && y + addUp*4 >= 0 && x + addLeft*4 < CurrentTrack.Width*4+1 && y + addUp*4 < CurrentTrack.Height*4+1)
 				{
 					newTrack.Heightmap[y].Add(CurrentTrack.Heightmap[y + addUp*4][x + addLeft*4]);
 				}
