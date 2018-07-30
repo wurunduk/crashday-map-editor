@@ -68,7 +68,11 @@ public class Tool_TerrainEdit : ToolGeneral
 						//add all tiles to _selectedtileslist
 						CreateSelectedCube(new IntVector2(x,y));
 					}
-				}	
+				}
+
+				for (int y = 0; y < TrackManager.CurrentTrack.Height; y++)
+					for(int x = 0; x < TrackManager.CurrentTrack.Width; x++)
+						_currentSelectedTiles.Add(new IntVector2(x,y));
 			}
 		}
 	}
@@ -133,14 +137,16 @@ public class Tool_TerrainEdit : ToolGeneral
 				if (gridPosition.x % 4 == 0 && gridPosition.x > 0)
 				{
 					tilePos.x -= 1;
-					ax += 1;
+					if(gridPosition.x != TrackManager.CurrentTrack.Width*4)
+						ax += 1;
 				}
 
 
 				if (gridPosition.y % 4 == 0 && gridPosition.y > 0)
 				{
 					tilePos.y -= 1;
-					ay += 1;
+					if(gridPosition.y != TrackManager.CurrentTrack.Height*4)
+						ay += 1;
 				}
 
 				for(int y = 0; y <= ay; y++)
