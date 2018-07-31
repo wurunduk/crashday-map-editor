@@ -96,7 +96,7 @@ public class Tool_TilePlace : ToolGeneral
 
 		TileManager.LoadModelForTileId(i);
 
-		Mesh m = TileManager.TileList[i].Model.CreateMeshes()[0];
+		Mesh m = TileManager.TileList[i].Model.CreateMesh();
 		SomePrefab.GetComponent<MeshFilter>().mesh = m;
 		SomePrefab.GetComponent<Renderer>().materials = TileManager.TileList[i].Materials.ToArray();
 

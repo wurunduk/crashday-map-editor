@@ -145,7 +145,7 @@ public class TrackManager : MonoBehaviour
 			Tiles[y][x].name = x + ":" + y + " " + _tm.TileList[index].Name;
 
 			//set the model and textures for the tile
-			Mesh m = _tm.TileList[index].Model.CreateMeshes()[0];
+			Mesh m = _tm.TileList[index].Model.CreateMesh();
 			Tiles[y][x].GetComponent<MeshFilter>().mesh = m;
 			Tiles[y][x].GetComponent<Renderer>().materials = _tm.TileList[index].Materials.ToArray();
 

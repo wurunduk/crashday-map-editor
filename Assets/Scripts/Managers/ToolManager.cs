@@ -32,10 +32,9 @@ public class ToolManager : MonoBehaviour
 
 	void Start ()
 	{
-		InitializeTool(new Tool_TilePlace());
 		InitializeTool(new Tool_MapSettings());
 		InitializeTool(new Tool_MapSize());
-		
+		InitializeTool(new Tool_TilePlace());
 		InitializeTool(new Tool_TileRemove());
 		InitializeTool(new Tool_TerrainEdit());
 

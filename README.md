@@ -31,7 +31,7 @@ A - deselect all points if selected, select all points if none are selected
 1. ~~Heightmaps loading~~(done)
  * Some tiles still have holes when connecting
 2. ~~Texture loading~~(partialy done)
- * Needs correct UV loading
+ * Needs UV loading
 3. ~~Adding tile tools~~
 4. ~~Adding terrain tools~~
 5. Checkpoint tools

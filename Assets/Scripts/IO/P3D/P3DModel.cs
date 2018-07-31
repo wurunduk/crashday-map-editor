@@ -132,12 +132,31 @@ public class P3DModel
 
 	public Material CreateMaterial(int id)
 	{
+		Material mat = new Material(Shader.Find("Standard"));
 		byte[] data = System.IO.File.ReadAllBytes(IO.GetCrashdayPath() + "/data/content/textures/" + P3DRenderInfo[id].TextureFile.Remove(P3DRenderInfo[id].TextureFile.Length - 4) + ".dds");
 		Texture2D tex = LoadTextureDXT(data, TextureFormat.DXT5);
+		if (P3DRenderInfo[id].TextureFile.Contains("transp"))
+		{
+			mat.SetColor("_Color", Color.clear);
+			mat.SetFloat("_Mode", 2);
+			
+			mat.SetInt("_ZWrite", 0);
+			mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+			mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
 
-		Material mat = new Material(Shader.Find("Standard"));
-		mat.SetFloat("_Glossiness", 0);
+			mat.DisableKeyword("_ALPHATEST_ON");
+			mat.EnableKeyword("_ALPHABLEND_ON");
+			mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+
+			mat.renderQueue = 3000;
+		}
+		else
+		{
+			mat.SetFloat("_Glossiness", 0);
+		}
+
 		mat.mainTexture = tex;
+		
 		return mat;
 	}
 
@@ -147,83 +166,55 @@ public class P3DModel
 
 		m.subMeshCount = P3DNumTextures;
 
+		List<Vector3> vertices = new List<Vector3>();
+		//List<Vector2> uv = new List<Vector2>();
+		List<List<int>> tri = new List<List<int>>();
+
+		List<string> textures = new List<string>();
+
+		for (int n = 0; n < P3DNumTextures; n++)
+		{
+			textures.Add(P3DRenderInfo[n].TextureFile);
+			tri.Add(new List<int>());
+		}
+
+		int pointOffset = 0;
+
 		for (int i = 0; i < P3DNumMeshes; i++)
 		{
+			//avoid loading LODs
+			if(P3DMeshes[i].Name.Contains(".0") || P3DMeshes[i].Name.Contains(".1") || P3DMeshes[i].Name.Contains(".2") || P3DMeshes[i].Name.Contains(".3")
+			   || P3DMeshes[i].Name.Contains(".4")) continue;
 
+			for (int v = 0; v < P3DMeshes[i].NumVertices; v++)
+			{
+				vertices.Add(P3DMeshes[i].Vertex[v] + P3DMeshes[i].LocalPos);
+			}
+
+			for (int v = 0; v < P3DMeshes[i].NumPolys; v++)
+			{
+				int index = textures.FindIndex(x => x.Contains(P3DMeshes[i].Poly[v].Texture));
+				tri[index].Add(pointOffset + P3DMeshes[i].Poly[v].P1);
+				tri[index].Add(pointOffset + P3DMeshes[i].Poly[v].P2);
+				tri[index].Add(pointOffset + P3DMeshes[i].Poly[v].P3);
+
+				//uv.Add(new Vector2(P3DMeshes[i].Poly[v].U1, P3DMeshes[i].Poly[v].V1));
+			}
+
+			pointOffset += P3DMeshes[i].NumVertices;
 		}
+
+
+		m.SetVertices(vertices);
+		//m.SetUVs(0, uv);
+		for (int n = 0; n < P3DNumTextures; n++)
+		{
+			m.SetTriangles(tri[n], n);
+		}
+
+		m.RecalculateNormals();
+		m.RecalculateBounds();
 
 		return m;
 	}
-
-    public Mesh[] CreateMeshes()
-    {
-        Mesh[] m = new Mesh[P3DNumMeshes];
-        for (int i = 0; i < P3DNumMeshes; i++)
-        {
-			//REMOVE THIS***************************************************************************************************************************///
-			//MADE FOR FASTER TESTING ONLY
-			//
-	        if (i != 0) continue;
-
-            Mesh newMesh = new Mesh();
-            newMesh.name = P3DMeshes[i].Name;
-
-			//unity requires models to have the same amount of vertices as polys.
-            int size = 0;
-            if (P3DMeshes[i].NumVertices > P3DMeshes[i].NumPolys)
-            {
-                size = P3DMeshes[i].NumVertices;
-            }
-            else
-            {
-                size = P3DMeshes[i].NumPolys;
-            }
-
-
-            Vector3[] verts = new Vector3[size];
-            for (int v = 0; v < P3DMeshes[i].NumVertices; v++)
-            {
-                verts[v] = P3DMeshes[i].Vertex[v];
-            }
-            for (int v = P3DMeshes[i].NumVertices; v < size; v++)
-            {
-				verts[v] = new Vector3(0f,0f,0f);
-            }
-
-            newMesh.vertices = verts;
-
-	        List<string> textures = new List<string>();
-	        List<Vector2> uv = new List<Vector2>();
-	        List<List<int>> tri = new List<List<int>>();
-	        for (int n = 0; n < P3DNumTextures; n++)
-	        {
-		        textures.Add(P3DRenderInfo[n].TextureFile);
-				tri.Add(new List<int>());
-	        }
-
-            for (int v = 0; v < P3DMeshes[i].NumPolys; v++)
-            {
-	            int index = textures.FindIndex(x => x.Contains(P3DMeshes[i].Poly[v].Texture));
-                tri[index].Add(P3DMeshes[i].Poly[v].P1);
-                tri[index].Add(P3DMeshes[i].Poly[v].P2);
-                tri[index].Add(P3DMeshes[i].Poly[v].P3);
-
-		        uv.Add(new Vector2(P3DMeshes[i].Poly[v].U1, P3DMeshes[i].Poly[v].V1));
-            }
-
-	        newMesh.subMeshCount = P3DNumTextures;
-
-	        newMesh.SetUVs(0, uv);
-	        for (int n = 0; n < P3DNumTextures; n++)
-	        {
-				newMesh.SetTriangles(tri[n], n);
-	        }
-
-            newMesh.RecalculateNormals();
-	        newMesh.RecalculateBounds();
-
-            m[i] = newMesh;
-        }
-        return m;
-    }
 }
