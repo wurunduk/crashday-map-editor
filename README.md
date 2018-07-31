@@ -33,14 +33,15 @@ A - deselect all points if selected, select all points if none are selected
 2. ~~Texture loading~~(partialy done)
  * Needs correct UV loading
 3. ~~Adding tile tools~~
-4. Adding terrain tools
-5. Optimisations
+4. ~~Adding terrain tools~~
+5. Checkpoint tools
+6. Object tools
+7. Optimisations
  * Research C# collections to faster load maps (FindIndex takes too long when loading maps)
-6. Better Mod tiles support
-7. Fix stupid stuff
-8. ~~Better controls~~
-9. Mobile version?
-10. Move objects and CPs after map resize
+8. Better Mod tiles support
+9. Fix stupid stuff
+10. ~~Better controls~~
+11. Move objects and CPs after map resize
  * CPs are moved now, but not tested for bugs
 
 

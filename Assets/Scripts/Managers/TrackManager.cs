@@ -145,12 +145,12 @@ public class TrackManager : MonoBehaviour
 			Tiles[y][x].name = x + ":" + y + " " + _tm.TileList[index].Name;
 
 			//set the model and textures for the tile
-			Tiles[y][x].GetComponent<MeshFilter>().mesh = _tm.TileList[index].Model.CreateMeshes()[0];
+			Mesh m = _tm.TileList[index].Model.CreateMeshes()[0];
+			Tiles[y][x].GetComponent<MeshFilter>().mesh = m;
 			Tiles[y][x].GetComponent<Renderer>().materials = _tm.TileList[index].Materials.ToArray();
 
-			//Tile tile = Tiles[y][x].AddComponent<Tile>();
 			Tiles[y][x].GetComponent<Tile>().SetupTile(CurrentTrack.TrackTiles [y][x], _tm.TileList[index].Size, new IntVector2(x, y), _terrainManager, _tm.TileList[index].Name);
-			Tiles[y][x].GetComponent<Tile>().ForceVerticiesUpdate();
+			Tiles[y][x].GetComponent<Tile>().SetOriginalVertices(m.vertices);
 			Tiles[y][x].GetComponent<Tile>().ApplyTerrain();
 		}
 	}

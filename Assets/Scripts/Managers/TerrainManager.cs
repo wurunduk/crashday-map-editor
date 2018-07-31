@@ -104,7 +104,7 @@ public class TerrainManager : MonoBehaviour
 			float dx = (vertPosX - posX);
 			float dy = (vertPosY - posY);
 
-			if ((dx + dy) <= 1)
+			if ((dx + dy) <= 1 || posX == _tm.CurrentTrack.Width*4 || posY == _tm.CurrentTrack.Height*4)
 			{
 				height = _tm.CurrentTrack.Heightmap[posY][posX];
 				if(posX != _tm.CurrentTrack.Width*4)

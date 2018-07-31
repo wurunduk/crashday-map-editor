@@ -141,6 +141,20 @@ public class P3DModel
 		return mat;
 	}
 
+	public Mesh CreateMesh()
+	{
+		Mesh m = new Mesh();
+
+		m.subMeshCount = P3DNumTextures;
+
+		for (int i = 0; i < P3DNumMeshes; i++)
+		{
+
+		}
+
+		return m;
+	}
+
     public Mesh[] CreateMeshes()
     {
         Mesh[] m = new Mesh[P3DNumMeshes];

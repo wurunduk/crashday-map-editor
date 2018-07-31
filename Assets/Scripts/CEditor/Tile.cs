@@ -78,9 +78,9 @@ public class Tile : MonoBehaviour
         UpdateTransform();
     }
 
-	public void ForceVerticiesUpdate()
+	public void SetOriginalVertices(Vector3[] original)
 	{
-		_originalVertices = null;
+		_originalVertices = original;
 	}
 
 	public void ApplyTerrain()
@@ -90,10 +90,7 @@ public class Tile : MonoBehaviour
 			return;
 		}
 
-		if (_originalVertices == null)
-			_originalVertices = GetComponent<MeshFilter>().mesh.vertices;
-
-		if(_currentVertices == null)
+		if(_currentVertices == null || _currentVertices.Length != _originalVertices.Length)
 			_currentVertices = new Vector3[_originalVertices.Length];
 
 		for (int i = 0; i < _originalVertices.Length; i++)

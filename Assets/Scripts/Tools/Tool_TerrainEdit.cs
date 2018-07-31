@@ -180,6 +180,11 @@ public class Tool_TerrainEdit : ToolGeneral
 		}
 	}
 
+	public override void UpdateGUI(Rect guiRect)
+	{
+
+	}
+
 	private void CreateSelectedCube(IntVector2 gridPosition)
 	{
 		_currentSelectedPoints.Add(gridPosition);
