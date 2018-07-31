@@ -27,7 +27,7 @@ public class Tool_MapSettings : ToolGeneral
 		position.y += 30;
 		GUI.Label(position, "Heightmap bumpyness");
 		position.x += 145;
-		if (CustomGuiControls.DrawFloatSlider(position, ref TrackManager.CurrentTrack.GroundBumpyness))
+		if (CustomGuiControls.DrawFloatSlider(position, ref TrackManager.CurrentTrack.GroundBumpyness, 0.1f))
 		{
 			TrackManager.UpdateTerrain();
 		}

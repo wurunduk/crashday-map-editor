@@ -114,7 +114,7 @@ public class Tool_TerrainEdit : ToolGeneral
 			TerrainManager.UpdateTerrain(hp);
 
 			_heightPoints[hp.x, hp.y].position = new Vector3(_heightPoints[hp.x, hp.y].position.x, 
-				TrackManager.CurrentTrack.Heightmap[hp.y][hp.x]*TrackManager.CurrentTrack.GroundBumpyness*5, 
+				TrackManager.CurrentTrack.Heightmap[hp.y][hp.x], 
 				_heightPoints[hp.x, hp.y].position.z);
 		}
 
@@ -188,7 +188,7 @@ public class Tool_TerrainEdit : ToolGeneral
 		_heightPoints[gridPosition.x, gridPosition.y].localScale = new Vector3(2,2,2);
 		_heightPoints[gridPosition.x, gridPosition.y].rotation = Quaternion.Euler(0, 45, 0);
 		_heightPoints[gridPosition.x, gridPosition.y].position = new Vector3(gridPosition.x*5 - TrackManager.TileSize/2, 
-			TrackManager.CurrentTrack.Heightmap[gridPosition.y][gridPosition.x]*TrackManager.CurrentTrack.GroundBumpyness*5, 
+			TrackManager.CurrentTrack.Heightmap[gridPosition.y][gridPosition.x], 
 			gridPosition.y*-5 + TrackManager.TileSize/2);
 
 		_heightPoints[gridPosition.x, gridPosition.y].SetParent(_heightPointsParent);

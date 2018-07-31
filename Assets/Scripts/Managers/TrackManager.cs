@@ -14,7 +14,7 @@ public class TrackManager : MonoBehaviour
 	{
 		TrackEmpty,
 		TrackStart,
-		TracckLoaded
+		TrackLoaded
 	};
 
 	public TrackState CurrentTrackState;
@@ -207,6 +207,6 @@ public class TrackManager : MonoBehaviour
 
 	    GetComponent<ToolManager>().OnMapSizeChange();
 
-	    CurrentTrackState = TrackState.TracckLoaded;
+	    CurrentTrackState = TrackState.TrackLoaded;
     }
 }

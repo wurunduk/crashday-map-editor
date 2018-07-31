@@ -85,6 +85,11 @@ public class Tile : MonoBehaviour
 
 	public void ApplyTerrain()
 	{
+		if (!GetComponent<MeshFilter>().sharedMesh)
+		{
+			return;
+		}
+
 		if (_originalVertices == null)
 			_originalVertices = GetComponent<MeshFilter>().mesh.vertices;
 

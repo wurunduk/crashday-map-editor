@@ -119,7 +119,7 @@ public class TerrainManager : MonoBehaviour
 				height += (_tm.CurrentTrack.Heightmap[posY+1][posX] - _tm.CurrentTrack.Heightmap[posY+1][posX+1]) * (1.0f - dx);
 			}
 
-			vertices[i].y += height * _tm.CurrentTrack.GroundBumpyness * 5;
+			vertices[i].y += height ;
 		}
 	}
 
@@ -131,7 +131,7 @@ public class TerrainManager : MonoBehaviour
 	public void UpdateTerrain(IntVector2 pos)
 	{
 		_terrainVertices[pos.x + (_tm.CurrentTrack.Width*4+1)*pos.y] = 
-			new Vector3(-10 + pos.x*5, _tm.CurrentTrack.Heightmap[pos.y][pos.x]*_tm.CurrentTrack.GroundBumpyness*5, 10 + pos.y*-5);
+			new Vector3(-10 + pos.x*5, _tm.CurrentTrack.Heightmap[pos.y][pos.x], 10 + pos.y*-5);
 	}
 
 	/// <summary>
@@ -156,6 +156,8 @@ public class TerrainManager : MonoBehaviour
 	/// </summary>
 	public void GenerateTerrain()
 	{
+		float max = 0, min = 0;
+
 		int sizeX = _tm.CurrentTrack.Width * 4 + 1;
 		int sizeY = _tm.CurrentTrack.Height * 4 + 1;
 
@@ -168,8 +170,14 @@ public class TerrainManager : MonoBehaviour
 		{
 			for (int x = 0; x < sizeX; x++)
 			{
+				if (max < _tm.CurrentTrack.Heightmap[y][x] )
+					max = _tm.CurrentTrack.Heightmap[y][x] ;
+
+				if (min > _tm.CurrentTrack.Heightmap[y][x])
+					min = _tm.CurrentTrack.Heightmap[y][x];
+
 				//-10 is half of the Tile size to the center the terrain. According to thethe tile is divided every 5 meters
-				_terrainVertices[x+sizeX*y] = new Vector3(-10 + x*5, _tm.CurrentTrack.Heightmap[y][x]*_tm.CurrentTrack.GroundBumpyness*5, 10 + y*-5);
+				_terrainVertices[x+sizeX*y] = new Vector3(-10 + x*5, _tm.CurrentTrack.Heightmap[y][x], 10 + y*-5);
 				normals[x + sizeX * y] = Vector3.down;
 				uvs[x+sizeX*y] = new Vector2(x*10%sizeX, y%sizeY);
 			}
@@ -199,7 +207,8 @@ public class TerrainManager : MonoBehaviour
 		m.RecalculateNormals();
 		m.RecalculateBounds();
 		Terrain.GetComponent<MeshFilter>().mesh = m;
-		
+
+		Debug.Log(max + " " + min);
 
 		Terrain.GetComponent<MeshCollider>().sharedMesh = Terrain.GetComponent<MeshFilter>().sharedMesh;
 	}
