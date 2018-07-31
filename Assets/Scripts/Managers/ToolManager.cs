@@ -32,9 +32,10 @@ public class ToolManager : MonoBehaviour
 
 	void Start ()
 	{
+		InitializeTool(new Tool_TilePlace());
 		InitializeTool(new Tool_MapSettings());
 		InitializeTool(new Tool_MapSize());
-		InitializeTool(new Tool_TilePlace());
+		
 		InitializeTool(new Tool_TileRemove());
 		InitializeTool(new Tool_TerrainEdit());
 
@@ -90,6 +91,9 @@ public class ToolManager : MonoBehaviour
 
 		//only pass click events to tools if the click was in the world and not on UI
 		if (GUIUtility.hotControl != 0) return;
+
+		if(Input.GetMouseButtonUp(0))
+			_currentTool.OnLMBUp(pos);
 
 		if(Input.GetMouseButtonDown(0))
 			_currentTool.OnLMBDown(pos);

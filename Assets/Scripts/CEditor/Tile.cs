@@ -9,7 +9,8 @@ public class Tile : MonoBehaviour
 
 	private IntVector2 _size;
 	private TerrainManager _terrainManager;
-	private Vector3[] _originalVerticies;
+	private Vector3[] _originalVertices;
+	private Vector3[] _currentVertices;
 
     public IntVector2 GridPosition;
 
@@ -79,16 +80,23 @@ public class Tile : MonoBehaviour
 
 	public void ForceVerticiesUpdate()
 	{
-		_originalVerticies = null;
+		_originalVertices = null;
 	}
 
 	public void ApplyTerrain()
 	{
-		if (_originalVerticies == null)
-			_originalVerticies = GetComponent<MeshFilter>().mesh.vertices;
+		if (_originalVertices == null)
+			_originalVertices = GetComponent<MeshFilter>().mesh.vertices;
 
-		GetComponent<MeshFilter>().mesh.vertices = _originalVerticies;
+		if(_currentVertices == null)
+			_currentVertices = new Vector3[_originalVertices.Length];
 
-		_terrainManager.ApplyTerrainToMesh(GetComponent<MeshFilter>().mesh, GridPosition, _trackTileSavable.Rotation, _size, _trackTileSavable.IsMirrored > 0 ? true : false);
+		for (int i = 0; i < _originalVertices.Length; i++)
+			_currentVertices[i] = _originalVertices[i];
+
+		_terrainManager.ApplyTerrainToMesh(ref _currentVertices, GridPosition, _trackTileSavable.Rotation, _size, _trackTileSavable.IsMirrored > 0 ? true : false);
+
+		GetComponent<MeshFilter>().mesh.vertices = _currentVertices;
+		GetComponent<MeshFilter>().mesh.RecalculateBounds();
 	}
 }

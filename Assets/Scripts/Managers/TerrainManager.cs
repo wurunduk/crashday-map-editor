@@ -6,11 +6,18 @@ public class TerrainManager : MonoBehaviour
 	private TrackManager _tm;
 	public Transform Terrain;
 
+	private Vector3[] _terrainVertices;
+
 	void Awake()
 	{
 		_tm = GetComponent<TrackManager>();
 	}
 
+	/// <summary>
+	/// Get space coordinates of the point on the terrain, where mouse points. 
+	/// If the terrain is not present, return poosition on the zero plane
+	/// </summary>
+	/// <returns>Position in space</returns>
 	public Vector3 GetMousePointOnTerrain()
 	{
 		//get the point on the Terrain where our mouse currenlty points
@@ -32,10 +39,33 @@ public class TerrainManager : MonoBehaviour
 		return pos;
 	}
 
+	/// <summary>
+	/// Deformates the given mesh accroding to the position on the map and the terrain
+	/// </summary>
+	/// <param name="mesh">Mesh which will be deformed</param>
+	/// <param name="gridPosition">Position on the map</param>
+	/// <param name="rotation">rotation byte 0 - not rotated , 1 - 90 etc</param>
+	/// <param name="size">size of the mesh in tiles</param>
+	/// <param name="isMirrored">should the mesh be mirrored</param>
 	public void ApplyTerrainToMesh(Mesh mesh, IntVector2 gridPosition, int rotation, IntVector2 size, bool isMirrored)
 	{
 		Vector3[] vertices = mesh.vertices;
 
+		ApplyTerrainToMesh(ref vertices, gridPosition, rotation, size, isMirrored);
+		mesh.vertices = vertices;
+		mesh.RecalculateBounds();
+	}
+
+	/// <summary>
+	/// Deformates the given array of verticies accroding to the position on the map and the terrain
+	/// </summary>
+	/// <param name="vertices">vertices which will be deformed</param>
+	/// <param name="gridPosition">Position on the map</param>
+	/// <param name="rotation">rotation byte 0 - not rotated , 1 - 90 etc</param>
+	/// <param name="size">size of the mesh in tiles</param>
+	/// <param name="isMirrored">should the mesh be mirrored</param>
+	public void ApplyTerrainToMesh(ref Vector3[] vertices, IntVector2 gridPosition, int rotation, IntVector2 size, bool isMirrored)
+	{
 		Quaternion rot = Quaternion.Euler(0, rotation*-90, 0);
 		for (int i = 0; i < vertices.Length; i++)
 		{
@@ -89,32 +119,47 @@ public class TerrainManager : MonoBehaviour
 				height += (_tm.CurrentTrack.Heightmap[posY+1][posX] - _tm.CurrentTrack.Heightmap[posY+1][posX+1]) * (1.0f - dx);
 			}
 
-			vertices[i].y += height*_tm.CurrentTrack.GroundBumpyness*5;
+			vertices[i].y += height * _tm.CurrentTrack.GroundBumpyness * 5;
 		}
-			
-		mesh.vertices = vertices;
-		mesh.RecalculateBounds();
 	}
 
+	/// <summary>
+	/// Updates the heightmap point of the terrain mesh in the given point accroding to CurrentTrack's heightmap
+	/// !Call PushTerrainChanges() after changing needed vertices to actually update the mesh
+	/// </summary>
+	/// <param name="pos">grid position of the vertex to be updated</param>
 	public void UpdateTerrain(IntVector2 pos)
 	{
-		Vector3[] verticies = Terrain.GetComponent<MeshFilter>().mesh.vertices;
-
-		verticies[pos.x + (_tm.CurrentTrack.Width*4+1)*pos.y] = 
+		_terrainVertices[pos.x + (_tm.CurrentTrack.Width*4+1)*pos.y] = 
 			new Vector3(-10 + pos.x*5, _tm.CurrentTrack.Heightmap[pos.y][pos.x]*_tm.CurrentTrack.GroundBumpyness*5, 10 + pos.y*-5);
+	}
 
-		Terrain.GetComponent<MeshFilter>().mesh.vertices = verticies;
+	/// <summary>
+	/// Applied local terrain vertices to the mesh
+	/// </summary>
+	public void PushTerrainChanges()
+	{
+		Terrain.GetComponent<MeshFilter>().mesh.vertices = _terrainVertices;
 		Terrain.GetComponent<MeshFilter>().mesh.RecalculateBounds();
 	}
 
+	/// <summary>
+	/// Update Terrain's collider
+	/// </summary>
+	public void UpdateCollider()
+	{
+		Terrain.GetComponent<MeshCollider>().sharedMesh = Terrain.GetComponent<MeshFilter>().sharedMesh;
+	}
+
+	/// <summary>
+	/// Generates a mesh according to CurrentTrack's heightmap
+	/// </summary>
 	public void GenerateTerrain()
 	{
-		if (!_tm) return;
-
 		int sizeX = _tm.CurrentTrack.Width * 4 + 1;
 		int sizeY = _tm.CurrentTrack.Height * 4 + 1;
 
-		Vector3[] verticies = new Vector3[sizeX*sizeY];
+		_terrainVertices = new Vector3[sizeX*sizeY];
 		Vector3[] normals = new Vector3[sizeX*sizeY];
 		Vector2[] uvs = new Vector2[sizeX*sizeY];
 		int[] tris = new int[(sizeX*sizeY-sizeX)*6];
@@ -124,7 +169,7 @@ public class TerrainManager : MonoBehaviour
 			for (int x = 0; x < sizeX; x++)
 			{
 				//-10 is half of the Tile size to the center the terrain. According to thethe tile is divided every 5 meters
-				verticies[x+sizeX*y] = new Vector3(-10 + x*5, _tm.CurrentTrack.Heightmap[y][x]*_tm.CurrentTrack.GroundBumpyness*5, 10 + y*-5);
+				_terrainVertices[x+sizeX*y] = new Vector3(-10 + x*5, _tm.CurrentTrack.Heightmap[y][x]*_tm.CurrentTrack.GroundBumpyness*5, 10 + y*-5);
 				normals[x + sizeX * y] = Vector3.down;
 				uvs[x+sizeX*y] = new Vector2(x*10%sizeX, y%sizeY);
 			}
@@ -147,7 +192,7 @@ public class TerrainManager : MonoBehaviour
 		}
 
 		Mesh m = new Mesh();
-		m.vertices = verticies;
+		m.vertices = _terrainVertices;
 		m.triangles = tris;
 		m.normals = normals;
 		m.uv = uvs;

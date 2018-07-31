@@ -26,6 +26,11 @@ public abstract class ToolGeneral
 	{
 	}
 
+	public virtual void OnLMBUp(Vector3 point)
+	{
+
+	}
+
 	public virtual void OnLMBDown(Vector3 point)
 	{
 	}

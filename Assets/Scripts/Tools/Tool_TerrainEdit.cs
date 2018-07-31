@@ -28,6 +28,18 @@ public class Tool_TerrainEdit : ToolGeneral
 		_matYellow = Resources.Load<Material>("YellowGlow");
 	}
 
+	public override void OnMapSizeChange()
+	{
+		if (_heightPoints != null)
+		{
+			foreach (var obj in _heightPoints)
+			{
+				if(obj != null) Object.Destroy(obj.gameObject);
+			}
+		}
+		OnSelected();
+	}
+
 	public override void OnSelected()
 	{
 		_heightPoints = new Transform[TrackManager.CurrentTrack.Width*4+1,TrackManager.CurrentTrack.Height*4+1];
@@ -77,6 +89,11 @@ public class Tool_TerrainEdit : ToolGeneral
 		}
 	}
 
+	public override void OnLMBUp(Vector3 point)
+	{
+		TerrainManager.UpdateCollider();
+	}
+
 	public override void OnLMBDown(Vector3 point)
 	{
 		_startHeight = Input.mousePosition.y*5/Screen.height;
@@ -85,8 +102,11 @@ public class Tool_TerrainEdit : ToolGeneral
 
 	public override void OnLMB(Vector3 point)
 	{
+		//calcualte how high we lifted the mouse
 		float delta = Input.mousePosition.y*5/Screen.height - _oldHeight;
 
+		//for every selected point, change Track's heightmap, 
+		//update terrain in the current point and move the heightpoint object
 		foreach (var hp in _currentSelectedPoints)
 		{
 			TrackManager.CurrentTrack.Heightmap[hp.y][hp.x] += delta;
@@ -98,9 +118,13 @@ public class Tool_TerrainEdit : ToolGeneral
 				_heightPoints[hp.x, hp.y].position.z);
 		}
 
+		//update terrain's mesh to show the changes
+		TerrainManager.PushTerrainChanges();
+
+		//also update every tile which is affected
 		foreach (var st in _currentSelectedTiles)
 		{
-			TrackManager.UpdateTileAt(st.x, st.y);
+			TrackManager.UpdateTerrainAt(st);
 		}
 
 		_oldHeight = Input.mousePosition.y*5/Screen.height;

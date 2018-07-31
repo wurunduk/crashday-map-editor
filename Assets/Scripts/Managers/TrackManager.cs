@@ -80,8 +80,6 @@ public class TrackManager : MonoBehaviour
 			}
 		}
 
-
-
 		newTrack.Heightmap = new List<List<float>>(newTrack.Height*4+1);
 
 		for (int y = 0; y < newTrack.Height*4+1; y++)
@@ -155,6 +153,18 @@ public class TrackManager : MonoBehaviour
 			Tiles[y][x].GetComponent<Tile>().ForceVerticiesUpdate();
 			Tiles[y][x].GetComponent<Tile>().ApplyTerrain();
 		}
+	}
+
+	public void UpdateTerrain()
+	{
+		for(int y = 0; y < CurrentTrack.Height; y++)
+			for(int x = 0; x < CurrentTrack.Height; x++)
+				UpdateTerrainAt(new IntVector2(x, y));
+	}
+
+	public void UpdateTerrainAt(IntVector2 pos)
+	{
+		Tiles[pos.y][pos.x].GetComponent<Tile>().ApplyTerrain();
 	}
 
 	public void LoadTrack()
