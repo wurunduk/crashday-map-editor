@@ -25,12 +25,12 @@ public class Tool_MapSettings : ToolGeneral
 			CustomGuiControls.DrawNamedTextField(position, "Ambience",  TrackManager.CurrentTrack.Ambience);
 
 		position.y += 30;
-		GUI.Label(position, "Heightmap bumpyness");
+		/*GUI.Label(position, "Heightmap bumpyness");
 		position.x += 145;
 		if (CustomGuiControls.DrawFloatSlider(position, ref TrackManager.CurrentTrack.GroundBumpyness, 0.1f))
 		{
 			TrackManager.UpdateTerrain();
 		}
-		position.x -= 145;
+		position.x -= 145;*/
 	}
 }
