@@ -105,7 +105,7 @@ public class TrackManager : MonoBehaviour
 
 	public void SetTileByAtlasId(ushort atlasId, IntVector2 position)
 	{
-		if (CurrentTrackState == TrackState.TrackEmpty || atlasId >= CurrentTrack.FieldFilesNumber) return;
+		if (CurrentTrackState == TrackState.TrackEmpty) return;
 
 		CurrentTrack.TrackTiles[position.y][position.x] = new TrackTileSavable(atlasId,0,0,0);
 
@@ -152,6 +152,11 @@ public class TrackManager : MonoBehaviour
 			Tiles[y][x].GetComponent<Tile>().SetupTile(CurrentTrack.TrackTiles [y][x], _tm.TileList[index].Size, new IntVector2(x, y), _terrainManager, _tm.TileList[index].Name);
 			Tiles[y][x].GetComponent<Tile>().SetOriginalVertices(m.vertices);
 			Tiles[y][x].GetComponent<Tile>().ApplyTerrain();
+		}
+		else
+		{
+			Tiles[y][x].name = x + ":" + y + " ";
+			Tiles[y][x].GetComponent<MeshFilter>().mesh.Clear();
 		}
 	}
 

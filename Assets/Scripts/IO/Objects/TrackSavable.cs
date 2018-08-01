@@ -28,15 +28,15 @@ public class TrackSavable
 	[XmlAttribute("ambience")]
     public string Ambience;
 
-	[XmlAttribute("fieldFiles")]
+	[XmlAttribute("fieldFilesNum")]
     public ushort FieldFilesNumber;
-	[XmlAttribute("fields")]
+	[XmlAttribute("fieldFiles")]
     public List<string> FieldFiles;
 	[XmlAttribute("width")]
     public ushort Width;
 	[XmlAttribute("height")]
     public ushort Height;
-	[XmlAttribute("tracktiles")]
+	[XmlAttribute("trackTiles")]
     public List<List<TrackTileSavable>> TrackTiles;
 
 	[XmlAttribute("dynobjsfilesnum")]
