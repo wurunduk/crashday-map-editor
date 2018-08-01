@@ -3,13 +3,15 @@ Crashday 3D editor made with unity.
 Current unity version: 2018.1.0b13
 
 ## How to setup
-1. go to your crashday's data folder
+1. [Download the latest release](https://github.com/wurunduk/crashday-map-editor/releases)
+2. Unzip the editor into any folder
+3. go to your crashday's data folder
  * steamapps/common/crashday/data/
-2. You need to extract data000, 002, 005, 006 cpk's to this folder  
+4. You need to extract data000, 002, 005, 006 cpk's to this folder  
  (take the content folders from the dat---'s and put them in the /data folder)
-3. Additinally you can install mods by finding their archives and unzipping them too (Highly untested!)
-4. Launch the editor
-5. First time editor will ask for the CD installation folder (the one with the .exe)
+5. Additinally you can install mods by finding their archives and unzipping them too (Highly untested!)
+6. Launch the editor
+7. First time editor will ask for the CD installation folder (the one with the .exe)
 
 ## Usage
 ### General
@@ -25,7 +27,6 @@ Right click to select points
 Right click + ctrl to deselect points
 Left click + drag up/dwon to lower or raise selected points
 A - deselect all points if selected, select all points if none are selected
-
 
 ## Current TODO list
 1. ~~Heightmaps loading~~(done)
