@@ -7,7 +7,7 @@ public class Tile : MonoBehaviour
     public TrackTileSavable _trackTileSavable;
 	public string FieldName;
 
-	private IntVector2 _size;
+	public IntVector2 Size;
 	private TerrainManager _terrainManager;
 	private Vector3[] _originalVertices;
 	private Vector3[] _currentVertices;
@@ -17,7 +17,7 @@ public class Tile : MonoBehaviour
     public void SetupTile(TrackTileSavable trackTileSavable, IntVector2 size, IntVector2 gridPosition, TerrainManager term, string fieldName)
     {
 		_trackTileSavable = trackTileSavable;
-	    _size = size;
+	    Size = size;
 	    GridPosition = gridPosition;
 	    _terrainManager = term;
 	    FieldName = fieldName;
@@ -36,11 +36,11 @@ public class Tile : MonoBehaviour
 
 	public Vector3 GetTransformPosition()
 	{
-		if (_size.x + _size.y == 3 && _trackTileSavable.Rotation%2 == 1)
+		if (_trackTileSavable.Rotation%2 == 1)
 		{
-			return new Vector3((GridPosition.x + (_size.y/2)/2.0f)*TrackManager.TileSize, transform.localPosition.y, -1*(GridPosition.y + (_size.x/2)/2.0f)*TrackManager.TileSize);
+			return new Vector3((GridPosition.x + (Size.y/2)/2.0f)*TrackManager.TileSize, transform.localPosition.y, -1*(GridPosition.y + (Size.x/2)/2.0f)*TrackManager.TileSize);
 		}
-		return new Vector3((GridPosition.x + (_size.x/2)/2.0f)*TrackManager.TileSize, transform.localPosition.y, -1*(GridPosition.y + (_size.y/2)/2.0f)*TrackManager.TileSize);
+		return new Vector3((GridPosition.x + (Size.x/2)/2.0f)*TrackManager.TileSize, transform.localPosition.y, -1*(GridPosition.y + (Size.y/2)/2.0f)*TrackManager.TileSize);
 	}
 
 	public void UpdateTransform()
@@ -96,7 +96,7 @@ public class Tile : MonoBehaviour
 		for (int i = 0; i < _originalVertices.Length; i++)
 			_currentVertices[i] = _originalVertices[i];
 
-		_terrainManager.ApplyTerrainToMesh(ref _currentVertices, GridPosition, _trackTileSavable.Rotation, _size, _trackTileSavable.IsMirrored > 0 ? true : false);
+		_terrainManager.ApplyTerrainToMesh(ref _currentVertices, GridPosition, _trackTileSavable.Rotation, Size, _trackTileSavable.IsMirrored > 0 ? true : false);
 
 		GetComponent<MeshFilter>().mesh.vertices = _currentVertices;
 		GetComponent<MeshFilter>().mesh.RecalculateBounds();

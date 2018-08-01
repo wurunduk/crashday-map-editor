@@ -125,7 +125,46 @@ public class TrackManager : MonoBehaviour
 		}
 
 		tile._trackTileSavable.FieldId = Convert.ToUInt16(index);
-		CurrentTrack.TrackTiles[tile.GridPosition.y][tile.GridPosition.x] = tile._trackTileSavable;
+		CurrentTrack.TrackTiles[tile.GridPosition.y][tile.GridPosition.x] = new TrackTileSavable(tile._trackTileSavable);
+
+		if (tile.Size.y == 2 && tile.Size.x == 2)
+		{
+			if (tile.GridPosition.x + 1 < CurrentTrack.Width && tile.GridPosition.y + 1 < CurrentTrack.Height)
+			{
+				SetTileByAtlasId(65470, new IntVector2(tile.GridPosition.x + 1, tile.GridPosition.y + 1));
+				UpdateTileAt(tile.GridPosition.x + 1, tile.GridPosition.y + 1);
+			}
+
+			if (tile.GridPosition.x + 1 < CurrentTrack.Width)
+			{
+				SetTileByAtlasId(65472, new IntVector2(tile.GridPosition.x + 1, tile.GridPosition.y));
+				UpdateTileAt(tile.GridPosition.x + 1, tile.GridPosition.y);
+			}
+
+			if (tile.GridPosition.y + 1 < CurrentTrack.Height)
+			{
+				SetTileByAtlasId(65471, new IntVector2(tile.GridPosition.x, tile.GridPosition.y + 1));
+				UpdateTileAt(tile.GridPosition.x, tile.GridPosition.y + 1);
+			}
+		}
+		else if ((tile.Size.y == 2 && tile._trackTileSavable.Rotation%2 == 1) || 
+		         tile.Size.x == 2 && tile._trackTileSavable.Rotation%2 == 0)
+		{
+			if (tile.GridPosition.x + 1 < CurrentTrack.Width)
+			{
+				SetTileByAtlasId(65472, new IntVector2(tile.GridPosition.x + 1, tile.GridPosition.y));
+				UpdateTileAt(tile.GridPosition.x + 1, tile.GridPosition.y);
+			}
+		}
+		else if(tile.Size.x + tile.Size.y == 3)
+		{
+			if (tile.GridPosition.y + 1 < CurrentTrack.Height)
+			{
+				SetTileByAtlasId(65471, new IntVector2(tile.GridPosition.x, tile.GridPosition.y + 1));
+				UpdateTileAt(tile.GridPosition.x, tile.GridPosition.y + 1);
+			}
+		}
+		
 
 		UpdateTileAt(tile.GridPosition.x, tile.GridPosition.y);
 	}
@@ -157,6 +196,7 @@ public class TrackManager : MonoBehaviour
 		{
 			Tiles[y][x].name = x + ":" + y + " ";
 			Tiles[y][x].GetComponent<MeshFilter>().mesh.Clear();
+			Tiles[y][x].GetComponent<Tile>().SetupTile(CurrentTrack.TrackTiles [y][x], new IntVector2(1,1), new IntVector2(x, y), _terrainManager, "");
 		}
 	}
 

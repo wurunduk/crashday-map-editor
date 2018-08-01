@@ -29,8 +29,7 @@ public class Tool_TilePlace : ToolGeneral
 	{
 		SomePrefab.GetComponent<MeshRenderer>().enabled = false;
 
-		if(TrackManager.Tiles[_gridPosition.y][_gridPosition.x] != null)
-			TrackManager.Tiles[_gridPosition.y][_gridPosition.x].GetComponent<Renderer>().enabled = true;
+		ShowTiles(_gridPosition, _currentTile.Size, true);
 	}
 
 	public override void OnRMBDown(Vector3 point)
@@ -48,12 +47,8 @@ public class Tool_TilePlace : ToolGeneral
 	{
 		if (_gridPosition.x != point.x || _gridPosition.y != point.y)
 		{
-			//placeholder to turn on/off tile rendering under current tile
-			if(TrackManager.Tiles[_gridPosition.y][_gridPosition.x] != null)
-				TrackManager.Tiles[_gridPosition.y][_gridPosition.x].GetComponent<Renderer>().enabled = true;
-
-			if(TrackManager.Tiles[point.y][point.x] != null)
-				TrackManager.Tiles[point.y][point.x].GetComponent<Renderer>().enabled = false;
+			ShowTiles(_gridPosition, _currentTile.Size, true);
+			ShowTiles(point, _currentTile.Size, false);
 
 			_gridPosition = point;
 			_currentTile.GridPosition = _gridPosition;
@@ -88,9 +83,35 @@ public class Tool_TilePlace : ToolGeneral
 		GUI.EndScrollView();
 	}
 
+	private void ShowTiles(IntVector2 pos, IntVector2 size, bool show)
+	{
+		for (int y = 0; y < size.y; y++)
+		{
+			for (int x = 0; x < size.x; x++)
+			{
+				if (_currentTile._trackTileSavable.Rotation % 2 == 1)
+				{
+					if (pos.x + y < TrackManager.CurrentTrack.Width && pos.y + x < TrackManager.CurrentTrack.Height)
+					{
+						TrackManager.Tiles[pos.y + x][pos.x + y].GetComponent<Renderer>().enabled = show;
+					}
+				}
+				else
+				{
+					if (pos.x + x < TrackManager.CurrentTrack.Width && pos.y + y < TrackManager.CurrentTrack.Height)
+					{
+						TrackManager.Tiles[pos.y + y][pos.x + x].GetComponent<Renderer>().enabled = show;
+					}
+				}
+			}
+		}
+	}
+
 	private void SelectTile(int i)
 	{
 		if (i == SelectedTileId) return;
+
+		ShowTiles(_gridPosition, _currentTile.Size, true);
 
 		SelectedTileId = i;
 
@@ -105,5 +126,7 @@ public class Tool_TilePlace : ToolGeneral
 		_currentTile.SetupTile(new TrackTileSavable(), TileManager.TileList[i].Size, _gridPosition, TerrainManager, TileManager.TileList[i].Name);
 		_currentTile.SetOriginalVertices(m.vertices);
 		_currentTile.ApplyTerrain();
+
+		ShowTiles(_gridPosition, _currentTile.Size, false);
 	}
 }
