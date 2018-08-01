@@ -34,8 +34,10 @@ public class Tool_TilePlace : ToolGeneral
 
 	public override void OnRMBDown(Vector3 point)
 	{
+		ShowTiles(_gridPosition, _currentTile.Size, true);
 		_currentTile.Rotate();
 		_currentTile.ApplyTerrain();
+		ShowTiles(_gridPosition, _currentTile.Size, false);
 	}
 
 	public override void OnLMBDown(Vector3 point)
