@@ -33,7 +33,7 @@ public class Tool_TileRemove : ToolGeneral
 
 	public override void OnLMBDown(Vector3 point)
 	{
-		TrackManager.SetTileByAtlasId(0, _gridPosition);
+		TrackManager.RemoveTileAt(_gridPosition);
 	}
 
 	public override void OnMouseOverTile(IntVector2 point)

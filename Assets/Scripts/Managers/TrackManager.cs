@@ -32,6 +32,50 @@ public class TrackManager : MonoBehaviour
 		_terrainManager = GetComponent<TerrainManager>();
 	}
 
+	/// <summary>
+	/// Remove (set to atlas id 0) tile at this position and remove null tiles if our tile 
+	/// has size bigger then 1x1
+	/// </summary>
+	/// <param name="pos">position of the tile to be removed</param>
+	public void RemoveTileAt(IntVector2 pos)
+	{
+		if (CurrentTrackState == TrackState.TrackEmpty) return;
+
+		//if we are trying to delete the extra part of a multi-tiled tile, delete the main part
+		if (CurrentTrack.TrackTiles[pos.y][pos.x].FieldId == 65470)
+		{
+			RemoveTileAt(new IntVector2(pos.x-1, pos.y-1));
+			return;
+		}
+
+		if (CurrentTrack.TrackTiles[pos.y][pos.x].FieldId == 65472)
+		{
+			RemoveTileAt(new IntVector2(pos.x-1, pos.y));
+			return;
+		}
+
+		if (CurrentTrack.TrackTiles[pos.y][pos.x].FieldId == 65471)
+		{
+			RemoveTileAt(new IntVector2(pos.x, pos.y-1));
+			return;
+		}
+
+		//if additional parts exists and are on the map, delete them
+		if(pos.x + 1 < CurrentTrack.Width && pos.y + 1 < CurrentTrack.Height)
+			if(CurrentTrack.TrackTiles[pos.y + 1][pos.x + 1].FieldId == 65470)
+				SetTileByAtlasId(0, new IntVector2(pos.x+1, pos.y+1));
+
+		if(pos.x + 1 < CurrentTrack.Width)
+			if(CurrentTrack.TrackTiles[pos.y][pos.x + 1].FieldId == 65472)
+				SetTileByAtlasId(0, new IntVector2(pos.x+1, pos.y));
+
+		if(pos.y + 1 < CurrentTrack.Height)
+			if(CurrentTrack.TrackTiles[pos.y + 1][pos.x].FieldId == 65471)
+				SetTileByAtlasId(0, new IntVector2(pos.x, pos.y+1));
+
+		//now reset the main part of the tile
+		SetTileByAtlasId(0, pos);
+	}
 
 	public void UpdateTrackSize(int addLeft, int addRight, int addUp, int addDown)
 	{
@@ -103,6 +147,12 @@ public class TrackManager : MonoBehaviour
 		GetComponent<ToolManager>().OnMapSizeChange();
 	}
 
+	/// <summary>
+	/// Sets the tile on the given position to the tile with given atlasId and reloads it world model
+	/// ! This will not reset additional parts for multi-tiled tiles!
+	/// </summary>
+	/// <param name="atlasId">Id in the atlas of the tile you want. Usually 0 - field</param>
+	/// <param name="position">Position of the tile to be reset</param>
 	public void SetTileByAtlasId(ushort atlasId, IntVector2 position)
 	{
 		if (CurrentTrackState == TrackState.TrackEmpty) return;
@@ -112,10 +162,15 @@ public class TrackManager : MonoBehaviour
 		UpdateTileAt(position.x, position.y);
 	}
 
+	/// <summary>
+	/// Apply a tile object on the map
+	/// </summary>
+	/// <param name="tile">The tile object which will be applied</param>
 	public void SetTile(Tile tile)
 	{
 		if (CurrentTrackState == TrackState.TrackEmpty) return;
 
+		//find the index of the tile in our atlas. If the tile is new and not present in the atlas, add it to the atlas
 		int index = CurrentTrack.FieldFiles.FindIndex(entry=>entry == tile.FieldName);
 		if(index == -1)
 		{
@@ -124,9 +179,12 @@ public class TrackManager : MonoBehaviour
 			CurrentTrack.FieldFilesNumber += 1;
 		}
 
+		//get the correct tile id and set it to the new tile object
 		tile._trackTileSavable.FieldId = Convert.ToUInt16(index);
 		CurrentTrack.TrackTiles[tile.GridPosition.y][tile.GridPosition.x] = new TrackTileSavable(tile._trackTileSavable);
 
+		//multi-tiled tiles need right slave-tile id's so CD will not crash
+		//this is probably done for easier working when we are trying to do something with slave-tiles
 		if (tile.Size.y == 2 && tile.Size.x == 2)
 		{
 			if (tile.GridPosition.x + 1 < CurrentTrack.Width && tile.GridPosition.y + 1 < CurrentTrack.Height)
@@ -169,6 +227,20 @@ public class TrackManager : MonoBehaviour
 		UpdateTileAt(tile.GridPosition.x, tile.GridPosition.y);
 	}
 
+	/// <summary>
+	/// Update world model of the given tile in world space
+	/// </summary>
+	/// <param name="pos">Position of the tile to be updated</param>
+	public void UpdateTileAt(IntVector2 pos)
+	{
+		UpdateTileAt(pos.x, pos.y);
+	}
+
+	/// <summary>
+	/// Update world model of the given tile in world space
+	/// </summary>
+	/// <param name="x">x pos of the tile</param>
+	/// <param name="y">y pos of the tile</param>
 	public void UpdateTileAt(int x, int y)
 	{
 		if (CurrentTrack.TrackTiles[y][x].FieldId < CurrentTrack.FieldFilesNumber)
@@ -200,16 +272,33 @@ public class TrackManager : MonoBehaviour
 		}
 	}
 
+	/// <summary>
+	/// Updates the terrain mesh corresponding to currentTrack
+	/// </summary>
 	public void UpdateTerrain()
 	{
 		for(int y = 0; y < CurrentTrack.Height; y++)
 			for(int x = 0; x < CurrentTrack.Height; x++)
-				UpdateTerrainAt(new IntVector2(x, y));
+				UpdateTerrainAt(x, y);
 	}
 
+	/// <summary>
+	/// Update terrain for the given tile
+	/// </summary>
+	/// <param name="pos">Position of the tile</param>
 	public void UpdateTerrainAt(IntVector2 pos)
 	{
-		Tiles[pos.y][pos.x].GetComponent<Tile>().ApplyTerrain();
+		UpdateTerrainAt(pos.x, pos.y);
+	}
+
+	/// <summary>
+	/// Update terrain for the given tile
+	/// </summary>
+	/// <param name="x"></param>
+	/// <param name="y"></param>
+	public void UpdateTerrainAt(int x, int y)
+	{
+		Tiles[y][x].GetComponent<Tile>().ApplyTerrain();
 	}
 
 	public void LoadTrack()

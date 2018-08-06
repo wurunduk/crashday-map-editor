@@ -111,8 +111,6 @@ public class Tool_TilePlace : ToolGeneral
 
 	private void SelectTile(int i)
 	{
-		if (i == SelectedTileId) return;
-
 		ShowTiles(_gridPosition, _currentTile.Size, true);
 
 		SelectedTileId = i;
