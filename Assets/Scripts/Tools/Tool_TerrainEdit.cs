@@ -5,15 +5,10 @@ using UnityEngine;
 
 public class Tool_TerrainEdit : ToolGeneral
 {
-	private GameObject _heightPointObject;
-	private Transform[,] _heightPoints;
-	private Transform _heightPointsParent;
-
-	private List<IntVector2> _currentSelectedPoints;
+	private List<float> _currentSelectedPoints;
 	private List<IntVector2> _currentSelectedTiles;
 
-	private Material _matBlue;
-	private Material _matYellow;
+	private ComputeBuffer _buf;
 
 	public float _oldHeight;
 	public float _startHeight;
@@ -21,40 +16,27 @@ public class Tool_TerrainEdit : ToolGeneral
 	public override void Initialize()
 	{
 		ToolName = "Edit Terrain";
-		_heightPointsParent = new GameObject("Height points").transform;
-		_currentSelectedPoints = new List<IntVector2>();
+		_currentSelectedPoints = new List<float>();
 		_currentSelectedTiles = new List<IntVector2>();
-		_matBlue = Resources.Load<Material>("BlueGlow");
-		_matYellow = Resources.Load<Material>("YellowGlow");
 	}
 
 	public override void OnMapSizeChange()
 	{
-		if (_heightPoints != null)
-		{
-			foreach (var obj in _heightPoints)
-			{
-				if(obj != null) Object.Destroy(obj.gameObject);
-			}
-		}
 		OnSelected();
 	}
 
 	public override void OnSelected()
 	{
-		_heightPoints = new Transform[TrackManager.CurrentTrack.Width*4+1,TrackManager.CurrentTrack.Height*4+1];
 		_currentSelectedPoints.Clear();
 		_currentSelectedTiles.Clear();
+		UpdateTerrainShader();
 		TerrainManager.Terrain.GetComponent<MeshRenderer>().enabled = true;
 	}
 
 	public override void OnDeselected()
 	{
-		foreach (var obj in _heightPoints)
-		{
-			if(obj != null) Object.Destroy(obj.gameObject);
-		}
 		TerrainManager.Terrain.GetComponent<MeshRenderer>().enabled = false;
+		_buf.Dispose();
 	}
 
 	public override void Update()
@@ -63,10 +45,6 @@ public class Tool_TerrainEdit : ToolGeneral
 		{
 			if (_currentSelectedPoints.Count > 0)
 			{
-				foreach (IntVector2 sp in _currentSelectedPoints)
-				{
-					Object.Destroy(_heightPoints[sp.x, sp.y].gameObject);
-				}
 				_currentSelectedPoints.Clear();
 				_currentSelectedTiles.Clear();
 			}
@@ -76,9 +54,7 @@ public class Tool_TerrainEdit : ToolGeneral
 				{
 					for (int x = 0; x < TrackManager.CurrentTrack.Width * 4 + 1; x++)
 					{
-						//todo:
-						//add all tiles to _selectedtileslist
-						CreateSelectedCube(new IntVector2(x,y));
+						_currentSelectedPoints.Add(GetPoint(new IntVector2(x, y)));
 					}
 				}
 
@@ -86,6 +62,8 @@ public class Tool_TerrainEdit : ToolGeneral
 					for(int x = 0; x < TrackManager.CurrentTrack.Width; x++)
 						_currentSelectedTiles.Add(new IntVector2(x,y));
 			}
+
+			UpdateTerrainShader();
 		}
 	}
 
@@ -109,17 +87,16 @@ public class Tool_TerrainEdit : ToolGeneral
 		//update terrain in the current point and move the heightpoint object
 		foreach (var hp in _currentSelectedPoints)
 		{
-			TrackManager.CurrentTrack.Heightmap[hp.y][hp.x] += delta;
-
-			TerrainManager.UpdateTerrain(hp);
-
-			_heightPoints[hp.x, hp.y].position = new Vector3(_heightPoints[hp.x, hp.y].position.x, 
-				TrackManager.CurrentTrack.Heightmap[hp.y][hp.x], 
-				_heightPoints[hp.x, hp.y].position.z);
+			IntVector2 p = GetPoint(hp);
+			TrackManager.CurrentTrack.Heightmap[p.y][p.x] += delta;
+			TerrainManager.UpdateTerrain(p);
 		}
 
 		//update terrain's mesh to show the changes
 		TerrainManager.PushTerrainChanges();
+
+		//update wireframe shader
+		UpdateTerrainShader();
 
 		//also update every tile which is affected
 		foreach (var st in _currentSelectedTiles)
@@ -138,24 +115,30 @@ public class Tool_TerrainEdit : ToolGeneral
 		IntVector2 gridPosition = new IntVector2(Mathf.Clamp(Mathf.RoundToInt(pos.x / 5), 0, TrackManager.CurrentTrack.Width*4), 
 			Mathf.Clamp(-1*Mathf.RoundToInt(pos.z / 5), 0, TrackManager.CurrentTrack.Height*4));
 
+		float p = GetPoint(gridPosition);
+
+		//if we are in remove selection mode
 		if (Input.GetButton("Control"))
 		{
-			int res = _currentSelectedPoints.FindIndex(x => x.x == gridPosition.x && x.y == gridPosition.y);
+			//check if we are pressing on selected point and remove it if so
+			int res = _currentSelectedPoints.FindIndex(x => Mathf.Abs(x-p) < 0.01);
 			if (res >= 0)
 			{
 				_currentSelectedPoints.RemoveAt(res);
-				Object.Destroy(_heightPoints[gridPosition.x, gridPosition.y].gameObject);
 			}
 		}
 		else
 		{
-			if (!_currentSelectedPoints.Exists(x => x.x == gridPosition.x && x.y == gridPosition.y))
+			//if current point is not selected
+			//(the check is needed to avoid selecting one point multiple times)
+			if (!_currentSelectedPoints.Exists(x => Mathf.Abs(x-p) < 0.01))
 			{
-				CreateSelectedCube(gridPosition);
+				_currentSelectedPoints.Add(GetPoint(gridPosition));
 
 				int ax = 0;
 				int ay = 0;
 
+				//also select the tile on the current height point and add it
 				IntVector2 tilePos = new IntVector2(gridPosition.x, gridPosition.y);
 
 				if (gridPosition.x % 4 == 0 && gridPosition.x > 0)
@@ -164,7 +147,6 @@ public class Tool_TerrainEdit : ToolGeneral
 					if(gridPosition.x != TrackManager.CurrentTrack.Width*4)
 						ax += 1;
 				}
-
 
 				if (gridPosition.y % 4 == 0 && gridPosition.y > 0)
 				{
@@ -178,6 +160,8 @@ public class Tool_TerrainEdit : ToolGeneral
 						_currentSelectedTiles.Add(new IntVector2(tilePos.x/4 + x, tilePos.y/4 + y));
 			}
 		}
+
+		UpdateTerrainShader();
 	}
 
 	public override void UpdateGUI(Rect guiRect)
@@ -185,20 +169,35 @@ public class Tool_TerrainEdit : ToolGeneral
 
 	}
 
-	private void CreateSelectedCube(IntVector2 gridPosition)
+	private IntVector2 GetPoint(float p)
 	{
-		_currentSelectedPoints.Add(gridPosition);
+		return new IntVector2(((int)p)%(TrackManager.CurrentTrack.Width*4+1), ((int)p)/(TrackManager.CurrentTrack.Width*4+1));
+	}
 
-		_heightPoints[gridPosition.x, gridPosition.y] = GameObject.CreatePrimitive(PrimitiveType.Cube).transform;
-		_heightPoints[gridPosition.x, gridPosition.y].localScale = new Vector3(2,2,2);
-		_heightPoints[gridPosition.x, gridPosition.y].rotation = Quaternion.Euler(0, 45, 0);
-		_heightPoints[gridPosition.x, gridPosition.y].position = new Vector3(gridPosition.x*5 - TrackManager.TileSize/2, 
-			TrackManager.CurrentTrack.Heightmap[gridPosition.y][gridPosition.x], 
-			gridPosition.y*-5 + TrackManager.TileSize/2);
+	private float GetPoint(IntVector2 p)
+	{
+		return p.x + p.y * (TrackManager.CurrentTrack.Width * 4 + 1);
+	}
 
-		_heightPoints[gridPosition.x, gridPosition.y].SetParent(_heightPointsParent);
-		_heightPoints[gridPosition.x, gridPosition.y].name = gridPosition.x + " : " + gridPosition.y;
+	private void UpdateTerrainShader()
+	{
+		if(_buf != null)
+			_buf.Dispose();
 
-		_heightPoints[gridPosition.x, gridPosition.y].GetComponent<MeshRenderer>().material = _matYellow;
+		//prevent creation of the zero sized compute buffer
+		if (_currentSelectedPoints.Count == 0)
+		{
+			_buf = new ComputeBuffer(1, sizeof(float), ComputeBufferType.Default);
+			float[] ar = {-1.0f};
+			_buf.SetData(ar);
+		}
+		else
+		{
+			_buf = new ComputeBuffer(_currentSelectedPoints.Count, sizeof(float), ComputeBufferType.Default);
+			_buf.SetData(_currentSelectedPoints);
+		}
+
+		Shader.SetGlobalBuffer("_Points", _buf);
+		Shader.SetGlobalInt("_Points_Length", _buf.count);
 	}
 }

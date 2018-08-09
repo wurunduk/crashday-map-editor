@@ -116,7 +116,7 @@ public class P3DModel
         texture.LoadRawTextureData(dxtBytes);
         texture.Apply();
 
-        return (texture);
+        return texture;
     }
 
 	public Material[] CreateMaterials()

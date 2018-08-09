@@ -96,7 +96,7 @@ public class Tile : MonoBehaviour
 		for (int i = 0; i < _originalVertices.Length; i++)
 			_currentVertices[i] = _originalVertices[i];
 
-		_terrainManager.ApplyTerrainToMesh(ref _currentVertices, GridPosition, _trackTileSavable.Rotation, Size, _trackTileSavable.IsMirrored > 0 ? true : false);
+		_terrainManager.ApplyTerrainToMesh(ref _currentVertices, GridPosition, _trackTileSavable.Rotation, Size, _trackTileSavable.IsMirrored > 0);
 
 		GetComponent<MeshFilter>().mesh.vertices = _currentVertices;
 		GetComponent<MeshFilter>().mesh.RecalculateBounds();

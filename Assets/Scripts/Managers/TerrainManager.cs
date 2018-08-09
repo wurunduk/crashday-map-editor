@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class TerrainManager : MonoBehaviour
 {
@@ -15,7 +16,7 @@ public class TerrainManager : MonoBehaviour
 
 	/// <summary>
 	/// Get space coordinates of the point on the terrain, where mouse points. 
-	/// If the terrain is not present, return poosition on the zero plane
+	/// If the terrain is not present, return position on the zero plane
 	/// </summary>
 	/// <returns>Position in space</returns>
 	public Vector3 GetMousePointOnTerrain()

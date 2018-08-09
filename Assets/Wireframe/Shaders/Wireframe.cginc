@@ -2,12 +2,17 @@
 uniform float _WireThickness = 100;
 uniform float _WireSmoothness = 3;
 uniform float4 _WireColor = float4(0.0, 1.0, 0.0, 1.0);
+uniform float4 _SelectedWireColor = float4(0.0, 0.0, 1.0, 1.0);
 uniform float4 _BaseColor = float4(0.0, 0.0, 0.0, 0.0);
 uniform float _MaxTriSize = 25.0;
+
+uniform int _Points_Length = 0;
+uniform StructuredBuffer<float> _Points;
 
 struct appdata
 {
     float4 vertex : POSITION;
+	uint   id         : SV_VertexID;
     UNITY_VERTEX_INPUT_INSTANCE_ID
 };
 
@@ -15,6 +20,7 @@ struct v2g
 {
     float4 projectionSpaceVertex : SV_POSITION;
     float4 worldSpacePosition : TEXCOORD1;
+	uint   id         : VERTEXID;
     UNITY_VERTEX_OUTPUT_STEREO
 };
 
@@ -22,6 +28,7 @@ struct g2f
 {
     float4 projectionSpaceVertex : SV_POSITION;
     float4 worldSpacePosition : TEXCOORD0;
+	float color : COLOR;
     float4 dist : TEXCOORD1;
     float4 area : TEXCOORD2;
     UNITY_VERTEX_OUTPUT_STEREO
@@ -34,6 +41,7 @@ v2g vert (appdata v)
     UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
     o.projectionSpaceVertex = UnityObjectToClipPos(v.vertex);
     o.worldSpacePosition = mul(unity_ObjectToWorld, v.vertex);
+	o.id = v.id;
     return o;
 }
 
@@ -61,17 +69,50 @@ void geom(triangle v2g i[3], inout TriangleStream<g2f> triangleStream)
     float area = abs(edge1.x * edge2.y - edge1.y * edge2.x);
     float wireThickness = 800 - _WireThickness;
 
+	float m1 = 0.0;
+	float m2 = 0.0;
+	float m3 = 0.0;
+
+	uint size, stride;
+
+	for(uint t = 0; t < _Points_Length; t += 1)
+	{
+		float k = _Points[t];
+	
+		if(abs(k - i[0].id) < 0.1)
+		{
+			m1 = 1;
+		}
+
+		if(abs(k - i[1].id) < 0.1)
+		{
+			m2= 1;
+		}
+
+		if(abs(k - i[2].id) < 0.1)
+		{
+			m3 = 1;
+		}
+	}
+
+
+
     g2f o;
 
     o.area = float4(0, 0, 0, 0);
     o.area.x = max(length(worldEdge0), max(length(worldEdge1), length(worldEdge2)));
 
+	o.color = m1;
+
     o.worldSpacePosition = i[0].worldSpacePosition;
     o.projectionSpaceVertex = i[0].projectionSpaceVertex;
-    o.dist.xyz = float3( (area / length(edge0)), 0.0, 0.0) * o.projectionSpaceVertex.w * wireThickness;
+    o.dist.xyz = float3( (area/ length(edge0)), 0.0, 0.0) * o.projectionSpaceVertex.w * wireThickness;
     o.dist.w = 1.0 / o.projectionSpaceVertex.w;
     UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(i[0], o);
     triangleStream.Append(o);
+
+
+	o.color = m2;
 
     o.worldSpacePosition = i[1].worldSpacePosition;
     o.projectionSpaceVertex = i[1].projectionSpaceVertex;
@@ -79,6 +120,9 @@ void geom(triangle v2g i[3], inout TriangleStream<g2f> triangleStream)
     o.dist.w = 1.0 / o.projectionSpaceVertex.w;
     UNITY_TRANSFER_VERTEX_OUTPUT_STEREO(i[1], o);
     triangleStream.Append(o);
+
+
+	o.color = m3;
 
     o.worldSpacePosition = i[2].worldSpacePosition;
     o.projectionSpaceVertex = i[2].projectionSpaceVertex;
@@ -100,7 +144,7 @@ fixed4 frag(g2f i) : SV_Target
 
     // Smooth our line out
     float t = exp2(_WireSmoothness * -1.0 * minDistanceToEdge * minDistanceToEdge);
-    fixed4 finalColor = lerp(_BaseColor, _WireColor, t);
+    fixed4 finalColor = lerp(_BaseColor, lerp(_WireColor, _SelectedWireColor, i.color), t);
 
     return finalColor;
 }
