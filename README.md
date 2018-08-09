@@ -45,4 +45,7 @@ A - deselect all points if selected, select all points if none are selected
 11. Move objects and CPs after map resize
  * CPs are moved now, but not tested for bugs
 
+ ## Changelog
+ You can view the changelog [here](https://github.com/wurunduk/crashday-map-editor/blob/master/CHANGELOG.md)
+
 
