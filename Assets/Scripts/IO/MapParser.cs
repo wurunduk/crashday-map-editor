@@ -9,7 +9,7 @@ public class MapParser
     {
         TrackSavable Track = new TrackSavable();
         List<byte> data = new List<byte>(File.ReadAllBytes(path));
-        IO io = new IO(data);
+        ByteFileParser io = new ByteFileParser(data);
 
         //ignore "CDTRK" string in the start of the file
         io.SetReadingOffest(5);
@@ -117,7 +117,7 @@ public class MapParser
 	public void SaveMap(TrackSavable track, string path)
 	{
 		List<byte> bytes = new List<byte>();
-		IO io = new IO(bytes);
+		ByteFileParser io = new ByteFileParser(bytes);
 
 		 //ignore "CDTRK" string in the start of the file
         io.WriteFlag("CDTRK");

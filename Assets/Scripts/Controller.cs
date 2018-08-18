@@ -14,6 +14,7 @@ public class Controller : MonoBehaviour
 	{
 	    CrashdayPath = IO.GetCrashdayPath();
 		GetComponent<TileManager>().LoadTiles();
+		GetComponent<AmbienceManager>().LoadAmbiences();
 		GetComponent<TrackManager>().LoadTrack();
 	}
 
@@ -23,12 +24,12 @@ public class Controller : MonoBehaviour
 
         if (GUI.Button(new Rect(5, 5, 160, 35), "Load map"))
         {
-            string path = StandaloneFileBrowser.OpenFilePanel("Open trk file", CrashdayPath + "/user/", "trk", false)[0];
-            if (path.Length != 0)
+            string[] path = StandaloneFileBrowser.OpenFilePanel("Open trk file", CrashdayPath + "/user/", "trk", false);
+            if (path.Length != 0 && path[0].Length != 0)
             {
-				PlayerPrefs.SetString("lastmappath", path);
+				PlayerPrefs.SetString("lastmappath", path[0]);
 				MapParser mapParser = new MapParser();
-                Track = mapParser.ReadMap(path);
+                Track = mapParser.ReadMap(path[0]);
                 GetComponent<TrackManager>().LoadTrack(Track);
             }
         }
@@ -36,8 +37,11 @@ public class Controller : MonoBehaviour
 	    if (GUI.Button(new Rect(175, 5, 160, 35), "Save map"))
 	    {
 		    string path = StandaloneFileBrowser.SaveFilePanel("Save trk file", CrashdayPath + "/user/", "my_awesome_track", "trk");
-			MapParser mapParser = new MapParser();
-			mapParser.SaveMap(GetComponent<TrackManager>().CurrentTrack, path);
+		    if (path.Length != 0)
+		    {
+			    MapParser mapParser = new MapParser();
+			    mapParser.SaveMap(GetComponent<TrackManager>().CurrentTrack, path);
+		    }
 	    }
     }
 

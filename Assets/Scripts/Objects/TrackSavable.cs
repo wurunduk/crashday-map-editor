@@ -61,6 +61,11 @@ public class TrackSavable
 	[XmlAttribute("heightmap")]
     public List<List<float>> Heightmap;
 
+
+	/// <summary>
+	/// Copy constructor
+	/// </summary>
+	/// <param name="old">Old track to copy parameters from</param>
 	public TrackSavable(TrackSavable old)
 	{
 		Author = old.Author;
@@ -118,6 +123,9 @@ public class TrackSavable
 		}
 	}
 
+	/// <summary>
+	/// Default constructor
+	/// </summary>
 	public TrackSavable()
 	{
 		Author = "Author";

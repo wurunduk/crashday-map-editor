@@ -341,6 +341,8 @@ public class TrackManager : MonoBehaviour
 
 	    GetComponent<ToolManager>().OnMapSizeChange();
 
+		Camera.main.transform.position = new Vector3(CurrentTrack.Width*10, 300, CurrentTrack.Height*-10);
+
 	    CurrentTrackState = TrackState.TrackLoaded;
     }
 }

@@ -23,10 +23,10 @@ Left mouse click to place a tile
 Right mouse to rotate  
 Left control to flip  
 ### Terrain edit tool
-Right click to select points
-Right click + ctrl to deselect points
-Left click + drag up/dwon to lower or raise selected points
-A - deselect all points if selected, select all points if none are selected
+Right click to select points  
+Right click + ctrl to deselect points  
+Left click + drag up/dwon to lower or raise selected points  
+A - deselect all points if selected, select all points if none are selected  
 
 ## Current TODO list
 1. ~~Heightmaps loading~~(done)

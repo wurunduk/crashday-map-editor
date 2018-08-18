@@ -12,7 +12,7 @@ public class P3DParser
     public P3DModel LoadFromBytes(List<byte> data)
     {
         P3DModel model = new P3DModel();
-        IO io = new IO(data);
+	    ByteFileParser io = new ByteFileParser(data);
         //skip 'p3d' text and version, cause i am a bad guy
         io.SetReadingOffest(4);
 

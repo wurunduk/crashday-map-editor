@@ -135,9 +135,12 @@ public class P3DModel
 		Material mat = new Material(Shader.Find("Standard"));
 		byte[] data = System.IO.File.ReadAllBytes(IO.GetCrashdayPath() + "/data/content/textures/" + P3DRenderInfo[id].TextureFile.Remove(P3DRenderInfo[id].TextureFile.Length - 4) + ".dds");
 		Texture2D tex = LoadTextureDXT(data, TextureFormat.DXT5);
-		if (P3DRenderInfo[id].TextureFile.Contains("transp"))
+		bool tr = P3DRenderInfo[id].TextureFile.Contains("transp");
+		bool gls = P3DRenderInfo[id].TextureFile.Contains("gls");
+		if ( tr || gls)
 		{
-			mat.SetColor("_Color", Color.clear);
+			Color c = gls ? new Color(0.1f, 0.1f, 0.1f, 0.4f) : Color.clear; 
+			mat.SetColor("_Color", c);
 			mat.SetFloat("_Mode", 2);
 			
 			mat.SetInt("_ZWrite", 0);
@@ -185,6 +188,9 @@ public class P3DModel
 			//avoid loading LODs
 			if(P3DMeshes[i].Name.Contains(".0") || P3DMeshes[i].Name.Contains(".1") || P3DMeshes[i].Name.Contains(".2") || P3DMeshes[i].Name.Contains(".3")
 			   || P3DMeshes[i].Name.Contains(".4")) continue;
+
+			//dont load destroyed parts of the mesh
+			if (P3DMeshes[i].Name.Contains("dest_")) continue;
 
 			for (int v = 0; v < P3DMeshes[i].NumVertices; v++)
 			{
