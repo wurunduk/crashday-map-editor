@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
+
+## [0.6.2] - 2018-08-26
 ### Added
 - Camera is reset to the center of the map on map load.
 - Enabled unity key select menu before start.
