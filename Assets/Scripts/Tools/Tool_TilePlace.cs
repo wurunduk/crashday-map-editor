@@ -62,7 +62,7 @@ public class Tool_TilePlace : ToolGeneral
 
 	public override void Update()
 	{
-		if (Input.GetButtonDown("Control"))
+		if (Input.GetButtonDown("Flip"))
 		{
 			_currentTile.Flip();
 			_currentTile.ApplyTerrain();
@@ -74,12 +74,22 @@ public class Tool_TilePlace : ToolGeneral
 		GUI.Label(new Rect(guiRect.x, guiRect.y, guiRect.width, 20), "Current tile: " + _currentTile.FieldName);
 
 		_scrollPosition = GUI.BeginScrollView(new Rect(guiRect.x, guiRect.y + 25, guiRect.width, Screen.height - 165), _scrollPosition, 
-			new Rect(guiRect.x, guiRect.y + 25, guiRect.width-10, (TileManager.TileList.Count/3 + 1) * 24), false, false);
+			new Rect(guiRect.x, guiRect.y + 25, guiRect.width-10, (TileManager.TileList.Count/3 + 1) * 105), false, false);
 		for (int i = 0; i < TileManager.TileList.Count; i++)
 		{
-			if (GUI.Button(new Rect(guiRect.x + (i%3)*105, guiRect.y + 25 + 24 * (i/3), guiRect.width/3 - 10, 22), TileManager.TileList[i].Name.Remove(TileManager.TileList[i].Name.Length-4)))
+			if (TileManager.TileList[i].Icon != null)
 			{
-				SelectTile(i);
+				if (GUI.Button(new Rect(guiRect.x + (i%3)*105, guiRect.y + 25 + 105 * (i/3), guiRect.width/3 - 10, guiRect.width/3 - 10), TileManager.TileList[i].Icon))
+				{
+					SelectTile(i);
+				}
+			}
+			else
+			{
+				if (GUI.Button(new Rect(guiRect.x + (i%3)*105, guiRect.y + 25 + 105 * (i/3), guiRect.width/3 - 10, guiRect.width/3 - 10), TileManager.TileList[i].Name.Remove(TileManager.TileList[i].Name.Length-4)))
+				{
+					SelectTile(i);
+				}
 			}
 		}
 		GUI.EndScrollView();

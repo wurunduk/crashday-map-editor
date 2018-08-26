@@ -28,8 +28,7 @@ public class Controller : MonoBehaviour
             if (path.Length != 0 && path[0].Length != 0)
             {
 				PlayerPrefs.SetString("lastmappath", path[0]);
-				MapParser mapParser = new MapParser();
-                Track = mapParser.ReadMap(path[0]);
+                Track = MapParser.ReadMap(path[0]);
                 GetComponent<TrackManager>().LoadTrack(Track);
             }
         }
@@ -39,8 +38,7 @@ public class Controller : MonoBehaviour
 		    string path = StandaloneFileBrowser.SaveFilePanel("Save trk file", CrashdayPath + "/user/", "my_awesome_track", "trk");
 		    if (path.Length != 0)
 		    {
-			    MapParser mapParser = new MapParser();
-			    mapParser.SaveMap(GetComponent<TrackManager>().CurrentTrack, path);
+			    MapParser.SaveMap(GetComponent<TrackManager>().CurrentTrack, path);
 		    }
 	    }
     }

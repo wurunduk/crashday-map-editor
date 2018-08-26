@@ -10,7 +10,7 @@ public class AmbienceParser
 	/// </summary>
 	/// <param name="path"></param>
 	/// <returns></returns>
-	public Ambience ReadAmbience(string path)
+	public static Ambience ReadAmbience(string path)
 	{
 		Ambience amb = new Ambience();
 		string[] s = File.ReadAllLines(path);

@@ -5,7 +5,7 @@ using System.IO;
 public class MapParser
 {
     //reads map from file to Track object
-    public TrackSavable ReadMap(string path)
+    public static TrackSavable ReadMap(string path)
     {
         TrackSavable Track = new TrackSavable();
         List<byte> data = new List<byte>(File.ReadAllBytes(path));
@@ -114,7 +114,7 @@ public class MapParser
         return Track;
     }
 
-	public void SaveMap(TrackSavable track, string path)
+	public static void SaveMap(TrackSavable track, string path)
 	{
 		List<byte> bytes = new List<byte>();
 		ByteFileParser io = new ByteFileParser(bytes);

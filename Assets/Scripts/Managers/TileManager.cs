@@ -9,6 +9,7 @@ public class TileListEntry
 	public string ModelPath;
 	public P3DModel Model;
 	public List<Material> Materials;
+	public Texture Icon;
 	public IntVector2 Size;
 
 	public LoadState CurrentLoadState;
@@ -19,21 +20,23 @@ public class TileListEntry
 		ModelLoaded
 	}
 
-	public TileListEntry(string name, string modelPath, IntVector2 size)
+	public TileListEntry(string name, string modelPath, Texture icon, IntVector2 size)
 	{
 		CurrentLoadState = LoadState.Cflloaded;
 
 		Name = name;
 		ModelPath = modelPath;
+		Icon = icon;
 		Size = size;
 	}
 
-	public TileListEntry(string name, string modelPath, P3DModel model, List<Material> materials, IntVector2 size)
+	public TileListEntry(string name, string modelPath, Texture icon, P3DModel model, List<Material> materials, IntVector2 size)
 	{
 		CurrentLoadState = LoadState.ModelLoaded;
 
 		Name = name;
 		ModelPath = modelPath;
+		Icon = icon;
 		Model = model;
 		Materials = materials;
 		Size = size;
@@ -59,9 +62,7 @@ public class TileManager : MonoBehaviour
 	{
 		if (TileList[id].CurrentLoadState == TileListEntry.LoadState.ModelLoaded) return;
 
-		P3DParser parser = new P3DParser();
-
-		P3DModel model = parser.LoadFromFile(TileList[id].ModelPath);
+		P3DModel model = P3DParser.LoadFromFile(TileList[id].ModelPath);
 		TileList[id].Model = model;
 
 		TileList[id].Materials = new List<Material>(model.P3DNumTextures);
@@ -97,6 +98,8 @@ public class TileManager : MonoBehaviour
 			//read only cfl files in tiles folder
 			if (files [i].Contains (".cfl"))
 			{
+				string name = files[i].Substring(files[i].LastIndexOf('/') + 1);
+
 				//files[i] already contains crashday path, so we dont add it
 				string[] cflFIle = System.IO.File.ReadAllLines(files[i]);
 
@@ -110,8 +113,9 @@ public class TileManager : MonoBehaviour
 				string sizeStr = cflFIle[3];
 				sizeStr = IO.RemoveComment(sizeStr);
 				IntVector2 size = new IntVector2(sizeStr[0]-'0', sizeStr[2]-'0');
+				Texture ic = TGAParser.LoadTGA(IO.GetCrashdayPath() + "/data/content/textures/pictures/tiles/" + name.Split('.')[0] + ".tga");
 
-				TileList.Add(new TileListEntry(files [i].Substring (files [i].LastIndexOf ('/')+1), pathToModel, size));
+				TileList.Add(new TileListEntry(name, pathToModel, ic, size));
 			}
 		}
 

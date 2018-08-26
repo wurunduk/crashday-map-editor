@@ -3,13 +3,13 @@ using UnityEngine;
 
 public class P3DParser
 {
-    public P3DModel LoadFromFile(string path)
+    public static P3DModel LoadFromFile(string path)
     {
         List<byte> data = new List<byte>(System.IO.File.ReadAllBytes(path));
         return LoadFromBytes(data);
     }
 
-    public P3DModel LoadFromBytes(List<byte> data)
+    public static P3DModel LoadFromBytes(List<byte> data)
     {
         P3DModel model = new P3DModel();
 	    ByteFileParser io = new ByteFileParser(data);
