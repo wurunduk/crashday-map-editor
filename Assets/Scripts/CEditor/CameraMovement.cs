@@ -11,7 +11,7 @@ public class CameraMovement : MonoBehaviour
 
 	void Update ()
 	{
-		if (Input.GetMouseButton(2))
+		if (Input.GetButton("Camera Move"))
 		{
 			if (Input.GetButton("Shift"))
 			{
