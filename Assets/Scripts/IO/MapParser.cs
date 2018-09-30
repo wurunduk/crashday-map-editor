@@ -4,7 +4,11 @@ using System.IO;
 
 public class MapParser
 {
-    //reads map from file to Track object
+    /// <summary>
+    /// Reads a map from .trk file at a given path to Track object
+    /// </summary>
+    /// <param name="path">absolute path to the track to open</param>
+    /// <returns>TrackSavable object for the given track</returns>
     public static TrackSavable ReadMap(string path)
     {
         TrackSavable Track = new TrackSavable();
@@ -114,6 +118,11 @@ public class MapParser
         return Track;
     }
 
+    /// <summary>
+    /// Saves the given track into a .trk file at a given path
+    /// </summary>
+    /// <param name="track">TrackSavable object to save</param>
+    /// <param name="path">Absolute path to the new file</param>
 	public static void SaveMap(TrackSavable track, string path)
 	{
 		List<byte> bytes = new List<byte>();

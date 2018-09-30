@@ -118,7 +118,7 @@ public class Tool_TerrainEdit : ToolGeneral
 		float p = GetPoint(gridPosition);
 
 		//if we are in remove selection mode
-		if (Input.GetButton("Control"))
+		if (Input.GetButton("Deselect"))
 		{
 			//check if we are pressing on selected point and remove it if so
 			int res = _currentSelectedPoints.FindIndex(x => Mathf.Abs(x-p) < 0.01);
