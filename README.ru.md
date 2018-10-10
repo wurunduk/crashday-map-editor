@@ -2,7 +2,7 @@
 Crashday 3D редактор сделанный на unity.  
 Версия unity: 2018.2.2f1
 
-*Read this in other languages: [English](README.md), [Русский](README.ru.md).* 
+*Данная инструкция на других языках: [English](README.md), [Русский](README.ru.md).* 
 
 ## Установка
 1. [Скачайте последнюю доступную версию](https://github.com/wurunduk/crashday-map-editor/releases)
