@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization.Formatters;
 using UnityEngine;
 
 public class TileListEntry
@@ -60,6 +62,12 @@ public class TileManager : MonoBehaviour
 
 	public void LoadModelForTileId(int id)
 	{
+	    if (id >= TileList.Count || id < 0)
+	    {
+            Debug.LogError("Some tile was out of bounds!");
+	        return;
+	    }
+
 		if (TileList[id].CurrentLoadState == TileListEntry.LoadState.ModelLoaded) return;
 
 		P3DModel model = P3DParser.LoadFromFile(TileList[id].ModelPath);

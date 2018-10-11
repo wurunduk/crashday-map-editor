@@ -246,7 +246,9 @@ public class TrackManager : MonoBehaviour
 		if (CurrentTrack.TrackTiles[y][x].FieldId < CurrentTrack.FieldFilesNumber)
 		{
 			int index = _tm.TileList.FindIndex(entry=>entry.Name == CurrentTrack.FieldFiles[CurrentTrack.TrackTiles [y][x].FieldId]);
-					
+
+		    if (index < 0) return;
+
 			//load our model in to the memory
 			_tm.LoadModelForTileId(index);
 

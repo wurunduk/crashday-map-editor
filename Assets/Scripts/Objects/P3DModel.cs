@@ -163,26 +163,46 @@ public class P3DModel
 		return mat;
 	}
 
+    class Vert
+    {
+        public Vector3 Pos;
+        public Vector2 Uv;
+        public bool UvAssigned;
+
+        public Vert(Vector3 pos)
+        {
+            Pos = pos;
+            UvAssigned = false;
+        }
+    }
+
 	public Mesh CreateMesh()
 	{
 		Mesh m = new Mesh();
 
 		m.subMeshCount = P3DNumTextures;
 
-		List<Vector3> vertices = new List<Vector3>();
-		//List<Vector2> uv = new List<Vector2>();
+	    List<string> textures = new List<string>();
+
+		List<Vert> vertices = new List<Vert>();
 		List<List<int>> tri = new List<List<int>>();
 
-		List<string> textures = new List<string>();
+        //uvs and positions separated from verticies array - needed for splitting
+        List<Vector2> uv = new List<Vector2>();
+        List<Vector3> verts = new List<Vector3>();
 
+
+        //for every texture we have a separate set of of triangles, so lets figure out how much textures we have for the model
 		for (int n = 0; n < P3DNumTextures; n++)
 		{
 			textures.Add(P3DRenderInfo[n].TextureFile);
 			tri.Add(new List<int>());
 		}
 
-		int pointOffset = 0;
 
+		int meshSizeOffset = 0;
+
+        //one model might contain more than one mesh
 		for (int i = 0; i < P3DNumMeshes; i++)
 		{
 			//avoid loading LODs
@@ -192,27 +212,73 @@ public class P3DModel
 			//dont load destroyed parts of the mesh
 			if (P3DMeshes[i].Name.Contains("dest_")) continue;
 
+            //iterate through every vertex and add it's position. Dont forget local object position
 			for (int v = 0; v < P3DMeshes[i].NumVertices; v++)
 			{
-				vertices.Add(P3DMeshes[i].Vertex[v] + P3DMeshes[i].LocalPos);
+				vertices.Add(new Vert(P3DMeshes[i].Vertex[v] + P3DMeshes[i].LocalPos));
 			}
 
 			for (int v = 0; v < P3DMeshes[i].NumPolys; v++)
 			{
-				int index = textures.FindIndex(x => x.Contains(P3DMeshes[i].Poly[v].Texture));
-				tri[index].Add(pointOffset + P3DMeshes[i].Poly[v].P1);
-				tri[index].Add(pointOffset + P3DMeshes[i].Poly[v].P2);
-				tri[index].Add(pointOffset + P3DMeshes[i].Poly[v].P3);
+			    int index = textures.FindIndex(x => x.Contains(P3DMeshes[i].Poly[v].Texture));
 
-				//uv.Add(new Vector2(P3DMeshes[i].Poly[v].U1, P3DMeshes[i].Poly[v].V1));
+			    Vector2 uv1 = new Vector2(P3DMeshes[i].Poly[v].U1, P3DMeshes[i].Poly[v].V1);
+			    if (vertices[P3DMeshes[i].Poly[v].P1].UvAssigned && vertices[P3DMeshes[i].Poly[v].P1].Uv != uv1)
+			    {
+                    vertices.Add(new Vert(P3DMeshes[i].Vertex[P3DMeshes[i].Poly[v].P1] + P3DMeshes[i].LocalPos));
+			        vertices[vertices.Count - 1].UvAssigned = true;
+                    vertices[vertices.Count - 1].Uv = uv1;
+			        tri[index].Add(vertices.Count - 1);
+			    }
+			    else
+			    {
+			        vertices[P3DMeshes[i].Poly[v].P1].UvAssigned = true;
+			        vertices[P3DMeshes[i].Poly[v].P1].Uv = uv1;
+			        tri[index].Add(meshSizeOffset + P3DMeshes[i].Poly[v].P1);
+			    }
+
+			    Vector2 uv2 = new Vector2(P3DMeshes[i].Poly[v].U2, P3DMeshes[i].Poly[v].V2);
+			    if (vertices[P3DMeshes[i].Poly[v].P2].UvAssigned && vertices[P3DMeshes[i].Poly[v].P2].Uv != uv2)
+			    {
+			        vertices.Add(new Vert(P3DMeshes[i].Vertex[P3DMeshes[i].Poly[v].P2] + P3DMeshes[i].LocalPos));
+			        vertices[vertices.Count - 1].UvAssigned = true;
+			        vertices[vertices.Count - 1].Uv = uv2;
+			        tri[index].Add(vertices.Count - 1);
+			    }
+			    else
+			    {
+			        vertices[P3DMeshes[i].Poly[v].P2].UvAssigned = true;
+			        vertices[P3DMeshes[i].Poly[v].P2].Uv = uv2;
+			        tri[index].Add(meshSizeOffset + P3DMeshes[i].Poly[v].P2);
+			    }
+
+			    Vector2 uv3 = new Vector2(P3DMeshes[i].Poly[v].U3, P3DMeshes[i].Poly[v].V3);
+			    if (vertices[P3DMeshes[i].Poly[v].P3].UvAssigned && vertices[P3DMeshes[i].Poly[v].P3].Uv != uv3)
+			    {
+			        vertices.Add(new Vert(P3DMeshes[i].Vertex[P3DMeshes[i].Poly[v].P3] + P3DMeshes[i].LocalPos));
+			        vertices[vertices.Count - 1].UvAssigned = true;
+			        vertices[vertices.Count - 1].Uv = uv3;
+			        tri[index].Add(vertices.Count - 1);
+			    }
+			    else
+			    {
+			        vertices[P3DMeshes[i].Poly[v].P3].UvAssigned = true;
+			        vertices[P3DMeshes[i].Poly[v].P3].Uv = uv3;
+			        tri[index].Add(meshSizeOffset + P3DMeshes[i].Poly[v].P3);
+			    }
 			}
 
-			pointOffset += P3DMeshes[i].NumVertices;
+		    meshSizeOffset += P3DMeshes[i].NumVertices;
 		}
 
+        foreach(Vert v in vertices)
+	    {
+            verts.Add(v.Pos);
+            uv.Add(v.Uv);
+	    }
 
-		m.SetVertices(vertices);
-		//m.SetUVs(0, uv);
+		m.SetVertices(verts);
+	    m.SetUVs(0, uv);
 		for (int n = 0; n < P3DNumTextures; n++)
 		{
 			m.SetTriangles(tri[n], n);
