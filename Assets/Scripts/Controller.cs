@@ -12,7 +12,8 @@ public class Controller : MonoBehaviour
 
 	void Start ()
 	{
-	    CrashdayPath = IO.GetCrashdayPath();
+		CrashdayPath = IO.GetCrashdayPath();
+		GetComponent<PackageManager>().LoadDefaultCPKs();
 		GetComponent<TileManager>().LoadTiles();
 		GetComponent<AmbienceManager>().LoadAmbiences();
 		GetComponent<TrackManager>().LoadTrack();

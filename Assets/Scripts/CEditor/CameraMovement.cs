@@ -30,7 +30,7 @@ public class CameraMovement : MonoBehaviour
 	{
 		//welcome to the ghetto
 		//this is the size of the left GUI panel
-		if(Input.mousePosition.x > 340)
+		if(Input.mousePosition.x > 340 && Application.isFocused)
 			transform.Translate(Vector3.forward*Input.GetAxis("Mouse ScrollWheel")*100, Space.Self);
 	}
 }
