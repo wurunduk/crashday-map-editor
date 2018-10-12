@@ -7,6 +7,7 @@ public class Tool_TerrainEdit : ToolGeneral
 {
 	private List<float> _currentSelectedPoints;
 	private List<IntVector2> _currentSelectedTiles;
+	private float _currentHeight;
 
 	private ComputeBuffer _buf;
 
@@ -27,7 +28,7 @@ public class Tool_TerrainEdit : ToolGeneral
 
 	public override void OnSelected()
 	{
-		_currentSelectedPoints.Clear();
+		ClearSelectedPoints();
 		_currentSelectedTiles.Clear();
 		UpdateTerrainShader();
 		TerrainManager.Terrain.GetComponent<MeshRenderer>().enabled = true;
@@ -45,7 +46,7 @@ public class Tool_TerrainEdit : ToolGeneral
 		{
 			if (_currentSelectedPoints.Count > 0)
 			{
-				_currentSelectedPoints.Clear();
+				ClearSelectedPoints();
 				_currentSelectedTiles.Clear();
 			}
 			else
@@ -54,7 +55,7 @@ public class Tool_TerrainEdit : ToolGeneral
 				{
 					for (int x = 0; x < TrackManager.CurrentTrack.Width * 4 + 1; x++)
 					{
-						_currentSelectedPoints.Add(GetPoint(new IntVector2(x, y)));
+						AddPointToSelection(GetPoint(new IntVector2(x, y)));
 					}
 				}
 
@@ -83,26 +84,10 @@ public class Tool_TerrainEdit : ToolGeneral
 		//calcualte how high we lifted the mouse
 		float delta = Input.mousePosition.y*5/Screen.height - _oldHeight;
 
-		//for every selected point, change Track's heightmap, 
-		//update terrain in the current point and move the heightpoint object
-		foreach (var hp in _currentSelectedPoints)
-		{
-			IntVector2 p = GetPoint(hp);
-			TrackManager.CurrentTrack.Heightmap[p.y][p.x] += delta;
-			TerrainManager.UpdateTerrain(p);
-		}
+		//add height to the median point
+		_currentHeight += delta;
 
-		//update terrain's mesh to show the changes
-		TerrainManager.PushTerrainChanges();
-
-		//update wireframe shader
-		UpdateTerrainShader();
-
-		//also update every tile which is affected
-		foreach (var st in _currentSelectedTiles)
-		{
-			TrackManager.UpdateTerrainAt(st);
-		}
+		RaiseSelectedPoints(delta);
 
 		_oldHeight = Input.mousePosition.y*5/Screen.height;
 	}
@@ -124,7 +109,7 @@ public class Tool_TerrainEdit : ToolGeneral
 			int res = _currentSelectedPoints.FindIndex(x => Mathf.Abs(x-p) < 0.01);
 			if (res >= 0)
 			{
-				_currentSelectedPoints.RemoveAt(res);
+				RemovePointFromSelection(res);
 			}
 		}
 		else
@@ -133,7 +118,7 @@ public class Tool_TerrainEdit : ToolGeneral
 			//(the check is needed to avoid selecting one point multiple times)
 			if (!_currentSelectedPoints.Exists(x => Mathf.Abs(x-p) < 0.01))
 			{
-				_currentSelectedPoints.Add(GetPoint(gridPosition));
+				AddPointToSelection(GetPoint(gridPosition));
 
 				int ax = 0;
 				int ay = 0;
@@ -166,7 +151,59 @@ public class Tool_TerrainEdit : ToolGeneral
 
 	public override void UpdateGUI(Rect guiRect)
 	{
+		float height = _currentHeight;
 
+		if(CustomGuiControls.DrawFloatSlider(new Rect(guiRect.x + 65, guiRect.y + 80, 60, 30), ref height, 0.5f))
+		{
+			RaiseSelectedPoints(height - _currentHeight);
+			_currentHeight = height;
+		}
+	}
+
+	private void ClearSelectedPoints()
+	{
+		_currentSelectedPoints.Clear();
+		_currentHeight = 0.0f;
+	}
+
+	private void AddPointToSelection(float point)
+	{
+		_currentHeight *= _currentSelectedPoints.Count;
+		_currentSelectedPoints.Add(point);
+		_currentHeight += point;
+		_currentHeight /= _currentSelectedPoints.Count;
+	}
+
+	private void RemovePointFromSelection(int id)
+	{
+		_currentHeight *= _currentSelectedPoints.Count;
+		_currentHeight -= _currentSelectedPoints[id];
+		_currentSelectedPoints.RemoveAt(id);
+		_currentHeight /= _currentSelectedPoints.Count;
+	}
+
+	private void RaiseSelectedPoints(float amount)
+	{
+		//for every selected point, change Track's heightmap, 
+		//update terrain in the current point and move the heightpoint object
+		foreach (var hp in _currentSelectedPoints)
+		{
+			IntVector2 p = GetPoint(hp);
+			TrackManager.CurrentTrack.Heightmap[p.y][p.x] += amount;
+			TerrainManager.UpdateTerrain(p);
+		}
+
+		//update terrain's mesh to show the changes
+		TerrainManager.PushTerrainChanges();
+
+		//update wireframe shader
+		UpdateTerrainShader();
+
+		//also update every tile which is affected
+		foreach (var st in _currentSelectedTiles)
+		{
+			TrackManager.UpdateTerrainAt(st);
+		}
 	}
 
 	private IntVector2 GetPoint(float p)

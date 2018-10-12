@@ -11,6 +11,9 @@ public class PackageManager : MonoBehaviour
 	
     public void LoadDefaultCPKs()
     {
+		//disable for testing purposes, to fasten the load time
+		//return;
+
         foreach (string s in DefaultArchives)
             LoadCPK(IO.GetCrashdayPath() + "\\data\\" + s, false);
     }
