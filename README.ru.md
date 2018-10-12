@@ -1,6 +1,6 @@
 # Crashday 3D редактор карт
 Crashday 3D редактор сделанный на unity.  
-Версия unity: 2018.2.2f1
+Версия unity: 2018.2.12f1
 
 *Данная инструкция на других языках: [English](README.md), [Русский](README.ru.md).* 
 

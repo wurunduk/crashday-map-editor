@@ -2,8 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraMovement : MonoBehaviour 
+public class CameraMovement : MonoBehaviour
 {
+    private TerrainManager _terrainManager;
+
+    void Awake()
+    {
+        _terrainManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<TerrainManager>();
+    }
+
 	void Start()
 	{
 		
@@ -30,7 +37,26 @@ public class CameraMovement : MonoBehaviour
 	{
 		//welcome to the ghetto
 		//this is the size of the left GUI panel
-		if(Input.mousePosition.x > 340 && Application.isFocused)
-			transform.Translate(Vector3.forward*Input.GetAxis("Mouse ScrollWheel")*100, Space.Self);
+		if (Input.mousePosition.x > 340 && Application.isFocused)
+		{
+			if (!_terrainManager) return;
+			
+			Vector3 pos = _terrainManager.GetCameraPointOnTerrain() - transform.position;
+
+			float speed = Input.GetAxis("Mouse ScrollWheel") * 100;
+
+
+			if (pos.sqrMagnitude <= speed * speed)
+			{
+				if (pos.sqrMagnitude < 0.15f && Vector3.Angle(pos, transform.forward*speed) < 3.1415f/3.0f)
+					speed = 0;
+				else
+					speed = Mathf.Sign(speed)*pos.magnitude/2.0f;
+			}
+				
+
+			transform.Translate(Vector3.forward*speed, Space.Self);
+		}
+			
 	}
 }

@@ -153,7 +153,9 @@ public class Tool_TerrainEdit : ToolGeneral
 	{
 		float height = _currentHeight;
 
-		if(CustomGuiControls.DrawFloatSlider(new Rect(guiRect.x + 65, guiRect.y + 80, 60, 30), ref height, 0.5f))
+		GUI.Label(new Rect(guiRect.x + 5, guiRect.y, 60, 30), "Height");
+
+		if(CustomGuiControls.DrawFloatSlider(new Rect(guiRect.x + 125, guiRect.y, 100, 30), ref height, 1.0f))
 		{
 			RaiseSelectedPoints(height - _currentHeight);
 			_currentHeight = height;
@@ -168,16 +170,19 @@ public class Tool_TerrainEdit : ToolGeneral
 
 	private void AddPointToSelection(float point)
 	{
+		IntVector2 p = GetPoint(point);
+		
 		_currentHeight *= _currentSelectedPoints.Count;
 		_currentSelectedPoints.Add(point);
-		_currentHeight += point;
+		_currentHeight += TrackManager.CurrentTrack.Heightmap[p.y][p.x];
 		_currentHeight /= _currentSelectedPoints.Count;
 	}
 
 	private void RemovePointFromSelection(int id)
 	{
 		_currentHeight *= _currentSelectedPoints.Count;
-		_currentHeight -= _currentSelectedPoints[id];
+		IntVector2 p = GetPoint(_currentSelectedPoints[id]);
+		_currentHeight -= TrackManager.CurrentTrack.Heightmap[p.y][p.x];
 		_currentSelectedPoints.RemoveAt(id);
 		_currentHeight /= _currentSelectedPoints.Count;
 	}

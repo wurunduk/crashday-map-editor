@@ -14,6 +14,31 @@ public class TerrainManager : MonoBehaviour
 		_tm = GetComponent<TrackManager>();
 	}
 
+    /// <summary>
+    /// Get the space coordinates of the point, where the center of the cam is looking
+    /// </summary>
+    /// <returns>Position in space</returns>
+    public Vector3 GetCameraPointOnTerrain()
+    {
+        //get the point on the Terrain where our mouse currenlty points
+        Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        RaycastHit info;
+        Vector3 pos;
+        if (Terrain.GetComponent<MeshCollider>().Raycast(ray, out info, float.MaxValue))
+        {
+            pos = info.point;
+        }
+        else
+        {
+            Plane plane = new Plane(Vector3.up, Vector3.zero);
+            float outFloat;
+            plane.Raycast(ray, out outFloat);
+            pos = ray.GetPoint(outFloat);
+        }
+
+        return pos;
+    }
+
 	/// <summary>
 	/// Get space coordinates of the point on the terrain, where mouse points. 
 	/// If the terrain is not present, return position on the zero plane
@@ -124,6 +149,7 @@ public class TerrainManager : MonoBehaviour
 		}
 	}
 
+
 	/// <summary>
 	/// Updates the heightmap point of the terrain mesh in the given point accroding to CurrentTrack's heightmap
 	/// !Call PushTerrainChanges() after changing needed vertices to actually update the mesh
@@ -151,6 +177,7 @@ public class TerrainManager : MonoBehaviour
 	{
 		Terrain.GetComponent<MeshCollider>().sharedMesh = Terrain.GetComponent<MeshFilter>().sharedMesh;
 	}
+
 
 	/// <summary>
 	/// Generates a mesh according to CurrentTrack's heightmap

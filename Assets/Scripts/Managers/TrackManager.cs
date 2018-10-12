@@ -21,7 +21,7 @@ public class TrackManager : MonoBehaviour
 
     public static int TileSize = 20;
 
-	public static int MaxMapSizeLimit = 2000;
+	public static int MaxMapSizeLimit = 8000;
 
 	private TileManager _tm;
 	private TerrainManager _terrainManager;
@@ -30,6 +30,33 @@ public class TrackManager : MonoBehaviour
 	{
 		_tm = GetComponent<TileManager>();
 		_terrainManager = GetComponent<TerrainManager>();
+	}
+
+	/// <summary>
+	/// Retruns the position of the base tile at the given point
+	/// If a tile takes more than one block, on part of it will not be an actualy tile object.
+	/// Use this to get the position of the main one
+	/// </summary>
+	/// <param name="pos">Get actual base position</param>
+	/// <returns>Base position or the same pos, if tile is 1x1</returns>
+	public IntVector2 GetBaseTilePosition(IntVector2 pos)
+	{
+		if (CurrentTrack.TrackTiles[pos.y][pos.x].FieldId == 65470)
+		{
+			return new IntVector2(pos.x-1, pos.y-1);
+		}
+
+		if (CurrentTrack.TrackTiles[pos.y][pos.x].FieldId == 65472)
+		{
+			return new IntVector2(pos.x-1, pos.y);
+		}
+
+		if (CurrentTrack.TrackTiles[pos.y][pos.x].FieldId == 65471)
+		{
+			return new IntVector2(pos.x, pos.y-1);
+		}
+
+		return pos;
 	}
 
 	/// <summary>
@@ -131,9 +158,9 @@ public class TrackManager : MonoBehaviour
 			newTrack.Heightmap.Add(new List<float>(newTrack.Width*4+1));
 			for (int x = 0; x < newTrack.Width*4+1; x++)
 			{
-				if (x + addLeft*4 >= 0 && y + addUp*4 >= 0 && x + addLeft*4 < CurrentTrack.Width*4+1 && y + addUp*4 < CurrentTrack.Height*4+1)
+				if (x - addLeft*4 >= 0 && y - addUp*4 >= 0 && x - addLeft*4 < CurrentTrack.Width*4+1 && y - addUp*4 < CurrentTrack.Height*4+1)
 				{
-					newTrack.Heightmap[y].Add(CurrentTrack.Heightmap[y + addUp*4][x + addLeft*4]);
+					newTrack.Heightmap[y].Add(CurrentTrack.Heightmap[y - addUp*4][x - addLeft*4]);
 				}
 				else
 				{
@@ -243,11 +270,14 @@ public class TrackManager : MonoBehaviour
 	/// <param name="y">y pos of the tile</param>
 	public void UpdateTileAt(int x, int y)
 	{
+		IntVector2 p = GetBaseTilePosition(new IntVector2(x, y));
+
+		x = p.x;
+		y = p.y;
+
 		if (CurrentTrack.TrackTiles[y][x].FieldId < CurrentTrack.FieldFilesNumber)
 		{
 			int index = _tm.TileList.FindIndex(entry=>entry.Name == CurrentTrack.FieldFiles[CurrentTrack.TrackTiles [y][x].FieldId]);
-
-		    if (index < 0) return;
 
 			//load our model in to the memory
 			_tm.LoadModelForTileId(index);
@@ -300,7 +330,8 @@ public class TrackManager : MonoBehaviour
 	/// <param name="y"></param>
 	public void UpdateTerrainAt(int x, int y)
 	{
-		Tiles[y][x].GetComponent<Tile>().ApplyTerrain();
+		IntVector2 p = GetBaseTilePosition(new IntVector2(x,y));
+		Tiles[p.y][p.x].GetComponent<Tile>().ApplyTerrain();
 	}
 
 	public void LoadTrack()
@@ -343,7 +374,7 @@ public class TrackManager : MonoBehaviour
 
 	    GetComponent<ToolManager>().OnMapSizeChange();
 
-		Camera.main.transform.position = new Vector3(CurrentTrack.Width*10, 300, CurrentTrack.Height*-10);
+		Camera.main.transform.position = new Vector3(CurrentTrack.Width*10, 80, CurrentTrack.Height*-10);
 
 	    CurrentTrackState = TrackState.TrackLoaded;
     }

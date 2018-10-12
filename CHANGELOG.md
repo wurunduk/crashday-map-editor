@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 ## [Unreleased]
 ### Added
 - Tile icons are now loaded and shown in place tiles tool.
+- Textures are now correctly loaded.
+- Editor will now automatically unzip and check needed CPK files.
+- You can change selected terrain points by entering a height number.
+- Forward movement slows down when approaching terrain surface.
+### Fixed
+- Some light fixes to hopefully fix shadow artifacts.
+- Fixed editor crashing due to non-existant input key.
+- Camera will not move now when scrolling out of Editor window.
+- Tiles will now be removed correctly.
+- Terrain is now properly moved after map resizing.
 
 ## [0.6.2] - 2018-08-26
 ### Added

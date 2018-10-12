@@ -1,6 +1,6 @@
 # Crashday 3D map editor
 Crashday 3D editor made with unity.  
-Current unity version: 2018.2.2f1
+Current unity version: 2018.2.12f1
 
 *Read this in other languages: [English](README.md), [Русский](README.ru.md).* 
 
