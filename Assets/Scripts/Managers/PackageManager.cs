@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.AccessControl;
 using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.Zip;
 using UnityEngine;
@@ -11,11 +12,8 @@ public class PackageManager : MonoBehaviour
 	
     public void LoadDefaultCPKs()
     {
-		//disable for testing purposes, to fasten the load time
-		//return;
-
         foreach (string s in DefaultArchives)
-            LoadCPK(IO.GetCrashdayPath() + "\\data\\" + s, false);
+            LoadCPK(IO.GetCrashdayPath() + "\\data\\" + s);
     }
 
 
@@ -33,6 +31,7 @@ public class PackageManager : MonoBehaviour
         catch
         {
             Debug.Log("GameData file open exception: " + FilePath);
+	        return;
         }
 
         string path = IO.GetCrashdayPath();
@@ -40,15 +39,15 @@ public class PackageManager : MonoBehaviour
         if (isMod) path += "\\moddata\\";
         else path += "\\data\\";
 
-        if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+		Directory.CreateDirectory(path);
 
-        if (fs != null)
+		Debug.Log("unarchiving CPK: " + fs.Name + " into " + path);
+		if (fs != null)
         {
             try
             {
                 // Read zip file
                 ZipFile zf = new ZipFile(fs);
-                int numFiles = 0;
 
                 if (zf.TestArchive(true) == false)
                 {
@@ -65,25 +64,22 @@ public class PackageManager : MonoBehaviour
                         if (!zipEntry.IsFile)
                             continue;
 
-                        string entryFileName = zipEntry.Name;
+						string entryFileName = zipEntry.Name;
 
-                        //dont load already unpacked files
-                        if (File.Exists(path + entryFileName))
+						//dont load already unpacked files
+						if (File.Exists(path + entryFileName))
                         {
-                            //Debug.Log(entryFileName + " was already unpacked");
-                            continue;
+                            Debug.Log(entryFileName + " was already unpacked, assuming CPK is unpacked.");
+                            break;
                         }
 
                         // Skip .DS_Store files (these appear on OSX)
                         if (entryFileName.Contains("DS_Store"))
                             continue;
 
-                        //Debug.Log("Unpacking zip file entry: " + entryFileName);
-
                         byte[] buffer = new byte[4096];     // 4K is optimum
                         Stream zipStream = zf.GetInputStream(zipEntry);
 
-                        // Manipulate the output filename here as desired.
                         string fullZipToPath = path + entryFileName;
 
                         if (!Directory.Exists(path + Path.GetDirectoryName(entryFileName)))
@@ -96,7 +92,6 @@ public class PackageManager : MonoBehaviour
                         {
                             StreamUtils.Copy(zipStream, streamWriter, buffer);
                         }
-                        numFiles++;
                     }
 
                     zf.IsStreamOwner = false;
