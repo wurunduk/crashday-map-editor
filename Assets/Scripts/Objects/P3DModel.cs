@@ -112,7 +112,7 @@ public class P3DModel
         byte[] dxtBytes = new byte[ddsBytes.Length - DDS_HEADER_SIZE];
         Buffer.BlockCopy(ddsBytes, DDS_HEADER_SIZE, dxtBytes, 0, ddsBytes.Length - DDS_HEADER_SIZE);
 
-        Texture2D texture = new Texture2D(width, height, textureFormat, false);
+        Texture2D texture = new Texture2D(width, height, textureFormat, true);
         texture.LoadRawTextureData(dxtBytes);
         texture.Apply();
 
@@ -132,13 +132,17 @@ public class P3DModel
 
 	public Material CreateMaterial(int id)
 	{
-		Material mat = new Material(Shader.Find("Standard"));
+		Material mat;
 		byte[] data = System.IO.File.ReadAllBytes(IO.GetCrashdayPath() + "/data/content/textures/" + P3DRenderInfo[id].TextureFile.Remove(P3DRenderInfo[id].TextureFile.Length - 4) + ".dds");
 		Texture2D tex = LoadTextureDXT(data, TextureFormat.DXT5);
+		tex.mipMapBias = -0.5f;
+		tex.Apply(true);
 		bool tr = P3DRenderInfo[id].TextureFile.Contains("transp");
 		bool gls = P3DRenderInfo[id].TextureFile.Contains("gls");
 		if ( tr || gls)
 		{
+			mat = new Material(Shader.Find("Standard"));
+
 			Color c = gls ? new Color(0.1f, 0.1f, 0.1f, 0.4f) : Color.clear; 
 			mat.SetColor("_Color", c);
 			mat.SetFloat("_Mode", 2);
@@ -155,10 +159,13 @@ public class P3DModel
 		}
 		else
 		{
+			mat = new Material(Shader.Find("Mobile/Bumped Diffuse"));
+
 			mat.SetFloat("_Glossiness", 0);
 		}
 
 		mat.mainTexture = tex;
+		
 		
 		return mat;
 	}
