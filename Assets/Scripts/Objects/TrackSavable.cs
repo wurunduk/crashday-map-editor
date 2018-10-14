@@ -129,7 +129,7 @@ public class TrackSavable
 	public TrackSavable()
 	{
 		Author = "Author";
-		Comment = "A track made in 3d editor";
+		Comment = "A track made in 3D editor";
 		Style = 0;
 		Ambience = "day.amb";
 
@@ -137,11 +137,11 @@ public class TrackSavable
 		FieldFiles = new List<string>(2)
 		{
 			"field.cfl",
-			"chkpoint.cfl"
+			"chkfield.cfl"
 		};
 
-		Height = 5;
-		Width = 5;
+		Height = 7;
+		Width = 7;
 
 		TrackTiles = new List<List<TrackTileSavable>>(5);
 
@@ -151,7 +151,7 @@ public class TrackSavable
 			for (int x = 0; x <  Width; x++)
 			{
 				TrackTileSavable tile = new TrackTileSavable(0,0,0,0);
-				if(x == 2 && y == 2)
+				if(x == Height/2 && y == Width/2)
 					tile = new TrackTileSavable(1,0,0,0);
 				TrackTiles[y].Add(tile);
 			}
@@ -166,7 +166,7 @@ public class TrackSavable
 		CheckpointsNumber = 1;
 		Checkpoints = new List<ushort>
 		{
-			12
+			24
 		};
 
 		Permission = 0;

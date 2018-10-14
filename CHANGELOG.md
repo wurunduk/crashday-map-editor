@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
 ## [Unreleased]
+### Added
+- Added anti aliasing.
+### Changed
+- Changed skybox.
+- Added infinite map effect (maps are not infinite! :D).
+- Changed the default map a bit.
 
 ## [0.7.0] - 2018-10-12
 ### Added

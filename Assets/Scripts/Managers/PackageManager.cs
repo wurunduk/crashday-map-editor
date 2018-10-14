@@ -17,20 +17,20 @@ public class PackageManager : MonoBehaviour
     }
 
 
-    private void LoadCPK(string FilePath, bool isMod = false)
+    private void LoadCPK(string filePath, bool isMod = false)
     {
-        if (System.IO.File.Exists(FilePath) == false)
+        if (System.IO.File.Exists(filePath) == false)
             return;
 
         // Read file
         FileStream fs = null;
         try
         {
-            fs = new FileStream(FilePath, FileMode.Open);
+            fs = new FileStream(filePath, FileMode.Open);
         }
         catch
         {
-            Debug.Log("GameData file open exception: " + FilePath);
+            Debug.Log("GameData file open exception: " + filePath);
 	        return;
         }
 
