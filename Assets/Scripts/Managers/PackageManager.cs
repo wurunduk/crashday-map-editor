@@ -50,7 +50,7 @@ public class PackageManager : MonoBehaviour
                 ZipFile zf = new ZipFile(fs);
                 int numFiles = 0;
 
-                if (zf.TestArchive(true) == false)
+                if (false)
                 {
                     Debug.Log("Zip file failed integrity check!");
                     zf.IsStreamOwner = false;
