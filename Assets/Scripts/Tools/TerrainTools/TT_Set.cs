@@ -43,7 +43,7 @@ public class TT_Set : TT_General
 				{
 					for (int x = 0; x < TrackManager.CurrentTrack.Width * 4 + 1; x++)
 					{
-						brush.AddPointToSelection(GetPoint(new IntVector2(x, y)));
+						brush.AddPointToSelection(GetPoint(new IntVector2(x, y)), TrackManager.CurrentTrack.Heightmap[y][x]);
 					}
 				}
 
@@ -97,7 +97,7 @@ public class TT_Set : TT_General
 			int res = brush._selectedPoints.FindIndex(x => Mathf.Abs(x - p) < 0.01);
 			if (res >= 0)
 			{
-				brush.RemovePointFromSelection(res);
+				brush.RemovePointFromSelection(res, TrackManager.CurrentTrack.Heightmap[gridPosition.y][gridPosition.x]);
 			}
 		}
 		else
@@ -106,7 +106,7 @@ public class TT_Set : TT_General
 			//(the check is needed to avoid selecting one point multiple times)
 			if (!brush._selectedPoints.Exists(x => Mathf.Abs(x - p) < 0.01))
 			{
-				brush.AddPointToSelection(GetPoint(gridPosition));
+				brush.AddPointToSelection(GetPoint(gridPosition), TrackManager.CurrentTrack.Heightmap[gridPosition.y][gridPosition.x]);
 
 				int ax = 0;
 				int ay = 0;

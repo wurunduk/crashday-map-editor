@@ -22,18 +22,18 @@ public class TerrainBrush
 		_currentHeight = 0.0f;
 	}
 
-	public void AddPointToSelection(float point)
+	public void AddPointToSelection(float pointId, float height)
 	{
 		_currentHeight *= _selectedPoints.Count;
-		_selectedPoints.Add(point);
-		_currentHeight += point;
+		_selectedPoints.Add(pointId);
+		_currentHeight += height;
 		_currentHeight /= _selectedPoints.Count;
 	}
 
-	public void RemovePointFromSelection(int id)
+	public void RemovePointFromSelection(int id, float height)
 	{
 		_currentHeight *= _selectedPoints.Count;
-		_currentHeight -= _selectedPoints[id];
+		_currentHeight -= height;
 		_selectedPoints.RemoveAt(id);
 		_currentHeight /= _selectedPoints.Count;
 	}
@@ -90,11 +90,12 @@ public class Tool_TerrainEdit : ToolGeneral
 	public override void OnLMBUp(Vector3 point)
 	{
 		TerrainManager.UpdateCollider();
+		_currentTool.OnLMBUp(point);
 	}
 
 	public override void OnLMBDown(Vector3 point)
 	{
-		_currentTool.OnLMBUp(point);
+		_currentTool.OnLMBDown(point);
 	}
 
 	public override void OnLMB(Vector3 point)
