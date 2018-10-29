@@ -279,6 +279,17 @@ public class TrackManager : MonoBehaviour
 		{
 			int index = _tm.TileList.FindIndex(entry=>entry.Name == CurrentTrack.FieldFiles[CurrentTrack.TrackTiles [y][x].FieldId]);
 
+			if (index == -1)
+			{
+				Debug.LogError("Given tile id not found in the tile atlas!");
+
+				Tiles[y][x].name = x + ":" + y + " ";
+				Tiles[y][x].GetComponent<MeshFilter>().mesh.Clear();
+				Tiles[y][x].GetComponent<Tile>().SetupTile(CurrentTrack.TrackTiles [y][x], new IntVector2(1,1), new IntVector2(x, y), _terrainManager, "");
+
+				return;
+			}
+
 			//load our model in to the memory
 			_tm.LoadModelForTileId(index);
 

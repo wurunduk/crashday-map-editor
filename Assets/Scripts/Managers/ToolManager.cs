@@ -37,7 +37,7 @@ public class ToolManager : MonoBehaviour
 		InitializeTool(new Tool_TilePlace());
 		InitializeTool(new Tool_TileRemove());
 		InitializeTool(new Tool_TerrainEdit());
-		InitializeTool(new Tool_CheckpointEdit());
+		//InitializeTool(new Tool_CheckpointEdit());
 
 		_currentTool = _tools[0];
 		_currentTool.OnSelected();

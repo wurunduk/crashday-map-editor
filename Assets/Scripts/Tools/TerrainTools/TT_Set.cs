@@ -18,16 +18,6 @@ public class TT_Set : TT_General
 		OnSelected();
 	}
 
-	public override void OnSelected()
-	{
-		base.OnSelected();
-	}
-
-	public override void OnDeselected()
-	{
-		
-	}
-
 	public override void Update()
 	{
 		if (Input.GetButtonDown("Select all"))
