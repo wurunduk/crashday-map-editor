@@ -49,30 +49,33 @@ public class P3DModel
         public P3DMaterial Material;
 
         public short P1;
-        public short P2;
-        public short P3;
+	    public float U1, V1;
 
-        public float U1, V1;
+        public short P2;
         public float U2, V2;
+
+	    public short P3;
         public float U3, V3;
     };
 
     public class P3DMesh
     {
+		//submesh + 4 bytes
         public string Name;
         public uint Flags;
-        public short NumVertices;
-        public short NumPolys;
+	    public Vector3 LocalPos;
+
+	    public float Length;
+	    public float Height;
+	    public float Depth;
 
         public TextureInfo[] TextureInfos;
 
+	    public short NumVertices;
         public Vector3[] Vertex;
-        public P3DTexPolygon[] Poly;
 
-        public Vector3 LocalPos;
-        public float Length;
-        public float Height;
-        public float Depth;
+	    public short NumPolys;
+        public P3DTexPolygon[] Poly;
 
         public P3DMesh(byte numTextures)
         {
@@ -80,21 +83,26 @@ public class P3DModel
         }
     };
 
+	//p3d + version (4 bytes)
+	public float P3DLength;
+	public float P3DDepth;
+	public float P3DHeight;
+
+	//tex + 4 bytes
+	public byte P3DNumTextures;
+	public RenderInfo[] P3DRenderInfo;
+
+	//lights + 4 bytes
+	public short P3DNumLights;
+	public P3DLight[] P3DLights;
+
+	//meshes + 4 bytes
     public short P3DNumMeshes;
     public P3DMesh[] P3DMeshes;
 
-    public short P3DNumLights;
-    public P3DLight[] P3DLights;
-
-    public float P3DLength;
-    public float P3DDepth;
-    public float P3DHeight;
-
+	//user + 4 bytes
     public int P3DUserDataSize;
     public string P3DUserDataPtr;
-
-    public byte P3DNumTextures;
-    public RenderInfo[] P3DRenderInfo;
 
     public static Texture2D LoadTextureDXT(byte[] ddsBytes, TextureFormat textureFormat)
     {

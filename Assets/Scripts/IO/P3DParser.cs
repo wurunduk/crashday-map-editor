@@ -81,6 +81,7 @@ public class P3DParser
 
             newP3DMesh.Flags = io.ReadUInt();
             newP3DMesh.LocalPos = io.ReadVector3();
+
             newP3DMesh.Length = io.ReadFloat();
             newP3DMesh.Height = io.ReadFloat();
             newP3DMesh.Depth = io.ReadFloat();
@@ -130,15 +131,13 @@ public class P3DParser
                 newP3DMesh.Poly[i] = newP3DTexPolygon;
             }
 
-            short PolyInTex = 0;
-
             for (int i = 0; i < model.P3DNumTextures; i++)
             {
-                PolyInTex = newP3DMesh.TextureInfos[i].TextureStart;
+                short PolyInTex = newP3DMesh.TextureInfos[i].TextureStart;
 
                 for (int n = 0; n < newP3DMesh.TextureInfos[i].NumFlat; n++)
                 {
-                    newP3DMesh.Poly[PolyInTex+n].Material = P3DModel.P3DMaterial.Flat;
+                    newP3DMesh.Poly[PolyInTex + n].Material = P3DModel.P3DMaterial.Flat;
                     newP3DMesh.Poly[PolyInTex + n].Texture = model.P3DRenderInfo[i].TextureFile;
                 }
                 PolyInTex += newP3DMesh.TextureInfos[i].NumFlat;
@@ -178,26 +177,24 @@ public class P3DParser
                     newP3DMesh.Poly[PolyInTex + n].Texture = model.P3DRenderInfo[i].TextureFile;
                 }
             }
-
-            //skip user test
-            //io.ReadOffset += 4;
-            //4 reserved bytes
-            //io.ReadOffset += 4;
-
-            //model.P3DUserDataSize = io.ReadInt();
-
-            if (model.P3DUserDataSize != 0)
-            {
-                //read user data here
-                model.P3DUserDataPtr = "";
-            }
-            else
-            {
-                model.P3DUserDataPtr = "";
-            }
-
             model.P3DMeshes[m] = newP3DMesh;
         }
+
+	    //skip user test
+	    io.AddReadingOffset(4);
+	    //4 reserved bytes
+	    io.AddReadingOffset(4);
+
+	    model.P3DUserDataSize = io.ReadInt();
+
+	    if (model.P3DUserDataSize != 0)
+	    {
+		    model.P3DUserDataPtr = io.ReadString(model.P3DUserDataSize);
+	    }
+	    else
+	    {
+		    model.P3DUserDataPtr = "";
+	    }
         return model;
     }
 }

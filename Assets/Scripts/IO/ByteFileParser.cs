@@ -77,11 +77,17 @@ public class ByteFileParser
             {
                 var oldOffset = _readOffset;
 	            _readOffset = i + 1;
-                return Encoding.UTF8.GetString(Data.ToArray(), oldOffset, i - oldOffset);
+                return Encoding.UTF8.GetString(DataBytes, oldOffset, i - oldOffset);
             }
         }
         return "";
     }
+
+	public string ReadString(int size)
+	{
+		_readOffset += size;
+		return Encoding.UTF8.GetString(DataBytes, _readOffset-size, size);
+	}
 
 
 	public void WriteInt(int i)
