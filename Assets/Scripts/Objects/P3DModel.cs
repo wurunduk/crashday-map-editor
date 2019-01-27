@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class P3DModel
@@ -85,8 +86,8 @@ public class P3DModel
 
 	//p3d + version (4 bytes)
 	public float P3DLength;
-	public float P3DDepth;
 	public float P3DHeight;
+	public float P3DDepth;
 
 	//tex + 4 bytes
 	public byte P3DNumTextures;
@@ -141,13 +142,22 @@ public class P3DModel
 	public Material CreateMaterial(int id)
 	{
 		Material mat;
-		byte[] data = System.IO.File.ReadAllBytes(IO.GetCrashdayPath() + "/data/content/textures/" + P3DRenderInfo[id].TextureFile.Remove(P3DRenderInfo[id].TextureFile.Length - 4) + ".dds");
+		string textureName = P3DRenderInfo[id].TextureFile.Remove(P3DRenderInfo[id].TextureFile.Length - 4);
+		string path = IO.GetCrashdayPath() + "/data/content/textures/" + textureName + ".dds";
+		byte[] data;
+		if (File.Exists(path))
+			data = File.ReadAllBytes(path);
+		else
+		{
+			Debug.LogError("Failed to load " + textureName + ". Loading default texture.");
+			data = File.ReadAllBytes(IO.GetCrashdayPath() + "/data/content/textures/colwhite.dds");
+		}
 		Texture2D tex = LoadTextureDXT(data, TextureFormat.DXT5);
 		tex.mipMapBias = -0.5f;
 		tex.Apply(true);
 		bool tr = P3DRenderInfo[id].TextureFile.Contains("transp");
 		bool gls = P3DRenderInfo[id].TextureFile.Contains("gls");
-		if ( tr || gls)
+		if (tr || gls)
 		{
 			mat = new Material(Shader.Find("Standard"));
 

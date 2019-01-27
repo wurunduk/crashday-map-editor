@@ -41,7 +41,6 @@ public class P3DParser
         io.AddReadingOffset(4);
 
         model.P3DNumLights = io.ReadShort();
-
         model.P3DLights = new P3DModel.P3DLight[model.P3DNumLights];
         for (int i = 0; i < model.P3DNumLights; i++)
         {
@@ -66,7 +65,6 @@ public class P3DParser
         io.AddReadingOffset(4);
 
         model.P3DNumMeshes = io.ReadShort();
-
         model.P3DMeshes = new P3DModel.P3DMesh[model.P3DNumMeshes];
         for (int m = 0; m < model.P3DNumMeshes; m++)
         {
@@ -100,8 +98,8 @@ public class P3DParser
                 newP3DMesh.TextureInfos[i] = newTextureInfo;
             }
 
-            newP3DMesh.NumVertices = io.ReadShort();
 
+            newP3DMesh.NumVertices = io.ReadShort();
             newP3DMesh.Vertex = new Vector3[newP3DMesh.NumVertices];
             for (int i = 0; i < newP3DMesh.NumVertices; i++)
             {
@@ -110,7 +108,6 @@ public class P3DParser
 
 
             newP3DMesh.NumPolys = io.ReadShort();
-
             newP3DMesh.Poly = new P3DModel.P3DTexPolygon[newP3DMesh.NumPolys];
             for (int i = 0; i < newP3DMesh.NumPolys; i++)
             {
@@ -130,6 +127,7 @@ public class P3DParser
 
                 newP3DMesh.Poly[i] = newP3DTexPolygon;
             }
+            
 
             for (int i = 0; i < model.P3DNumTextures; i++)
             {
